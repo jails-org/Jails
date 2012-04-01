@@ -1,0 +1,78 @@
+/**
+*  @Page Colors 
+*/
+
+.holder strong{ color:yellow }
+
+h1{
+    color:#2A3E54;
+}
+
+    #content h1 strong{ 
+        color:#222;
+    }
+
+
+#wrap{
+	background-color:#fff;
+}
+
+   #sidebar a{
+        background-color:#eee;
+        border:1px solid #ddd;
+        color:#222;
+    }
+    
+    #sidebar a:hover,
+    #sidebar .selected{
+        background-color:#ddd;
+    }
+
+    #bar{
+        background-color:#222;
+        -webkit-box-shadow: 0 4px 2px #222;
+        -moz-box-shadow: 0 4px 2px #222;
+        box-shadow: 0 4px 2px #222;
+    }
+
+    #project .description{
+        color:yellow
+    }
+
+    #bar .menu li a{
+        color:#fff;
+    }
+
+    #bar .menu li a:hover,
+    #bar .menu li .selected{
+       color:yellow 
+    }
+
+		#content{
+			color:#333;
+		}
+    
+            #content strong{
+                color:#222;
+            }
+
+            #content ul li{
+                border:1px solid #ddd;
+                background-color:#eee
+            }
+
+            #content ul li .example{
+                color:#48021E;
+            }
+
+#bar, #footer{
+	color:#fff;	
+}
+
+#footer{
+    background-color:#222
+}
+
+	#footer .holder p,
+	#footer .holder a{ color:#fff }
+	#footer .holder a:hover{ color:yellow }
