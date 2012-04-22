@@ -6,7 +6,7 @@
 ;(function(namespace){
 
     //Static
-    var cache = {};
+    var cache = {}, context;
 
 	var Jails = {
 
@@ -62,7 +62,8 @@
 		
 		Controller :function(){
            Interface.command.filter.apply(this, ['before']); 
-           Interface.command.filter.apply(this, ['after']); 
+           Interface.command.filter.apply(this, ['after']);
+           context = this;
         }
 		
 	};
@@ -156,7 +157,7 @@
 							Jails.params[ k ] = result[j];
 						}
 
-						return json[key].apply( this, result );
+						return json[key].apply( context, result );
 					}
 
 				}
