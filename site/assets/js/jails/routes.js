@@ -1,12 +1,15 @@
 /**
  * @class Routes
- */
-;(function( namespace ){
+ **/
 
-	namespace.routes = [
-		{ '#!/:page' :function(page){	
-			Home.Controller.index(page);
-		}}
-	]
-		
-})( Jails )
+define([
+	
+	'jails-app',
+	'app/controller'
+
+],function( jails, controller ){
+			
+	jails.routes = [{ '#!/:page' :controller.index }];
+	
+});
+

@@ -1,15 +1,29 @@
-Jails.namespace.add('jails', 'assets/js/jails/')
 
-Jails.namespace.using(
-	'{jails}models/home.js',
-	'{jails}views/home.js',
-	'{jails}controllers/home.js',
-	'{jails}routes.js'
-)
-(function(){			
-	
-	Jails.url.observe();	
-	if(!location.hash)
-		Jails.url.redirect('/sobre');	
+require.config({
 
+	baseUrl:'../source',
+	paths :{ 
+		app :'../site/assets/js/jails',
+		jquery :['//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min']
+	}
 });
+
+require(['jquery'], function(){
+	
+	require([
+		
+		'jails-app',
+		'app/routes',
+		'app/modules/menu',
+		'app/modules/content'
+
+	], function(jails, routes, menu, content){
+		
+		jails.url.observe();
+		
+		if(!location.hash)
+			jails.url.redirect('/sobre');	
+	});
+});
+
+

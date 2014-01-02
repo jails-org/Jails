@@ -1,1 +1,48 @@
-eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}(';(4(l){5 m={},11;5 n={13:{},E:{},1T:4(a,b){o[a].7(b)},1e:4(a,b){8(a I 3){1O H 1u(\'y 1L 1D a 1e 1z 3 1y :\'+a);}n[a]=b},1N:4(a,b,c){m[a]=m[a]||{};m[a][c||3.19.18()]=b},1B:4(a,b){8(m[a]){6 m[a][b||3.19.18()]}6 G}};5 o={1F:4(){3.1k=3.1k||{}},1J:4(){5 e=/.{(\\w*)\\}/g;3.1K=4(b,c){5 d=1h(c).x(e,4(a){6 b[a.M(2,-1)]});6 d};3.1Q=4(a){6 1R.1S(a).1V};(3.1Z||4(){}).u(3)},20:4(){q.14.v.7(3,[\'1f\']);q.14.v.7(3,[\'1v\']);11=3}};5 p={D:4(){q.1d.r.7(3);5 c=\'\',T=1X;3.B=\'#!\';3.1U=4(a){6 a?a.U(3.B).Y():c.U(3.B).Y()};3.18=4(){6 c};3.T=4(){T=1o;5 a=H n.1s();a.R=4(){c=A.1c;v(n.13,c)};a.15()};3.r[16]=4(a){3.r(\'\',a)};3.r[P][1]=4(a){8(!a.x)6 3.r(3,\'\',a);8(!c.17(/#/))c=c+3.B+a;1g c=c.U(3.B)[0]+3.B+a;8(T)6 A.1c=c;v(n.13,c)};3.r[P][2]=4(a,b){F(5 i I b)a+=\'/\'+i+\'/\'+b[i];3.r(a)}}};4 v(a,b){5 c=G;n.E={};F(5 i=0;i<a.t;i++){5 d=a[i];F(5 e I d){5 f=e.17(/(\\w*)\\/\\:\\w*/g);5 g=e.x(/\\:(\\w*)/g,\'([^&/#?]*)\');8(c=b.17(g)){c.O();5 h=c.t;F(5 j=0;j<h;j++){c[j]=1h(c[j]);5 k=f[j].U(/\\//).O()||\'B\';n.E[k]=c[j]}6 d[e].7(11,c)}}}};5 q={1d:{r:4(){3.r=4(){6 3.r[9[0].1x].7(3,9)};3.r[16]=4(){6 3.r[16][9.t].7(3,9)};3.r[P]=4(){6 3.r[P][9.t].7(3,9)}}},14:{v:4(a){3[a+\'V\']=3[a+\'V\']||{v:4(){},1r:[]};5 b=3[a+\'V\'].1r;5 c=3[a+\'V\'].v;F(5 i=0;i<b.t;i++){5 d=3[b[i]];3[b[i]]=(4(){8(a==\'1f\'){6 4(){c.7(3,9);d.7(3,9)}}1g{6 4(){d.7(3,9);c.7(3,9)}}})()}}}};l.y=n;l.y.19=H p.D()})(Z);(4(c){5 d={D:4(){5 a=G,1t=3,1a=$(Z),1q=\'1w\'I Z,1p=e.z(1q);3.S=1A;3.R=4(){};4 1m(){8(!A.z)6;8(a!=A.z){a=A.z;1t.R(A.z.1C(1))}};1p.7(3,[1m,1a])}};5 e={z:4(a){8(a)6 f.Q;6 f.S}};5 f={Q:4(a,b){3.15=4(){8(A.z){3.R()};b.1E(\'Q\',a)};3.1l=4(){b.1G(\'Q\')}},S:4(a){5 b=G;3.15=4(){b=1H(a,3.S)};3.1l=4(){1I(b)}}};c.1s=d.D})(y);(4(f,$){5 g=1j.1i.M;5 h={N:$.1M,D:4(d){5 e={},s=[],E=G,X=H 1P,N=h.N;d=d||\'\';3.K=\'\';3.W=\'\';4 1b(){8(!s.t){6 X(E)}s.O();J.u(3)};4 J(){5 a=3;8(!s.t)6 X(E);8(s[0]I e){s.O();6 J.u(3)}e[s[0]]=1o;N(3.K+d+s[0]+3.W,4(){1b.u(a)})};3.L=4(){5 a=g.u(9.t?9:s);5 b=a[a.t-1];8(b.u){X=a.Y()}s=a;J.u(3)};3.12=4(){5 b=g.u(9);5 c=3;6 4(a){b.1W(a);c.L.7(c,b)}}}};f.1n=h.D})(y,1Y);(4(e){5 f={},C=H y.1n();4 x(b){5 c=/\\{(\\w*)\\}/g;5 d=b.x(c,4(a){6 f[a.M(1,-1)]||\'\'});6 d}4 10(a){5 a=1j.1i.M.u(a);F(5 i=0;i<a.t;i++){8(a[i].x){a[i]=x(a[i])}}6 a}e.21={K:4(a){C.K=a},W:4(a){C.W=a},22:4(a,b){f[a]=b},L:4(){6 C.L.7(C,10(9))},12:4(){6 C.12.7(C,10(9))},23:4(a){24 25[a]}}})(y)',62,130,'|||this|function|var|return|apply|if|arguments||||||||||||||||||redirect|fifo|length|call|filter||replace|Jails|hash|location|root|include|Class|params|for|null|new|in|create|minify|load|slice|scripttag|shift|String|hashchange|update|timer|observe|split|_filter|options|callback|pop|window|each|context|using|routes|command|start|Object|match|path|url|win|script_loaded|href|polymorphism|plugin|before|else|decodeURIComponent|prototype|Array|data|stop|listener|Include|true|interfaces|has_hashchange|action|Hashchange|self|Error|after|onhashchange|constructor|name|with|100|get_cache|substring|have|bind|Model|unbind|setInterval|clearInterval|View|inject|already|getScript|set_cache|throw|Function|template|document|getElementById|extend|get|innerHTML|push|false|jQuery|initialize|Controller|namespace|add|remove|delete|namespaces'.split('|'),0,{}))
+/**
+ *@class Jails
+ *@author Eduardo Ottaviani
+ */
+(function (root, factory) {
+
+	if (typeof exports === 'object' && exports) {
+		factory( exports ); // CommonJS
+	}else{
+		
+		var jails = {};
+		factory( jails );
+		
+		if (typeof define === "function" && define.amd) {
+			define( jails ); // AMD
+		}else{
+			root.Jails = jails; // <script>
+		}
+	}
+
+}(this, function (Jails) {	
+
+    var 
+		cache = {};
+
+	Jails.routes = {}; 
+	Jails.params = {};
+
+	Jails.extend = function(type, object){
+		
+		var 
+			mvc = Jails.mvc,
+			type = mvc[type]._class;
+		
+		if( mvc && type ) type.apply( object );
+	}
+
+	Jails.set_cache = function(name, data, alt){
+		cache[name] = cache[name] || {};
+		cache[name][alt || this.url.path()] = data;
+	}
+
+	Jails.get_cache = function(name, alt){				
+		if(cache[name]){ return cache[name][alt || this.url.path()];}
+		return null;
+	}
+				
+}));
