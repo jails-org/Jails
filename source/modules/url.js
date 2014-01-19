@@ -82,8 +82,10 @@
 		};	
 	}
 
-	Url.create = function(o){
-		return new this._class(o);
+	Url.create = function(object){
+		object.routes = {};
+		object.params = {};
+		return new this._class(object);
 	}
 	
 	function filter(array, url){	

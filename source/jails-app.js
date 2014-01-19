@@ -1,5 +1,5 @@
 define([
-	
+
 	'jails',
 	'modules/hashchange',
 	'modules/url',
@@ -8,7 +8,7 @@ define([
 ],function(jails, hash, url, mvc){
 	
 	jails.url = url.create( jails );
-	jails.mvc = mvc; 
+	jails.mvc = mvc.create( jails ); 
 	jails.hash = hash.create();
 
 	return jails;

@@ -12,7 +12,7 @@ define(['jails-app'], function(jails){
 			content = $('#content');
 			loading = 'loading';
 
-			this.on('update-page', this.update);
+			jails.on('update-page', this.update);
 		},
 
 		update :function(e, page){

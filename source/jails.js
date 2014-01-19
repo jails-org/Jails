@@ -24,25 +24,7 @@
 		cache = {},
 		body = $(document.body);
 
-	Jails.routes = {};
-	Jails.params = {};
 	Jails.events = [];
-
-	Jails.extend = function(type, object){
-
-		var
-			mvc = Jails.mvc,
-			type = mvc[type]._class;
-
-		if( mvc && type ){
-
-			type.apply( object, [object.name] );
-
-			if( object.name ){
-				Jails.modules[ object.name ] = object;
-			}
-		}
-	}
 
 	Jails.set_cache = function(name, data, alt){
 		cache[name] = cache[name] || {};
@@ -61,6 +43,12 @@
 	Jails.on = function(ev, method){
 		body.bind( ev, bind(method) );
 		Jails.events.push(ev);
+	}
+
+	function bind(method){
+		return function(e){
+			method.apply( Jails, arguments );
+		}
 	}
 
 }));

@@ -17,7 +17,7 @@ define(['jails-app'], function(jails){
 			menu.find('a').click( change );
 			menus.find('a').click( redirect );
 			
-			this.on('update-page', this.update);
+			jails.on('update-page', this.update);
 		},
 
 		update :function(e, page){

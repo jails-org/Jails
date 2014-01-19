@@ -47,7 +47,7 @@
 		return new this._class(o);
 	}
 	
-    _interface = (function(name){
+	_interface = (function(name){
 	
 		return({
 			

@@ -54,17 +54,34 @@
 			};
 
 			this.notify = function(name, args){
-				Jails.trigger(name, args);
-			}
-
-			function bind(method){
-				return function(e){
-					method.apply( _self, arguments );
-				}
+				body.trigger(name, args);
 			}
 
 			;(this.initialize || function(){}).call(this);
 		}
+	}
+
+	Mvc.create = function(object){
+
+		object.views = {};
+
+		object.extend = function(type, module){
+
+			var
+				mvc = object.mvc,
+				type = mvc[type]._class;
+
+			if( type ){
+
+				type.apply( module, [module.name] );
+
+				if( module.name ){
+					object.views[ module.name ] = module;
+				}
+			}
+		}
+
+		return Mvc;
 	}
 
 }));
