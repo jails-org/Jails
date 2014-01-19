@@ -9,7 +9,7 @@ require.config({
 });
 
 require(['jquery'], function(){
-	
+
 	require([
 		
 		'jails-app',
@@ -18,11 +18,11 @@ require(['jquery'], function(){
 		'app/modules/content'
 
 	], function(jails, routes, menu, content){
-		
+
 		jails.url.observe();
-		
+
 		if(!location.hash)
-			jails.url.redirect('/sobre');	
+			jails.url.redirect('/sobre');
 	});
 });
 

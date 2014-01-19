@@ -50,7 +50,7 @@
 				object.params = filter( object.routes, url );
 			};
 
-			hash.start();	
+			hash.start();
 		};
 
 		this.redirect[Object] = function(json){
@@ -103,17 +103,19 @@
 				aux = key.replace(/\:(\w*)/g, '([^&/#?]*)');
 				
 				if( result = url.match( aux ) ){
-					
+
 					result.shift();
 					len = result.length;
 					
-					for(j = 0; j < len; j++){	
+					for(j = 0; j < len; j++){
 						result[j] = decodeURIComponent( result[j] );
 						k = param[j].split(/\//).shift() || 'root';
 						ret[ k ] = result[j];
 					}
 
-					return json[key].apply( null, result );
+					json[key].apply( null, result );
+
+					return ret;
 				}
 			}
 		}

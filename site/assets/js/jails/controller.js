@@ -3,13 +3,14 @@
  */
 
 define(['jails-app'], function(jails){
-	
+
 	var controller;
 
 	jails.extend('controller', controller = {
 
 		index :function( page ){
-			controller.trigger('update_page', page);
+
+			jails.trigger('update-page', page);
 		}
 	});
 

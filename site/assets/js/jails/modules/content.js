@@ -1,18 +1,19 @@
-
 define(['jails-app'], function(jails){
-	
+
 	var 
 		content, module, loading, status;
-	
+
 	jails.extend('view', module = {
-        
-        initialize :function(){
-            
-            content = $('#content');
+
+		name :'content',
+
+		initialize :function(){
+
+			content = $('#content');
 			loading = 'loading';
-	
-			this.on('update_page', this.update);
-        },
+
+			this.on('update-page', this.update);
+		},
 
 		update :function(e, page){
 			load('pages/' + page + '.htm');
@@ -29,7 +30,7 @@ define(['jails-app'], function(jails){
 		complete :function(){
 			
 			content.removeClass( loading );
-			this.notify('content_loaded', this);
+			this.notify('content-loaded', this);
 		},
 
 		error :function(e){
@@ -42,21 +43,21 @@ define(['jails-app'], function(jails){
 	status = {
 		
 		'404' :function(e){ 
-			module.display( e.responseText );		
+			module.display( e.responseText );
 		},
 
 		redirect :function(){
 			jails.url.redirect('/sobre');
 		}
-	}
+	};
 
 	function load(url){
-        
-        var cache = jails.get_cache('page');		
 
-        if(!cache){	
-			module.loading();	
-			$.ajax({ url :url, dataType :'html', success :complete, error :error });	
+		var cache = jails.get_cache('page');
+
+		if(!cache){
+			module.loading();
+			$.ajax({ url :url, dataType :'html', success :complete, error :error });
 		}
 
 		else module.display( cache ); 
@@ -64,14 +65,14 @@ define(['jails-app'], function(jails){
 
 	function complete(html){
 
-        module.display( html );
-        
+		module.display( html );
+
 		jails.set_cache('page', html);
 		module.complete();
 	};
 
 	function error(e){
-		
+
 		module.complete();
 		module.error( e );
 	}

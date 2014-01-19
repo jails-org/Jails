@@ -29,29 +29,22 @@
 	};
 
 	Mvc.controller = {
-		
-		_class :function(){
 
-			var body = $(document.body);
-			
-			this.trigger = function(name, args){ 
-				body.trigger(name, args); 
-			}
-		}
+		_class :function(){}
 	};
 	
 	Mvc.view = { 
 		
 		_class :function(){
-		
-			var 
+
+			var
 				pattern = /[$#@]{(\w*)\}/g,
 				_self = this,
 				body = $(document.body);
 				
 			this.inject = function( json, template ){
 				var html = decodeURIComponent(template).replace( pattern, function(key){
-					return json[ key.slice(2, -1) ];	
+					return json[ key.slice(2, -1) ];
 				});
 				return html;
 			};
@@ -60,12 +53,8 @@
 				return document.getElementById(id).innerHTML; 
 			};
 
-			this.on = function(ev, method){
-				body.bind( ev, bind(method) );		
-			}
-
 			this.notify = function(name, args){
-				body.trigger(name, args);
+				Jails.trigger(name, args);
 			}
 
 			function bind(method){
@@ -73,7 +62,7 @@
 					method.apply( _self, arguments );
 				}
 			}
-			
+
 			;(this.initialize || function(){}).call(this);
 		}
 	}
