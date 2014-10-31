@@ -1,8 +1,11 @@
-require.config({ baseUrl: '../scaffold/' });
+require.config({
+	baseUrl	:'../scaffold/',
+	paths	:{ 'jails' :'../source/jails.min' }
+});
 
 define([
 
-	'lib/jails',
+	'jails',
 	'lib/mustache',
 
 	'apps/my-app'

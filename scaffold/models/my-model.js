@@ -1,6 +1,6 @@
 define([
 
-	'lib/jails'
+	'jails'
 
 ],function(jails){
 

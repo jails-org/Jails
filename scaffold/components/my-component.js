@@ -1,4 +1,4 @@
-define([ 'lib/jails' ],function(jails){
+define([ 'jails' ],function(jails){
 
 	jails.component('my-component', function(html){
 
