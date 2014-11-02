@@ -1,7 +1,8 @@
 define([
 
 	'jails',
-	'modules/presence',
+	'mods/presence/presence',
+	'comps/my-component/my-component',
 	'apps/structure'
 
 ], function( jails, Presence ){

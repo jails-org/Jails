@@ -1,6 +1,12 @@
 require.config({
+
 	baseUrl	:'../scaffold/',
-	paths	:{ 'jails' :'../source/jails.min' }
+
+	paths	:{
+		'jails' :'../source/jails.min',
+		'mods'	:'//rawgit.com/jails-scaffold/Modules/master',
+		'comps'	:'//rawgit.com/jails-scaffold/Components/master'
+	}
 });
 
 define([
