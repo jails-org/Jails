@@ -1,37 +1,40 @@
 define(function(){
 
 	var
-		Jails, config;
+		Jails, config, $;
 
 	Jails = {
 
-		config :{},
-		context:$( document.documentElement ),
+		config :{ templates :{ type :'x-tmpl-mustache'} },
+		context:null,
 
 		start :function(cfg, ctx){
-			Scanner.start( cfg, ctx );
+
+			$ = cfg.base;
+			Jails.context = $( document.documentElement );
+
+			$.extend( true, Jails.config, cfg );
+			Scanner.start( ctx );
 		}
 
 	};
 
 	var Scanner = {
 
-		start :function(cfg, context){
+		start :function(context){
 
 			var type, modules = [];
 
-			$.extend( Jails.config, cfg );
-
 			context = context || Jails.context;
-			type = Jails.config.templates.type || 'x-tmpl-mustache';
+			type = Jails.config.templates.type;
 
 			Scanner.scan( 'partial', 'script[type='+type+']', context, modules);
-			Scanner.scan( 'include', '[data-include]', context, modules );
-
 			Scanner.scan( 'component', '[data-component]', context, modules);
 			Scanner.scan( 'view', '[data-view]', context, modules);
 			Scanner.scan( 'controller', '[data-controller]', context, modules);
+			Scanner.scan( 'include', '[data-include]', context, modules );
 			Scanner.scan( 'app', '[data-app]', context, modules );
+
 
 			Module.start( modules );
 		},
@@ -57,6 +60,9 @@ define(function(){
 			var url = el.data(type);
 
 			$.get( url ).done(function(html){
+				html = $(html);
+				el.append(html);
+				Scanner.start( el );
 				el.replaceWith( html );
 			});
 		},
@@ -144,24 +150,20 @@ define(function(){
 					else return data;
 				};
 
-				this.watch = function(target, ev, method){
-					element.on(ev, target, method);
-				};
-
 				this.broadcast = function(target, ev){
 					$(target).trigger(ev);
 				};
 
 				this.listen = function(name, method){
-					Jails.context.on(name, function(e, o){
-						method.apply(o.element, o.args);
+					element.on(name, function(e, o){
+						method.apply(o.element, [e].concat(o.args));
 					});
 				};
 
 				this.emit = function( simbol, args ){
 					args = Array.prototype.slice.call(arguments);
 					args.shift();
-					Jails.context.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
 				};
 			}
 		},
@@ -208,16 +210,10 @@ define(function(){
 
 					if(templates[tpl]){
 
-						var modules = [];
 						var html = cfg.engine.render( get(tpl), vo, templates );
 
 						el.html( html );
-
-						Scanner.scan( 'component', '[data-component]', el, modules);
-						Scanner.scan( 'view', '[data-view]', el, modules);
-						Scanner.scan( 'controller', '[data-controller]', el, modules);
-
-						Module.start( modules );
+						Scanner.start(el);
 					}
 				};
 
@@ -248,7 +244,7 @@ define(function(){
 				this.emit = function( simbol, args ){
 					args = Array.prototype.slice.call(arguments);
 					args.shift();
-					Jails.context.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
 				};
 			}
 		}
