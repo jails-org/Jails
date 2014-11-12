@@ -15,6 +15,10 @@ define(function(){
 
 			$.extend( true, Jails.config, cfg );
 			Scanner.start( ctx );
+		},
+
+		refresh :function(ctx){
+			Scanner.start( ctx );
 		}
 
 	};
@@ -32,9 +36,7 @@ define(function(){
 			Scanner.scan( 'component', '[data-component]', context, modules);
 			Scanner.scan( 'view', '[data-view]', context, modules);
 			Scanner.scan( 'controller', '[data-controller]', context, modules);
-			Scanner.scan( 'include', '[data-include]', context, modules );
 			Scanner.scan( 'app', '[data-app]', context, modules );
-
 
 			Module.start( modules );
 		},
@@ -53,18 +55,6 @@ define(function(){
 				scan?
 					scan(name, el, modules) :Scanner.module( name, el, modules );
 			}
-		},
-
-		include:function(type, el, modules){
-
-			var url = el.data(type);
-
-			$.get( url ).done(function(html){
-				html = $(html);
-				el.append(html);
-				Scanner.start( el );
-				el.replaceWith( html );
-			});
 		},
 
 		module :function(type, el, modules){
