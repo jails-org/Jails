@@ -140,6 +140,10 @@ define(function(){
 					else return data;
 				};
 
+				this.watch = function(target, ev, method){
+					element.on(ev, target, method);
+				};
+
 				this.broadcast = function(target, ev){
 					$(target).trigger(ev);
 				};
@@ -178,7 +182,7 @@ define(function(){
 
 				Module.common._class.apply(this, [name, element]);
 
-				var tpl, cfg, templates, render;
+				var tpl, cfg, templates, render, _self = this;
 
 				tpl = element.data('template');
 				render = element.data('render');
@@ -216,7 +220,90 @@ define(function(){
 		},
 
 		model :{
-			_class :function( name, element ){}
+
+			_class :function( name, element ){
+
+				var
+					data, _self = this,
+					count, ev = document.createElement('i');
+
+				count = 0;
+				this.name = name;
+
+				this.data = function(response, id){
+					if(response){
+						data = response;
+						if(id) this.transform(id, response);
+						$(ev).trigger(name+':change', data);
+					}
+					else return data;
+				};
+
+				this.size = function(){
+					return data.length || count;
+				};
+
+				this.find = function(id){
+					return data[id];
+				};
+
+				this.remove = function(id){
+					delete data[id];
+					$(ev).trigger(name+':change', data);
+				};
+
+				this.update = function(id, value){
+					data[id] = value;
+					$(ev).trigger(name+':change', data);
+				};
+
+				this.emit = function(ev, data){
+					$(ev).trigger(name+':'+ev, data);
+				};
+
+				this.transform = function(primary, response){
+
+					response = response || data;
+					response = response.push? response :[ response ];
+					var json = {}, l = response.length, i, item;
+
+					for(i = 0; i < l; i++){
+						item = response[i];
+						json[ item[primary || i] ] = item;
+					}
+
+					count = i;
+					data = json;
+				};
+
+				this.rules = {
+
+					type :function(entity){
+						var c1, c2;
+
+						$.each(_self.schema, function(name, value){
+
+							if(!entity[name] && _self.required[name]){
+								console.log('Model::'+_self.name+'.'+name+' is missing or it\'s null, but it should have some value');
+								return false;
+							}
+
+							if( entity[name] ){
+
+								c1 = entity[name].constructor.name;
+								c2 = value.name;
+
+								if(c1 != c2){
+									console.log('Model::'+_self.name+'.'+name+' is ['+ c1 + '] it should be => ['+ c2 +']');
+									return false;
+								}
+							}
+						});
+
+						return true;
+					}
+				};
+			}
 		},
 
 		component :{
@@ -246,6 +333,7 @@ define(function(){
 
 			var object;
 			el.trigger('get-instance', function(instance){ object = instance; });
+
 			return object || {};
 		}
 
@@ -304,10 +392,14 @@ define(function(){
 				this.apps[ name ] = method;
 			},
 
-			this.model = function(name, object){
-				Module.model._class.apply( object );
-				Jails.models[ name ] = object;
-				return object;
+			this.model = function(name, method){
+
+				Jails.models[ name ] = method;
+
+				var model = new Module.model._class(name);
+				method.apply(model);
+
+				return model;
 			}
 		}
 	};
