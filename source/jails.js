@@ -224,23 +224,25 @@ define(function(){
 			_class :function( name, element ){
 
 				var
-					data, _self = this,
-					count, ev = document.createElement('i');
+					data, _self = this;
 
-				count = 0;
 				this.name = name;
+
+				this.on_update = function(){};
 
 				this.data = function(response, id){
 					if(response){
 						data = response;
 						if(id) this.transform(id, response);
-						$(ev).trigger(name+':change', data);
+						this.on_update(data);
 					}
 					else return data;
 				};
 
 				this.size = function(){
-					return data.length || count;
+					var count = 0;
+					for(var i in data) count++;
+					return count;
 				};
 
 				this.find = function(id){
@@ -249,16 +251,12 @@ define(function(){
 
 				this.remove = function(id){
 					delete data[id];
-					$(ev).trigger(name+':change', data);
+					this.on_update( data );
 				};
 
 				this.update = function(id, value){
 					data[id] = value;
-					$(ev).trigger(name+':change', data);
-				};
-
-				this.emit = function(ev, data){
-					$(ev).trigger(name+':'+ev, data);
+					this.on_update( data );
 				};
 
 				this.transform = function(primary, response){
@@ -274,34 +272,6 @@ define(function(){
 
 					count = i;
 					data = json;
-				};
-
-				this.rules = {
-
-					type :function(entity){
-						var c1, c2;
-
-						$.each(_self.schema, function(name, value){
-
-							if(!entity[name] && _self.required[name]){
-								console.log('Model::'+_self.name+'.'+name+' is missing or it\'s null, but it should have some value');
-								return false;
-							}
-
-							if( entity[name] ){
-
-								c1 = entity[name].constructor.name;
-								c2 = value.name;
-
-								if(c1 != c2){
-									console.log('Model::'+_self.name+'.'+name+' is ['+ c1 + '] it should be => ['+ c2 +']');
-									return false;
-								}
-							}
-						});
-
-						return true;
-					}
 				};
 			}
 		},
