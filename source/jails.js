@@ -1,7 +1,7 @@
 define(function(){
 
 	var
-		Jails, config, $;
+		Jails, config, $, publisher, global = {};
 
 	Jails = {
 
@@ -12,6 +12,7 @@ define(function(){
 
 			$ = cfg.base;
 			Jails.context = $( document.documentElement );
+			publisher = $('<i />');
 
 			$.extend( true, Jails.config, cfg );
 			Scanner.start( ctx );
@@ -65,7 +66,7 @@ define(function(){
 			object = new Module[ type ]._class( name, el, type );
 
 			m = Jails[type+sufix][ name ];
-			m? m.apply( object, [el] ) :null;
+			m? m.apply( object, [el, global] ) :null;
 
 			modules.push( object );
 		},
@@ -112,7 +113,7 @@ define(function(){
 
 			_class :function(name, element){
 
-				var _self = this, data;
+				var _self = this;
 
 				this.name = name;
 
@@ -130,14 +131,8 @@ define(function(){
 					return Entity( el );
 				};
 
-				this.data = function(vo){
-
-					if(vo){
-						this.get('view').broadcast('render', vo);
-						data = vo;
-					}
-
-					else return data;
+				this.data = function(data){
+					return data? global = data :global;
 				};
 
 				this.watch = function(target, ev, method){
@@ -149,7 +144,7 @@ define(function(){
 				};
 
 				this.listen = function(name, method){
-					element.on(name, function(e, o){
+					publisher.on(name, function(e, o){
 						method.apply(o.element, [e].concat(o.args));
 					});
 				};
@@ -157,7 +152,7 @@ define(function(){
 				this.emit = function( simbol, args ){
 					args = Array.prototype.slice.call(arguments);
 					args.shift();
-					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+					publisher.trigger(name+':'+simbol, { args :args, element :element.get(0) });
 				};
 			}
 		},
