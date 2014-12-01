@@ -3,7 +3,8 @@ define([
 	'jails',
 	'mods/url/url',
 	'mods/presence/presence',
-	'comps/ga/ga'
+	'comps/ga/ga',
+	'apps/structure'
 
 ], function( jails, url, Presence ){
 
@@ -25,8 +26,7 @@ define([
 			this.listen('my-view:emit', log);
 		};
 
-		presence.done = function(cfg){
-		};
+		presence.done = function(cfg){};
 
 		function log(){
 			console.log('app gets emit');

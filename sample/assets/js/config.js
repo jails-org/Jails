@@ -1,7 +1,7 @@
 require.config({
 
 	baseUrl :'assets/js/',
-	deps    :['jquery', 'mustache', 'jails'],
+	deps    :['jquery', 'mustache', 'jails', global.page],
 
 	paths   :{
 		jails		:'//cdn.rawgit.com/Javiani/Jails/master/source/jails.min',
@@ -14,8 +14,8 @@ require.config({
 	callback :function( jquery, mustache, jails ){
 
 		jails.start({
-			base: jquery,
-			templates :{ engine :mustache }
+			base        :jquery,
+			templates   :{ engine :mustache }
 		});
 	}
 });
