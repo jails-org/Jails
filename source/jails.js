@@ -20,6 +20,10 @@ define(function(){
 
 		refresh :function(ctx){
 			Scanner.start( ctx );
+		},
+
+		data :function(){
+			return global;
 		}
 
 	};
