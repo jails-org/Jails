@@ -1,7 +1,7 @@
 define(function(){
 
 	var
-		Jails, config, $, publisher, global = {};
+		Jails, config, $, global = {}, publisher;
 
 	Jails = {
 
@@ -148,7 +148,7 @@ define(function(){
 				};
 
 				this.listen = function(name, method){
-					publisher.on(name, function(e, o){
+					element.on(name, function(e, o){
 						method.apply(o.element, [e].concat(o.args));
 					});
 				};
@@ -156,7 +156,19 @@ define(function(){
 				this.emit = function( simbol, args ){
 					args = Array.prototype.slice.call(arguments);
 					args.shift();
+					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+				};
+
+				this.publish = function(simbol, args){
+					args = Array.prototype.slice.call(arguments);
+					args.shift();
 					publisher.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+				};
+
+				this.subscribe = function(name, method){
+					publisher.on(name, function(e, o){
+						method.apply(o.element, [e].concat(o.args));
+					});
 				};
 			}
 		},
@@ -214,7 +226,7 @@ define(function(){
 					return templates[name];
 				}
 
-				render? this.render({}) :null;
+				render? this.render(global) :null;
 			}
 		},
 
