@@ -213,7 +213,11 @@ define(function(){
 
 				this.partial = function(el, tpl, vo){
 
-					if(templates[tpl]){
+					if(vo && vo.done){
+						vo.done(function(response){ _self.partial(el, tpl, response); });
+					}
+
+					else if(templates[tpl]){
 
 						var html = cfg.engine.render( get(tpl), vo, templates );
 
@@ -235,7 +239,7 @@ define(function(){
 			_class :function( name, element ){
 
 				var
-					data, _self = this;
+					data = {}, _self = this;
 
 				this.name = name;
 
