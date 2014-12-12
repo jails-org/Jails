@@ -213,12 +213,15 @@ define(function(){
 
 				this.partial = function(el, tpl, vo){
 
+					vo = vo || {};
+
 					if(vo && vo.done){
 						vo.done(function(response){ _self.partial(el, tpl, response); });
 					}
 
 					else if(templates[tpl]){
 
+						$.extend(vo, Jails.filters);
 						var html = cfg.engine.render( get(tpl), vo, templates );
 
 						el.html( html );
@@ -360,22 +363,32 @@ define(function(){
 			this.models = {};
 			this.components = {};
 			this.templates = {};
+			this.filters = {};
 
 			this.controller = function(name, method){
 				this.controllers[ name ] = method;
-			},
+			};
 
 			this.component = function(name, method){
 				this.components[ name ] = method;
-			},
+			};
 
 			this.view = function(name, method){
 				this.views[ name ] = method;
-			},
+			};
 
 			this.app = function(name, method){
 				this.apps[ name ] = method;
-			},
+			};
+
+			this.filter = function(name, method){
+
+				this.filters[name] = function(){
+					return function(text, render){
+						return method( render(text) );
+					};
+				};
+			};
 
 			this.model = function(name, method){
 
@@ -385,7 +398,7 @@ define(function(){
 				method.apply(model);
 
 				return model;
-			}
+			};
 		}
 	};
 
