@@ -213,6 +213,7 @@ define(function(){
 
 				this.partial = function(el, tpl, vo){
 
+					var newvo, html;
 					vo = vo || {};
 
 					if(vo && vo.done){
@@ -221,8 +222,8 @@ define(function(){
 
 					else if(templates[tpl]){
 
-						$.extend(vo, Jails.filters);
-						var html = cfg.engine.render( get(tpl), vo, templates );
+						newvo = $.extend({}, vo, Jails.filters);
+						html = cfg.engine.render( get(tpl), newvo, templates );
 
 						el.html( html );
 						Scanner.start(el);
