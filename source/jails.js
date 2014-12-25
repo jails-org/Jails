@@ -195,35 +195,33 @@ define(function(){
 
 				var tpl, cfg, templates, render, _self = this;
 
-				tpl = element.data('template');
+				tpl = get(element.data('template')) || generate(element);
 				render = element.data('render');
 
 				cfg = Jails.config.templates;
 				templates = Jails.templates;
 
-				this.template = function(vo, tpl){
-					return cfg.engine.render( get(tpl), vo, templates );
+				this.template = function(vo, tmpl){
+					return cfg.engine.render( get(tmpl), vo, templates );
 				};
 
 				this.render = function(vo, template){
-					tpl = template || tpl;
-					if(tpl && templates[tpl])
-						this.partial(element, tpl, vo);
+					var tmpl = template || tpl;
+					this.partial(element, tmpl, vo);
 				};
 
-				this.partial = function(el, tpl, vo){
+				this.partial = function(el, tmpl, vo){
 
 					var newvo, html;
 					vo = vo || {};
+					tmpl = templates[tmpl];
 
 					if(vo && vo.done){
-						vo.done(function(response){ _self.partial(el, tpl, response); });
+						vo.done(function(response){ _self.partial(el, tmpl, response); });
 					}
-
-					else if(templates[tpl]){
-
+					else{
 						newvo = $.extend({}, vo, Jails.filters);
-						html = cfg.engine.render( get(tpl), newvo, templates );
+						html = cfg.engine.render( get(tmpl) || tpl, newvo, templates );
 
 						el.html( html );
 						Scanner.start(el);
@@ -231,7 +229,43 @@ define(function(){
 				};
 
 				function get(name){
-					return templates[name];
+					return name?templates[name] :null;
+				}
+
+				function generate(el){
+
+					var html = el.html(), ch = $('<div />'), aux = $('<div />'), text;
+
+					aux.append( html );
+
+					aux.find('[data-if]').each(function(){
+						var it = $(this), v = it.data('if');
+						it.before('{{#'+v+'}}');
+						it.after('{{/'+v+'}}');
+					});
+
+					aux.find('[data-not]').each(function(){
+						var it = $(this), v = it.data('not');
+						it.before('{{^'+v+'}}');
+						it.after('{{/'+v+'}}');
+					});
+
+					aux.find('[data-each]').each(function(){
+						var it = $(this), child = it.children().eq(0), name = it.data('each');
+						ch.empty().append(child);
+						it.html('{{#'+name +'}}'+ch.html()+'{{/'+name+'}}');
+					});
+
+					aux.find('[data-value]').each(function(){
+						var it = $(this), name = it.data('value'), filter = name.split(/\:/);
+						if(!filter[1]) it.html( '{{'+ name +'}}');
+						else it.html('{{#'+filter[1]+'}}{{' +filter[0]+ '}}{{/'+filter[1]+'}}');
+					});
+
+					//http://stackoverflow.com/questions/317053/regular-expression-for-extracting-tag-attributes
+					return $.trim(aux.html().replace(/(data-attr)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g, function(a, b, c, d){
+						return c;
+					}));
 				}
 
 				render? this.render(global) :null;
