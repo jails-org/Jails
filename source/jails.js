@@ -16,6 +16,7 @@ define(function(){
 
 			$.extend( true, Jails.config, cfg );
 			Scanner.start( ctx );
+			Jails.context.addClass('ready');
 		},
 
 		refresh :function(ctx){
@@ -262,6 +263,10 @@ define(function(){
 						else it.html('{{#'+filter[1]+'}}{{' +filter[0]+ '}}{{/'+filter[1]+'}}');
 					});
 
+					aux.find('[data-out]').each(function(){
+						$(this).before('{{#out}}').after('{{/out}}');
+					});
+
 					//http://stackoverflow.com/questions/317053/regular-expression-for-extracting-tag-attributes
 					return $.trim(aux.html().replace(/(data-attr)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g, function(a, b, c, d){
 						return c;
@@ -434,6 +439,14 @@ define(function(){
 
 				return model;
 			};
+
+			//Default Filters
+			this.filter('out', function(text){
+				var h = $(text), aux  = $('<div />'), script = h.data('out');
+					h.html((new Function('return ' +script))());
+					aux.append(h);
+				return aux.html();
+			});
 		}
 	};
 
