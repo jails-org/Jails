@@ -196,11 +196,11 @@ define(function(){
 
 				var tpl, cfg, templates, render, _self = this;
 
-				tpl = get(element.data('template')) || generate(element);
-				render = element.data('render');
-
 				cfg = Jails.config.templates;
 				templates = Jails.templates;
+
+				tpl = get(element.data('template')) || generate(element);
+				render = element.data('render');
 
 				this.template = function(vo, tmpl){
 					return cfg.engine.render( get(tmpl), vo, templates );
