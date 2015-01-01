@@ -1,0 +1,20 @@
+/*
+    TODOMVC - Jails App
+    @author Javiani
+*/
+
+.all #filters li:nth-child(1),
+.active #filters li:nth-child(2),
+.completed #filters li:nth-child(3){
+    font-weight:bold;
+}
+
+.js section,
+.js footer{
+    display:none
+}
+
+.ready section,
+.ready footer{
+    display:block
+}
