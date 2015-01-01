@@ -222,7 +222,7 @@ define(function(){
 					}
 					else{
 						newvo = $.extend({}, vo, Jails.filters);
-						html = cfg.engine.render( get(tmpl) || tpl, newvo, templates );
+						html = cfg.engine.render( tmpl || tpl, newvo, templates );
 
 						el.html( html );
 						Scanner.start(el);
