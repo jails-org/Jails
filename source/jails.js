@@ -212,11 +212,11 @@ define(function(){
 				};
 
 				this.partial = function(el, tmpl, vo){
-
+					
 					var newvo, html;
 					vo = vo || {};
-					tmpl = templates[tmpl];
-
+					tmpl = templates[tmpl] || tmpl;
+					
 					if(vo && vo.done){
 						vo.done(function(response){ _self.partial(el, tmpl, response); });
 					}
