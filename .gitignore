@@ -4,3 +4,4 @@ files to ignore
 *.DS_Store
 *.swp
 *.out
+node_modules/
