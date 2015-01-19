@@ -10,12 +10,7 @@ define([
 
 		this.schema = {
 			name	:String,
-			age		:Number
+			age	:Number
 		};
-
-		this.init = function(){
-
-		};
-
 	});
 });
