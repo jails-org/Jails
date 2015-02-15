@@ -136,10 +136,6 @@ define(function(){
 					return Entity( el );
 				};
 
-				this.data = function(data){
-					return data? global = data :global;
-				};
-
 				this.watch = function(target, ev, method){
 					element.on(ev, target, method);
 				};
@@ -212,11 +208,11 @@ define(function(){
 				};
 
 				this.partial = function(el, tmpl, vo){
-					
+
 					var newvo, html;
 					vo = vo || {};
 					tmpl = templates[tmpl] || tmpl;
-					
+
 					if(vo && vo.done){
 						vo.done(function(response){ _self.partial(el, tmpl, response); });
 					}
@@ -286,15 +282,23 @@ define(function(){
 
 				this.name = name;
 
-				this.on_update = function(){};
-
 				this.data = function(response, id){
 					if(response){
 						data = response;
 						if(id) this.transform(id, response);
-						this.on_update(data);
+						$? $(this).trigger('change', data) :null;
 					}
 					else return data;
+				};
+
+				this.on = function(action, method){
+					$(this).on(action, function(e, o){
+						method.call(this, o);
+					});
+				};
+
+				this.trigger = function(action, params){
+					$(this).trigger(action, params);
 				};
 
 				this.size = function(){
@@ -309,12 +313,12 @@ define(function(){
 
 				this.remove = function(id){
 					delete data[id];
-					this.on_update( data );
+					this.trigger( 'change', data );
 				};
 
 				this.update = function(id, value){
 					data[id] = value;
-					this.on_update( data );
+					this.trigger( 'change', data );
 				};
 
 				this.transform = function(primary, response){
