@@ -68,12 +68,10 @@ define(function(){
 			var name, object, m, sufix = 's';
 			name = el.data(type);
 
-			object = new Module[ type ]._class( name, el, type );
+			m = Jails[ type + sufix ][ name ];
+			m = m? new m( el, global ) :new Module[ type ]._class( name, el, type );
 
-			m = Jails[type+sufix][ name ];
-			m? m.apply( object, [el, global] ) :null;
-
-			modules.push( object );
+			modules.push( m );
 		},
 
 		partial :function(type, el){
@@ -93,11 +91,10 @@ define(function(){
 
 			$.each( components, function(i, n){
 
-				object = new Module[type]._class( n, el );
 				m = Jails.components[n];
-				m? m.apply( object, [el] ) :null;
+				m = m? new m( el ) :new Module[type]._class( n, el );
 
-				modules.push( object );
+				modules.push( m );
 			});
 		}
 
@@ -410,19 +407,35 @@ define(function(){
 			this.filters = {};
 
 			this.controller = function(name, method){
-				this.controllers[ name ] = method;
+
+				this.controllers[ name ] = function(element, global){
+					Module.controller._class.call( this, name, element );
+					method.call(this, element, global);
+				};
 			};
 
 			this.component = function(name, method){
-				this.components[ name ] = method;
+
+				this.components[ name ] = function(element, global){
+					Module.component._class.call( this, name, element );
+					method.call(this, element, global);
+				};
 			};
 
 			this.view = function(name, method){
-				this.views[ name ] = method;
+
+				this.views[ name ] = function(element, global){
+					Module.view._class.call( this, name, element );
+					method.call(this, element, global);
+				};
 			};
 
 			this.app = function(name, method){
-				this.apps[ name ] = method;
+
+				this.apps[ name ] = function(element, global){
+					Module.app._class.call( this, name, element );
+					method.call(this, element, global);
+				};
 			};
 
 			this.filter = function(name, method){
