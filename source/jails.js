@@ -156,7 +156,7 @@ define(function(){
 				this.publish = function(simbol, args){
 					args = Array.prototype.slice.call(arguments);
 					args.shift();
-					publisher.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+					publisher.trigger(simbol, { args :args, element :element.get(0) });
 				};
 
 				this.subscribe = function(name, method){
@@ -407,35 +407,19 @@ define(function(){
 			this.filters = {};
 
 			this.controller = function(name, method){
-
-				this.controllers[ name ] = function(element, global){
-					Module.controller._class.call( this, name, element );
-					method.call(this, element, global);
-				};
+				return create.call(this, 'controller', name, method);
 			};
 
 			this.component = function(name, method){
-
-				this.components[ name ] = function(element, global){
-					Module.component._class.call( this, name, element );
-					method.call(this, element, global);
-				};
+				create.call(this, 'component', name, method);
 			};
 
 			this.view = function(name, method){
-
-				this.views[ name ] = function(element, global){
-					Module.view._class.call( this, name, element );
-					method.call(this, element, global);
-				};
+				create.call(this, 'view', name, method);
 			};
 
 			this.app = function(name, method){
-
-				this.apps[ name ] = function(element, global){
-					Module.app._class.call( this, name, element );
-					method.call(this, element, global);
-				};
+				create.call(this, 'app', name, method);
 			};
 
 			this.filter = function(name, method){
@@ -449,12 +433,14 @@ define(function(){
 
 			this.model = function(name, method){
 
-				Jails.models[ name ] = method;
-
-				var model = new Module.model._class(name);
-				method.apply(model);
-
-				return model;
+				if(this instanceof Jails.model){
+					Module.model._class.call(this, name);
+				}else{
+					Jails.models[ name ] = method;
+					var model = new Module.model._class(name);
+					method.apply(model);
+					return model;
+				}
 			};
 
 			//Default Filters
@@ -464,6 +450,15 @@ define(function(){
 					aux.append(h);
 				return aux.html();
 			});
+
+			function create(type, name, method){
+				if(this instanceof Jails[type])
+					Module[type]._class.call( this, arguments[2], arguments[1] );
+				else return this[type+'s'][ name ] = function(element, global){
+					Module[type]._class.call( this, name, element );
+					method.call(this, element, global);
+				};
+			}
 		}
 	};
 
