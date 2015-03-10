@@ -1,0 +1,15 @@
+site_name: Jails
+site_url: http://javiani.wordpress.com
+site_description: Light-weight, MVC framework.
+repo_url: https://github.com/Javiani/Jails
+
+theme: readthedocs
+
+pages:
+    - [index.md, Jails]
+    - [getting-started.md, Getting Started]
+    - [app-controller-view.md, Api, "App, Controller & View"]
+    - [view.md, Api, View]
+    - [component.md, Api, Component]
+    - [model.md, Api, Model]
+    - [filter.md, Api, Filter]

@@ -282,7 +282,9 @@ define(function(){
 				this.data = function(response, id){
 					if(response){
 						data = response;
-						if(id) this.transform(id, response);
+						if(id){
+							data = this.transform(id, response);
+						}
 						$? $(this).trigger('change', data) :null;
 					}
 					else return data;
@@ -296,12 +298,6 @@ define(function(){
 
 				this.trigger = function(action, params){
 					$(this).trigger(action, params);
-				};
-
-				this.size = function(){
-					var count = 0;
-					for(var i in data) count++;
-					return count;
 				};
 
 				this.find = function(id){
@@ -318,6 +314,10 @@ define(function(){
 					this.trigger( 'change', data );
 				};
 
+				this.to_array = function(){
+					return $.map( data, function(item){ return [item]; });
+				};
+
 				this.transform = function(primary, response){
 
 					response = response || data;
@@ -330,7 +330,7 @@ define(function(){
 					}
 
 					count = i;
-					data = json;
+					return json;
 				};
 			}
 		},
