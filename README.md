@@ -1,2 +1,2 @@
 # Jails |||\
-MVC Javascript Framework
+Javascript MVC Framework
