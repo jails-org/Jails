@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>App, Controller & View - Jails</title>
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script>
+
+  <style>
+    body {font-size: 90%;}
+    pre, code {font-size: 100%;}
+    h3, h4, h5, h6 {color: #2980b9; font-weight: 300}
+  </style> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Jails</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l1 ">
+                <a class="" href="../getting-started">Getting Started</a>
+            </li>
+        
+
+    
+        
+        <span>Api</span>
+            
+                <li class="toctree-l1 current">
+                    <a class="current" href=".">App, Controller & View</a>
+                    
+                        <ul>
+                        
+                            <li class="toctree-l2"><a href="#init">.init</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#get">.get</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#watch">.watch</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#broadcast">.broadcast</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#emit">.emit</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#listen">.listen</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#publish">.publish</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#subscribe">.subscribe</a></li>
+                            
+                        
+                        </ul>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../view">View</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../component">Component</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../model">Model</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../filter">Filter</a>
+                    
+                </li>
+            
+        
+
+    
+</ul>
+
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+        <a href=".."></a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    <li>App, Controller & View</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/Javiani/Jails" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <p><strong>App</strong>, <strong>Controller</strong> and <strong>View</strong>, inherits from a same Common class and they share the same public methods.
+Every methods is executed in the Jails elements context.</p>
+<pre><code class="js">jails.app('my-app', function(html, data){
+    //Here you can call any public methods
+    //Or even create your own
+});
+</code></pre>
+
+<p>The markup should specify the type of Jails module and it's name aswell.</p>
+<pre><code class="html">    &lt;body data-app=&quot;my-app&quot; /&gt;
+    &lt;div data-controller=&quot;my-controller&quot; /&gt;
+    &lt;div data-view=&quot;my-view&quot; data-template=&quot;users&quot; /&gt;
+    &lt;div data-view=&quot;my-templateless-view&quot; /&gt;
+    &lt;div data-component=&quot;my-component&quot; /&gt;
+</code></pre>
+
+<hr />
+<h2 id="init">.init</h2>
+<pre><code>.init function();
+</code></pre>
+<p><code>.init()</code> is automatically called by <code>Jails</code>, is really usefull to start your application and let the variables and init things on <strong>top</strong>.</p>
+<pre><code class="js">jails.controller('my-controller', function(html, data){
+
+    this.init = function(){
+        console.log('Heeey I\'m already loaded!!');
+    };
+});
+</code></pre>
+
+<h2 id="get">.get</h2>
+<pre><code>.get function( type, name );
+</code></pre>
+<p>Gets a child of your Jails module.</p>
+<p>Type can be : <code>controller</code>, <code>component</code>, <code>view</code>,</p>
+<h2 id="watch">.watch</h2>
+<pre><code>.watch function( element, event, method );
+</code></pre>
+<p>Delegates a event to the container class.</p>
+<h2 id="broadcast">.broadcast</h2>
+<pre><code>.broadcast function( element, event );
+</code></pre>
+<p>Fires an event to all children of the current Jails module.</p>
+<h2 id="emit">.emit</h2>
+<pre><code>.emit function( name, [data] );
+</code></pre>
+<p>Emits an event and a optional data, name will be appended to the Jails module name.</p>
+<pre><code class="js">jails.component('my-component', function(html){
+
+    this.init = function(){
+        this.emit('loaded', { instance :this });
+    };
+});
+</code></pre>
+
+<p>The above example will fire <code>my-component:loaded</code> to node parents.</p>
+<h2 id="listen">.listen</h2>
+<pre><code>.listen function( name, method );
+</code></pre>
+<p>This method is used to catch <code>emit</code> events, using the example above, if you want to listen the component event on some controller/view/app, you can do this:</p>
+<pre><code class="js">    jails.view('my-view', function(html, data){
+
+        this.init = function(){
+            this.listen('my-component:loaded', cp_loaded);
+        };
+
+        function cp_loaded(event, option){
+            console.log('my-component instance:', option.instance );
+        }
+    });
+</code></pre>
+
+<hr />
+<blockquote>
+<p>While <code>.listen</code> and <code>.emit</code> has a closed scope and limits to parent and child limits,
+<code>.publish</code> and <code>subscribe</code> has a "global" behavior, any Jails module can listen and emit an event.</p>
+</blockquote>
+<hr />
+<h2 id="publish">.publish</h2>
+<pre><code>.publish( event, [data]);
+</code></pre>
+<p>Fires an event globally, every module which is subscribed will listen to that. <code>data</code> is optional.</p>
+<h2 id="subscribe">.subscribe</h2>
+<pre><code>.subscribe( event, callback([data]) );
+</code></pre>
+<p>Listen to a global event, and executes the callback. If <code>publish</code> send a data, it will be sent as a parameter of callback function.</p>
+
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../view" class="btn btn-neutral float-right" title="View"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../getting-started" class="btn btn-neutral" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../getting-started" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../view" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+</body>
+</html>

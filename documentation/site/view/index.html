@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>View - Jails</title>
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script>
+
+  <style>
+    body {font-size: 90%;}
+    pre, code {font-size: 100%;}
+    h3, h4, h5, h6 {color: #2980b9; font-weight: 300}
+  </style> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Jails</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l1 ">
+                <a class="" href="../getting-started">Getting Started</a>
+            </li>
+        
+
+    
+        
+        <span>Api</span>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../app-controller-view">App, Controller & View</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 current">
+                    <a class="current" href=".">View</a>
+                    
+                        <ul>
+                        
+                            <li class="toctree-l2"><a href="#render">.render</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#partial">.partial</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#template">.template</a></li>
+                            
+                        
+                        </ul>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../component">Component</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../model">Model</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../filter">Filter</a>
+                    
+                </li>
+            
+        
+
+    
+</ul>
+
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+        <a href=".."></a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    <li>View</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/Javiani/Jails" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <blockquote>
+<p>Although <strong>View</strong> inherits from the same class of <strong>Controller</strong> or <strong>App</strong> it has unique methods and engine, they helps you to handle templating and rendering problems.</p>
+</blockquote>
+<p>You need to specify where is your <code>view</code> module in html markup.</p>
+<p>Jails view can be used with external templates or use the html as a template.</p>
+<p>If you want to use external template you can use 2 properties:</p>
+<ul>
+<li><code>data-template</code> : Specifies what template to use.</li>
+<li><code>data-render</code> : Will automatically render the template using global Jails <code>data</code> on page load.</li>
+</ul>
+<pre><code class="html">&lt;div data-view=&quot;my-view&quot; data-template=&quot;user&quot; data-render=&quot;true&quot;&gt;&lt;/div&gt;
+...
+
+&lt;script type=&quot;x-tmpl-mustache&quot; id=&quot;tpl-user&quot;&gt;
+    {{#user}}
+        My name is {{name}}
+    {{/user}}
+&lt;/script&gt;
+</code></pre>
+
+<p>The <code>data-template</code> refers to tpl-<code>user</code>.</p>
+<p>But, you can also use the original html as your template system.
+<strong>Jails</strong> provide some html data properties:
+<code>if</code>, <code>not</code>, <code>each</code>, <code>value</code>, <code>out</code>, <code>attr</code>.</p>
+<pre><code class="html">
+&lt;div data-view=&quot;my-view&quot;&gt;
+
+    &lt;p data-if=&quot;name&quot;&gt;My name is {{name}}&lt;/p&gt; or
+    &lt;p data-if=&quot;name&quot;&gt;My name is &lt;span data-value=&quot;name&quot;&gt;&lt;/span&gt;&lt;/p&gt; or
+
+    {{#name}}&lt;p&gt;My name is {{name}}&lt;/p&gt;{{/name}}
+
+    &lt;ul data-each=&quot;users&quot;&gt;
+        &lt;li&gt;
+            &lt;p data-value=&quot;name&quot; /&gt;
+            &lt;img data-attr=&quot;src={{avatar}} alt={{name}}&quot; /&gt;
+        &lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p data-out=&quot;{{count}} != 1? 'Many users!':'Just one user'&quot;&gt;&lt;/p&gt;
+
+&lt;/div&gt;
+
+</code></pre>
+
+<h2 id="render">.render</h2>
+<pre><code>.render( data, [template]);
+</code></pre>
+<p><code>data</code> can be either a <code>Object</code> or a <code>Promise</code>.</p>
+<p>View will render the html mixing the data object with a specified template. If template is not specified, html will be rendered using <code>data-template</code> value.</p>
+<p>The following examples do the same thing:</p>
+<pre><code class="html">&lt;div data-view=&quot;my-view&quot; /&gt;
+</code></pre>
+
+<pre><code class="js">jails.view('my-view', function(){
+
+    this.init = function(){
+        this.render({ name:'Eduardo' }, 'user');
+    };
+});
+</code></pre>
+
+<blockquote>
+<p>or</p>
+</blockquote>
+<pre><code class="html">&lt;div data-view=&quot;my-view&quot; data-template=&quot;user&quot; /&gt;
+</code></pre>
+
+<pre><code class="js">jails.view('my-view', function(){
+
+    this.init = function(){
+        this.render({ name:'Eduardo' });
+    };
+});
+</code></pre>
+
+<h2 id="partial">.partial</h2>
+<pre><code>.partial( element, template, data );
+</code></pre>
+<p>Does the same thing as <code>.render()</code> but you can specify a html element target to render instead of the current <code>View</code>.</p>
+<h2 id="template">.template</h2>
+<pre><code>.template( object, template );
+</code></pre>
+<p>If, for some reason, you need just the string result of the template, you can use this method.
+Jails saves all the mustache template embeded on html on <code>jails.templates</code> property.</p>
+
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../component" class="btn btn-neutral float-right" title="Component"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../app-controller-view" class="btn btn-neutral" title="App, Controller & View"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../app-controller-view" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../component" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+</body>
+</html>
