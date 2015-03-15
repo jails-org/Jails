@@ -1,2 +1,4 @@
 # Jails |||\
-[Javascript MVC Framework](http://javiani.github.io/Jails/)
+
+[Documentation](http://javiani.github.io/Jails/)
+[Jails-org](https://github.com/jails-org)
