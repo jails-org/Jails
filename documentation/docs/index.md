@@ -19,7 +19,7 @@ Using the same philosophy, Jails tries to help developers to create a robust and
 
 `App`, `Controller` and `View` shares a `data` variable which is readable and writable for these classes.
 
-![diagram](../images/diagram.png)
+![diagram](http://javiani.github.io/Jails/docs/img/diagram.png)
 
 ---
 
