@@ -1,4 +1,4 @@
 # Jails ||\\|
 
-- [Documentation](http://javiani.github.io/Jails/docs)
-- [Jails-org](https://github.com/jails-org)
+- [Documentation](//jails-org.github.io/Jails/docs/)
+- [Jails-org](//github.com/jails-org)
