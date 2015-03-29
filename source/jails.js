@@ -84,15 +84,23 @@ define(function(){
 
 		component :function(type, el, modules){
 
-			var name, components, object, m;
+			var name, components, object, m, comment, code, annotations = {};
 
 			name = el.data(type);
 			components = name.replace(/\s/g, '').split(/\,/);
 
+			comment = el.get(0).previousSibling.previousSibling;
+
+			if(comment && comment.nodeType == 8){
+				code = comment.data.replace(/\@(.*)\((\{.*\})\)/g, function(text, component, param){
+					annotations[component] = new Function('return '+ param)();
+				});
+			}
+
 			$.each( components, function(i, n){
 
 				m = Jails.components[n];
-				m = m? new m( el ) :new Module[type]._class( n, el );
+				m = m? new m( el, n in annotations? annotations[n]:{} ) :new Module[type]._class( n, el );
 
 				modules.push( m );
 			});
@@ -105,8 +113,12 @@ define(function(){
 		start :function(modules){
 
 			var len = modules.length;
-			for(var i = 0; i < len; i++)
-				if( modules[i].init ) modules[i].init();
+			for(var i = 0; i < len; i++){
+				if( modules[i].init ){
+					modules[i].init();
+				}
+			}
+
 
 			modules = null;
 		},
@@ -119,26 +131,12 @@ define(function(){
 
 				this.name = name;
 
-				element.on('get-instance', function(e, getter){
-					getter( _self );
-					e.stopPropagation();
-				});
+				this.broadcast = function(target, prop){
 
-				this.get = function(type, query){
+					var type, ev, arg = target.split(/\:/);
 
-					var el;
-					if(query) el = element.find('[data-'+type+'*="'+query+'"]');
-					else el = element.find('[data-'+type+']');
-
-					return Entity( el );
-				};
-
-				this.watch = function(target, ev, method){
-					element.on(ev, target, method);
-				};
-
-				this.broadcast = function(target, ev){
-					$(target).trigger(ev);
+					type = arg[0]; ev = arg[1];
+					element.find('[data-'+type+']').trigger( ev, prop );
 				};
 
 				this.listen = function(name, method){
@@ -194,6 +192,10 @@ define(function(){
 
 				tpl = get(element.data('template')) || generate(element);
 				render = element.data('render');
+
+				this.watch = function(target, ev, method){
+					element.on(ev, target, method);
+				};
 
 				this.template = function(vo, tmpl){
 					return cfg.engine.render( get(tmpl), vo, templates );
@@ -339,60 +341,23 @@ define(function(){
 
 			_class :function( name, element ){
 
-				this.name = name;
 				var _self = this;
-
-				element.on('get-instance', function(e, getter){
-					getter( _self );
-					e.stopPropagation();
-				});
+				this.name = name;
 
 				this.emit = function( simbol, args ){
 					args = Array.prototype.slice.call(arguments);
 					args.shift();
 					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
 				};
+
+				this.listen = function(name, method){
+					element.on(name, function(e, o){
+						method.apply(o.element, [e, o]);
+					});
+				};
 			}
 		}
 	};
-
-	function Entity(dom){
-
-		function instance(el){
-
-			var object;
-			el.trigger('get-instance', function(instance){ object = instance; });
-
-			return object || {};
-		}
-
-		return {
-
-			execute :function(method, args){
-
-				args = Array.prototype.slice.call(arguments);
-				args.shift();
-
-				var object = instance( dom.eq(0) );
-				if( object[method] ) object[method].apply( object, args );
-			},
-
-			broadcast :function(method, args){
-
-				args = Array.prototype.slice.call(arguments);
-				args.shift();
-
-				dom.each(function(){
-					var object = instance( $(this) );
-					if( object[method] ) object[method].apply( object, args );
-				});
-			},
-
-			instance :function(){
-				return instance( dom.eq(0) );
-			}
-		};
-	}
 
 	var Interface = {
 
