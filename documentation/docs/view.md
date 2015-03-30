@@ -97,3 +97,9 @@ Does the same thing as `.render()` but you can specify a html element target to 
 
 If, for some reason, you need just the string result of the template, you can use this method.
 Jails saves all the mustache template embeded on html on `jails.templates` property.
+
+
+## .watch
+    .watch function( element, event, method );
+
+Delegates a event to the container class.

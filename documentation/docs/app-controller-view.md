@@ -34,21 +34,13 @@ jails.controller('my-controller', function(html, data){
 });
 ```
 
-## .get
-    .get function( type, name );
-Gets a child of your Jails module.
-
-Type can be : `controller`, `component`, `view`,
-
-## .watch
-    .watch function( element, event, method );
-
-Delegates a event to the container class.
-
 ## .broadcast
-    .broadcast function( element, event );
+    .broadcast function( type:event, options );
 
-Fires an event to all children of the current Jails module.
+Fires an event to all children of the current module.
+```js
+    this.broadcast('component:eventname', {some:'options'});
+```
 
 ## .emit
     .emit function( name, [data] );

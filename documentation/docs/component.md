@@ -6,6 +6,47 @@ Jails provides a limited way to construct a component. Whenever you create a new
 
 So, the only way your component can comunicate with your application is by emmiting an event. Then, other special class can be listening to it and go forward doing whatever you need to do.
 
+## @annotations
+
+Sometimes html `data` attributes can be very verbose, and you have to choose some long names
+in order to not collide or crash another component.
+
+You can use annotations to send some configurations data by setting a comment in one line.
+
+```html
+    <!-- @media-image({ max:800, src:'my/small/image.png' })-->
+    <img data-component="media-image" />
+
+    <!-- @media-image({ min:801, src:'my/bigger/image.png' })-->
+    <img data-component="media-image" />
+```
+
+The annotations will be sent to your component class, you can use them with `data` attributes to set up your component.
+
+```js
+    jails.component('media-image', function(html, annotation){
+
+        //Some code here...
+
+        this.init = function(){
+
+            var max, min, src;
+
+            max = annotation.max || html.data('max') || Infinity;
+            min = annotation.min || html.data('min') || 0;
+            src = annotation.src || html.data('src') || html.prop('src')
+        };
+
+        // More code here...
+    });
+```
+
+## .listen
+    .listen( event_name, callback )
+
+Listen for a higher-class module event, such as controller, views or apps.
+These classes should trigger an event for components using `.broadcast` method.
+
 ## .emit
     .emit( action, [data] );
 

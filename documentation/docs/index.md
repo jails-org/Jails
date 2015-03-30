@@ -19,7 +19,7 @@ Using the same philosophy, Jails tries to help developers to create a robust and
 
 `App`, `Controller` and `View` shares a `data` variable which is readable and writable for these classes.
 
-![diagram](http://javiani.github.io/Jails/docs/img/diagram.png)
+![diagram](http://jails-org.github.io/Jails/docs/img/diagram.png)
 
 ---
 
@@ -42,10 +42,10 @@ App is a main controller, it wraps all the components, views, controllers and is
 
 ## Component
 
-Component exists in their own world, it doesn't have any relationship with other elements in the page.
+Component exists in their own world, it doesn't have any relationship with other modules in the page.
 Like a validation component for instance, or a datepicker, even a styled selectbox can be treated as a component.
 
-The only job of component is to `emit` events to their parents.
+The only job of component is to `emit` and `listen` events to their parents.
 
 ## Modules
 
