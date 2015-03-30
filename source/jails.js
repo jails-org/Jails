@@ -134,9 +134,11 @@ define(function(){
 				this.broadcast = function(target, prop){
 
 					var type, ev, arg = target.split(/\:/);
+					var args = Array.prototype.slice.call(arguments);
+					args.shift();
 
 					type = arg[0]; ev = arg[1];
-					element.find('[data-'+type+']').trigger( ev, prop );
+					element.find('[data-'+type+']').trigger( ev, {args :args });
 				};
 
 				this.listen = function(name, method){
@@ -352,7 +354,7 @@ define(function(){
 
 				this.listen = function(name, method){
 					element.on(name, function(e, o){
-						method.apply(o.element, [e, o]);
+						method.apply(o.element, [e].concat(o.args));
 					});
 				};
 			}
