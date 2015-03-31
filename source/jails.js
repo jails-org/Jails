@@ -89,7 +89,8 @@ define(function(){
 			name = el.data(type);
 			components = name.replace(/\s/g, '').split(/\,/);
 
-			comment = el.get(0).previousSibling.previousSibling;
+			comment = el.get(0).previousSibling;
+			comment = comment? comment.previousSibling :null;
 
 			if(comment && comment.nodeType == 8){
 				code = comment.data.replace(/\@(.*)\((\{.*\})\)/g, function(text, component, param){
