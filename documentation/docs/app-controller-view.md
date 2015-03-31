@@ -35,11 +35,11 @@ jails.controller('my-controller', function(html, data){
 ```
 
 ## .broadcast
-    .broadcast function( type:event, options );
+    .broadcast function( selector, event, options );
 
 Fires an event to all children of the current module.
 ```js
-    this.broadcast('component:eventname', {some:'options'});
+    this.broadcast('[data-component]', 'my-event', {some:'options'});
 ```
 
 ## .emit

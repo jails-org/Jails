@@ -128,18 +128,18 @@ define(function(){
 
 			_class :function(name, element){
 
-				var _self = this;
+				var _self = this, dom;
 
 				this.name = name;
+				dom = element.get(0);
 
-				this.broadcast = function(target, prop){
+				this.broadcast = function(target, ev, prop){
 
-					var type, ev, arg = target.split(/\:/);
-					var args = Array.prototype.slice.call(arguments);
-					args.shift();
+					var args = Array.prototype.slice.call( arguments );
 
-					type = arg[0]; ev = arg[1];
-					element.find('[data-'+type+']').trigger( ev, {args :args });
+					args.shift(); args.shift();
+
+					$(dom.querySelector(target)).trigger( ev, {args :args });
 				};
 
 				this.listen = function(name, method){
