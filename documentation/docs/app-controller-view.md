@@ -34,6 +34,22 @@ jails.controller('my-controller', function(html, data){
 });
 ```
 
+## .x
+    .x function( selector) : Function( String method, arguments... );
+This method is called the EXecuter, used when you want to execute some method of other higher class
+such as App, Controller or a View.
+
+```js
+    jails.app('home', function(html, data){
+
+        var view = this.x('[data-view]');
+
+        this.init = function(){
+            view('render', { my_model :true } );
+        };
+    });
+```
+
 ## .broadcast
     .broadcast function( selector, event, options );
 
