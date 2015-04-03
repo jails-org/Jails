@@ -129,7 +129,6 @@ define(function(){
 				}
 			}
 
-
 			modules = null;
 		},
 
@@ -170,7 +169,7 @@ define(function(){
 				};
 
 				this.x = function(target){
-					target = $(dom.querySelectorAll(target));
+					target = element.find(target);
 					return function(){
 						var args = slice.call( arguments );
 						target.trigger('execute', {args :args});
@@ -232,6 +231,7 @@ define(function(){
 				};
 
 				this.render = function(vo, template){
+
 					var tmpl = template || tpl;
 					this.partial(element, tmpl, vo);
 				};
@@ -332,7 +332,6 @@ define(function(){
 			_class :function( name, element ){
 
 				var _self = this;
-				this.name = name;
 
 				Module.common._class.apply(this, [name, element]);
 
