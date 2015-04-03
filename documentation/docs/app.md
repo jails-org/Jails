@@ -13,9 +13,7 @@ The markup should specify the type of Jails module and it's name aswell.
 
 ```html
     <body data-app="my-app" />
-    <div data-controller="my-controller" />
-    <div data-view="my-view" data-template="users" />
-    <div data-view="my-templateless-view" />
+    <div data-controller="my-controller" data-template />
     <div data-component="my-component" />
 ```
 
@@ -34,6 +32,11 @@ jails.controller('my-controller', function(html, data){
 });
 ```
 
+## .watch
+    .watch function( String:selector, String:event, Function:method );
+
+Delegates a event to the container class. You don't have to append events again when child nodes are refreshed.
+
 ## .x
     .x function( selector) : Function( String method, arguments... );
 This method is called the EXecuter, used when you want to execute some method of other higher class
@@ -50,18 +53,10 @@ such as App, Controller or a View.
     });
 ```
 
-## .broadcast
-    .broadcast function( selector, event, options );
-
-Fires an event to all children of the current module.
-```js
-    this.broadcast('[data-component]', 'my-event', {some:'options'});
-```
-
 ## .emit
     .emit function( name, [data] );
 
-Emits an event and a optional data, name will be appended to the Jails module name.
+Emits an event to node parents and a optional data, name will be appended to the Jails module name.
 ```js
 jails.component('my-component', function(html){
 

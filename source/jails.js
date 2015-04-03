@@ -1,9 +1,10 @@
 define(function(){
 
 	var
-		Jails, config, $, global = {}, publisher, slice;
+		Jails, config, $, global = {}, publisher, slice, order;
 
 	slice = Array.prototype.slice;
+	order = { partial :0, component:1, controller :2, app :3 };
 
 	Jails = {
 
@@ -42,14 +43,13 @@ define(function(){
 
 			Scanner.scan( 'partial', 'script[type='+type+']', context, modules);
 			Scanner.scan( 'component', '[data-component]', context, modules);
-			Scanner.scan( 'view', '[data-view]', context, modules);
 			Scanner.scan( 'controller', '[data-controller]', context, modules);
 			Scanner.scan( 'app', '[data-app]', context, modules );
 
 			Module.start( modules );
 		},
 
-		scan :function(name, query, context, modules){
+		scan :function( name, query, context, modules ){
 
 			context = context || Jails.context;
 			var el, els, len, scan;
@@ -60,8 +60,7 @@ define(function(){
 			for(var i = 0; i < len; i++){
 				el = $(els[i]);
 				scan = Scanner[name];
-				scan?
-					scan(name, el, modules) :Scanner.module( name, el, modules );
+				scan? scan(name, el, modules) :Scanner.module( name, el, modules );
 			}
 		},
 
@@ -86,27 +85,35 @@ define(function(){
 
 		component :function(type, el, modules){
 
-			var name, components, object, m, comment, code, annotations = {};
+			var name, components, object, m, anno;
 
 			name = el.data(type);
+			anno = Scanner.annotations( name, el );
 			components = name.replace(/\s/g, '').split(/\,/);
+
+			$.each( components, function(i, n){
+
+				m = Jails.components[n];
+				m = m? new m( el, n in anno? anno[n]:{} ) :new Module[type]._class( n, el );
+
+				modules.push( m );
+			});
+		},
+
+		annotations :function( name, el ){
+
+			var ann = {}, comment, code;
 
 			comment = el.get(0).previousSibling;
 			comment = comment? comment.previousSibling :null;
 
 			if(comment && comment.nodeType == 8){
 				code = comment.data.replace(/\@(.*)\((\{.*\})\)/g, function(text, component, param){
-					annotations[component] = new Function('return '+ param)();
+					ann[component] = new Function('return '+ param)();
 				});
 			}
 
-			$.each( components, function(i, n){
-
-				m = Jails.components[n];
-				m = m? new m( el, n in annotations? annotations[n]:{} ) :new Module[type]._class( n, el );
-
-				modules.push( m );
-			});
+			return ann;
 		}
 
 	};
@@ -130,40 +137,44 @@ define(function(){
 
 			_class :function(name, element){
 
-				var _self = this, dom;
+				var _self = this;
 
 				this.name = name;
-				dom = element.get(0);
 
 				element.on('execute', function(e, o){
 
-					var n = o.args.shift(), method = _self[n];
-					if( method )
-						method.apply(_self, o.args);
-					else
-						console.error('Jails.error::', name, 'has no method :', n);
+					var
+						newargs = [].concat(o.args),
+						n = newargs.shift(),
+						method = _self[n];
 
+					if( method )
+						method.apply(_self, newargs);
+					else
+						console.warn('Jails@warning =>', name, 'has no method :', n);
 					e.stopPropagation();
 				});
+			}
+		},
+
+		app :{
+
+			_class :function( name, element ){
+
+				Module.common._class.apply(this, [name, element]);
+
+				var dom = element.get(0);
+
+				this.watch = function(target, ev, method){
+					element.on(ev, target, method);
+				};
 
 				this.x = function(target){
-
-					target = $(dom.querySelector(target));
-
+					target = $(dom.querySelectorAll(target));
 					return function(){
-
 						var args = slice.call( arguments );
 						target.trigger('execute', {args :args});
 					};
-				};
-
-				this.broadcast = function(target, ev, prop){
-
-					var args = slice.call( arguments );
-
-					args.shift(); args.shift();
-
-					$(dom.querySelector(target)).trigger( ev, {args :args });
 				};
 
 				this.listen = function(name, method){
@@ -175,13 +186,13 @@ define(function(){
 				this.emit = function( simbol, args ){
 					args = slice.call(arguments);
 					args.shift();
-					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+					element.trigger(name+':'+simbol, { args :args, element :dom });
 				};
 
 				this.publish = function(simbol, args){
 					args = slice.call(arguments);
 					args.shift();
-					publisher.trigger(simbol, { args :args, element :element.get(0) });
+					publisher.trigger(simbol, { args :args, element :dom });
 				};
 
 				this.subscribe = function(name, method){
@@ -192,25 +203,21 @@ define(function(){
 			}
 		},
 
-		app :{
+		controller :{
 
 			_class :function( name, element ){
-				Module.common._class.apply(this, [name, element]);
-			}
-		},
 
-		controller:{
+				Module.app._class.apply(this, [name, element]);
 
-			_class :function( name, element ){
-				Module.common._class.apply(this, [name, element]);
+				if( element.is('[data-template]') ){
+					Module.view._class.apply(this, [name, element]);
+				}
 			}
 		},
 
 		view :{
 
 			_class :function( name, element ){
-
-				Module.common._class.apply(this, [name, element]);
 
 				var tpl, cfg, templates, render, _self = this;
 
@@ -219,10 +226,6 @@ define(function(){
 
 				tpl = get(element.data('template')) || generate(element);
 				render = element.data('render');
-
-				this.watch = function(target, ev, method){
-					element.on(ev, target, method);
-				};
 
 				this.template = function(vo, tmpl){
 					return cfg.engine.render( get(tmpl), vo, templates );
@@ -253,46 +256,6 @@ define(function(){
 
 				function get(name){
 					return name?templates[name] :null;
-				}
-
-				function generate(el){
-
-					var html = el.html(), ch = $('<div />'), aux = $('<div />'), text;
-
-					aux.append( html );
-
-					aux.find('[data-if]').each(function(){
-						var it = $(this), v = it.data('if');
-						it.before('{{#'+v+'}}');
-						it.after('{{/'+v+'}}');
-					});
-
-					aux.find('[data-not]').each(function(){
-						var it = $(this), v = it.data('not');
-						it.before('{{^'+v+'}}');
-						it.after('{{/'+v+'}}');
-					});
-
-					aux.find('[data-each]').each(function(){
-						var it = $(this), child = it.children().eq(0), name = it.data('each');
-						ch.empty().append(child);
-						it.html('{{#'+name +'}}'+ch.html()+'{{/'+name+'}}');
-					});
-
-					aux.find('[data-value]').each(function(){
-						var it = $(this), name = it.data('value'), filter = name.split(/\:/);
-						if(!filter[1]) it.html( '{{'+ name +'}}');
-						else it.html('{{#'+filter[1]+'}}{{' +filter[0]+ '}}{{/'+filter[1]+'}}');
-					});
-
-					aux.find('[data-out]').each(function(){
-						$(this).before('{{#out}}').after('{{/out}}');
-					});
-
-					//http://stackoverflow.com/questions/317053/regular-expression-for-extracting-tag-attributes
-					return $.trim(aux.html().replace(/(data-attr)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g, function(a, b, c, d){
-						return c;
-					}));
 				}
 
 				render? this.render(global) :null;
@@ -371,6 +334,8 @@ define(function(){
 				var _self = this;
 				this.name = name;
 
+				Module.common._class.apply(this, [name, element]);
+
 				this.emit = function( simbol, args ){
 					args = slice.call(arguments);
 					args.shift();
@@ -392,7 +357,6 @@ define(function(){
 
 			this.apps = {};
 			this.controllers = {};
-			this.views = {};
 			this.models = {};
 			this.components = {};
 			this.templates = {};
@@ -404,10 +368,6 @@ define(function(){
 
 			this.component = function(name, method){
 				create.call(this, 'component', name, method);
-			};
-
-			this.view = function(name, method){
-				create.call(this, 'view', name, method);
 			};
 
 			this.app = function(name, method){
@@ -453,6 +413,46 @@ define(function(){
 			}
 		}
 	};
+
+	function generate(el){
+
+		var html = el.html(), ch = $('<div />'), aux = $('<div />'), text;
+
+		aux.append( html );
+
+		aux.find('[data-if]').each(function(){
+			var it = $(this), v = it.data('if');
+			it.before('{{#'+v+'}}');
+			it.after('{{/'+v+'}}');
+		});
+
+		aux.find('[data-not]').each(function(){
+			var it = $(this), v = it.data('not');
+			it.before('{{^'+v+'}}');
+			it.after('{{/'+v+'}}');
+		});
+
+		aux.find('[data-each]').each(function(){
+			var it = $(this), child = it.children().eq(0), name = it.data('each');
+			ch.empty().append(child);
+			it.html('{{#'+name +'}}'+ch.html()+'{{/'+name+'}}');
+		});
+
+		aux.find('[data-value]').each(function(){
+			var it = $(this), name = it.data('value'), filter = name.split(/\:/);
+			if(!filter[1]) it.html( '{{'+ name +'}}');
+			else it.html('{{#'+filter[1]+'}}{{' +filter[0]+ '}}{{/'+filter[1]+'}}');
+		});
+
+		aux.find('[data-out]').each(function(){
+			$(this).before('{{#out}}').after('{{/out}}');
+		});
+
+		//http://stackoverflow.com/questions/317053/regular-expression-for-extracting-tag-attributes
+		return $.trim(aux.html().replace(/(data-attr)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g, function(a, b, c, d){
+			return c;
+		}));
+	}
 
 	Interface._class.apply( Jails );
 	return Jails;

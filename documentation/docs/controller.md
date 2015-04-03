@@ -1,16 +1,14 @@
 >Although **View** inherits from the same class of **Controller** or **App** it has unique methods and engine, they helps you to handle templating and rendering problems.
 
-You need to specify where is your `view` module in html markup.
+You need to specify will use the `view` methods in html markup.
 
 Jails view can be used with external templates or use the html as a template.
 
-If you want to use external template you can use 2 properties:
-
-- `data-template` : Specifies what template to use.
+- `data-template` : Specifies if controller will handle templating or not and what template to use.
 - `data-render` : Will automatically render the template using global Jails `data` on page load.
 
 ```html
-<div data-view="my-view" data-template="user" data-render="true"></div>
+<div data-controller="my-controller" data-template="user" data-render="true"></div>
 ...
 
 <script type="x-tmpl-mustache" id="tpl-user">
@@ -27,7 +25,7 @@ But, you can also use the original html as your template system.
 
 ```html
 
-<div data-view="my-view">
+<div data-controller="my-view" data-template>
 
     <p data-if="name">My name is {{name}}</p> or
     <p data-if="name">My name is <span data-value="name"></span></p> or
@@ -58,11 +56,11 @@ View will render the html mixing the data object with a specified template. If t
 The following examples do the same thing:
 
 ```html
-<div data-view="my-view" />
+<div data-controller="my-controller" data-template />
 ```
 
 ```js
-jails.view('my-view', function(){
+jails.controller('my-controller', function(){
 
     this.init = function(){
         this.render({ name:'Eduardo' }, 'user');
@@ -74,11 +72,11 @@ jails.view('my-view', function(){
 
 
 ```html
-<div data-view="my-view" data-template="user" />
+<div data-controller="my-controller" data-template="user" />
 ```
 
 ```js
-jails.view('my-view', function(){
+jails.controller('my-controller', function(){
 
     this.init = function(){
         this.render({ name:'Eduardo' });
@@ -89,7 +87,7 @@ jails.view('my-view', function(){
 ## .partial
     .partial( element, template, data );
 
-Does the same thing as `.render()` but you can specify a html element target to render instead of the current `View`.
+Does the same thing as `.render()` but you can specify a html element target to render instead of the current `view`.
 
 
 ## .template
@@ -97,9 +95,3 @@ Does the same thing as `.render()` but you can specify a html element target to 
 
 If, for some reason, you need just the string result of the template, you can use this method.
 Jails saves all the mustache template embeded on html on `jails.templates` property.
-
-
-## .watch
-    .watch function( element, event, method );
-
-Delegates a event to the container class.
