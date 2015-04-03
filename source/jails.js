@@ -1,7 +1,9 @@
 define(function(){
 
 	var
-		Jails, config, $, global = {}, publisher;
+		Jails, config, $, global = {}, publisher, slice;
+
+	slice = Array.prototype.slice;
 
 	Jails = {
 
@@ -133,9 +135,31 @@ define(function(){
 				this.name = name;
 				dom = element.get(0);
 
+				element.on('execute', function(e, o){
+
+					var n = o.args.shift(), method = _self[n];
+					if( method )
+						method.apply(_self, o.args);
+					else
+						console.error('Jails.error::', name, 'has no method :', n);
+
+					e.stopPropagation();
+				});
+
+				this.x = function(target){
+
+					target = $(dom.querySelector(target));
+
+					return function(){
+
+						var args = slice.call( arguments );
+						target.trigger('execute', {args :args});
+					};
+				};
+
 				this.broadcast = function(target, ev, prop){
 
-					var args = Array.prototype.slice.call( arguments );
+					var args = slice.call( arguments );
 
 					args.shift(); args.shift();
 
@@ -149,13 +173,13 @@ define(function(){
 				};
 
 				this.emit = function( simbol, args ){
-					args = Array.prototype.slice.call(arguments);
+					args = slice.call(arguments);
 					args.shift();
 					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
 				};
 
 				this.publish = function(simbol, args){
-					args = Array.prototype.slice.call(arguments);
+					args = slice.call(arguments);
 					args.shift();
 					publisher.trigger(simbol, { args :args, element :element.get(0) });
 				};
@@ -348,7 +372,7 @@ define(function(){
 				this.name = name;
 
 				this.emit = function( simbol, args ){
-					args = Array.prototype.slice.call(arguments);
+					args = slice.call(arguments);
 					args.shift();
 					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
 				};
