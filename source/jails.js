@@ -1,10 +1,9 @@
 define(function(){
 
 	var
-		Jails, config, $, global = {}, publisher, slice, order;
+		Jails, config, $, global = {}, publisher, slice;
 
 	slice = Array.prototype.slice;
-	order = { partial :0, component:1, controller :2, app :3 };
 
 	Jails = {
 
@@ -361,6 +360,28 @@ define(function(){
 			this.templates = {};
 			this.filters = {};
 
+			this.template = {
+
+				promises:{},
+
+				load :function(url, name){
+
+					var p, template, t, l;
+					name = name || filename(url);
+					template = Jails.templates;
+					t = template[name];
+					pm = this.promises[name];
+
+					if(t) return t;
+					if(pm) return pm;
+
+					l = $.get(url).done(function(tpl){ template[name] = tpl; });
+					this.promises[name] = l;
+
+					return l;
+				}
+			};
+
 			this.controller = function(name, method){
 				return create.call(this, 'controller', name, method);
 			};
@@ -451,6 +472,10 @@ define(function(){
 		return $.trim(aux.html().replace(/(data-attr)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g, function(a, b, c, d){
 			return c;
 		}));
+	}
+
+	function filename(url){
+		return url.split(/\//).pop().split(/\./).shift();
 	}
 
 	Interface._class.apply( Jails );
