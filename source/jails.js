@@ -107,11 +107,12 @@ define(function(){
 			comment = comment? comment.previousSibling :null;
 
 			if(comment && comment.nodeType == 8){
-				code = comment.data.replace(/\@(.*)\((\{.*\})\)/g, function(text, component, param){
-					ann[component] = new Function('return '+ param)();
-				});
+				code = comment.data
+					.replace(/[\n\s\t]/g, '')
+					.replace(/\@(\w*)\(([^@]*)\)/g, function(text, component, param){
+						ann[component] = new Function('return '+ param)();
+					});
 			}
-
 			return ann;
 		}
 
