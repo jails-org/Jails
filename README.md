@@ -3,11 +3,11 @@
 ## The Javascript AMD Framework
 
 - [The Framework](#theframework)
-- [The Community is the Framework](#thecomunityistheframework)
-- [DRY - The solution on a Repository](#DRY-thesolutiononarepository)
-- [Refactory is Easy](#refactoryiseasy)
-- [Fast, Light and Easy](#fastlightandeasy)
-- [Dive in](#divein)
+- [The Community is the Framework](#the-comunity-is-the-framework)
+- [DRY - The solution on a Repository](#dry-the-solution-on-a-repository)
+- [Refactory is Easy](#refactory-is-easy)
+- [Fast, Light and Easy](#fast-light-and-easy)
+- [Dive in](#dive-in)
 
 ## The Framework
 
