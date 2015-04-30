@@ -24,7 +24,7 @@ Since Jails is modular, you don't need to use the standard module to render view
 You can create your own mini view project and other devs can choose whether is better
 depending on some situation or application.
 
-Community should decides the future of the framework.
+Community should decide the future of the framework.
 
 ## DRY, The solution on a Repository
 
