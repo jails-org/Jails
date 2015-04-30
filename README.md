@@ -2,8 +2,8 @@
 
 ## The Javascript AMD Framework
 
-- [The Framework](#theframework)
-- [The Community is the Framework](#the-comunity-is-the-framework)
+- [The Framework](#the-framework)
+- [The Community is the Framework](#the-community-is-the-framework)
 - [DRY - The solution on a Repository](#dry-the-solution-on-a-repository)
 - [Refactory is Easy](#refactory-is-easy)
 - [Fast, Light and Easy](#fast-light-and-easy)
