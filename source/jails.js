@@ -1,24 +1,42 @@
 define(function(){
 
-	var
-		Jails, config, $, global = {}, publisher, slice;
+	var jails, config, $, global = {}, publisher, slice;
 
 	slice = Array.prototype.slice;
 
-	Jails = {
+	jails = {
 
-		config :{ templates :{ type :'x-tmpl-mustache'} },
 		context:null,
+		config :{ templates :{ type :'x-tmpl-mustache'} },
+
+		apps 		: {},
+		controllers : {},
+		components 	: {},
+		templates 	: {},
+		filters 	: {},
+
+		app			:create('app'),
+		controller	:create('controller'),
+		component	:create('component'),
+
+		filter :function(name, method){
+
+			this.filters[name] = function(){
+				return function(text, render){
+					return method( render(text) );
+				};
+			};
+		},
 
 		start :function(cfg, ctx){
 
 			$ = cfg.base;
-			Jails.context = $( document.documentElement );
+			jails.context = $( document.documentElement );
 			publisher = $('<i />');
 
-			$.extend( true, Jails.config, cfg );
+			$.extend( true, jails.config, cfg );
 			Scanner.start( ctx );
-			Jails.context.addClass('ready');
+			jails.context.addClass('ready');
 		},
 
 		refresh :function(ctx){
@@ -27,8 +45,20 @@ define(function(){
 
 		data :function(){
 			return global;
+		},
+
+		scanner :function(){
+			return Scanner;
 		}
 
+	};
+
+	//Default Filter
+	jails.filters.out = function(text){
+		var h = $(text), aux  = $('<div />'), script = h.data('out');
+			h.html((new Function('return ' +script))());
+			aux.append(h);
+		return aux.html();
 	};
 
 	var Scanner = {
@@ -37,8 +67,8 @@ define(function(){
 
 			var type, modules = [];
 
-			context = context || Jails.context;
-			type = Jails.config.templates.type;
+			context = context || jails.context;
+			type = jails.config.templates.type;
 
 			Scanner.scan( 'partial', 'script[type='+type+']', context, modules);
 			Scanner.scan( 'component', '[data-component]', context, modules);
@@ -50,7 +80,7 @@ define(function(){
 
 		scan :function( name, query, context, modules ){
 
-			context = context || Jails.context;
+			context = context || jails.context;
 			var el, els, len, scan;
 
 			els = context.get(0).querySelectorAll(query);
@@ -68,7 +98,7 @@ define(function(){
 			var name, object, m, sufix = 's';
 			name = el.data(type);
 
-			m = Jails[ type + sufix ][ name ];
+			m = jails[ type + sufix ][ name ];
 			m = m? new m( el, global ) :new Module[ type ]._class( name, el, type );
 
 			modules.push( m );
@@ -76,10 +106,10 @@ define(function(){
 
 		partial :function(type, el){
 
-			var cfg = Jails.config.templates.prefix;
+			var cfg = jails.config.templates.prefix;
 			var name = el.prop('id').split( cfg || 'tmpl-').pop();
 
-			Jails.templates[name] = $.trim( el.html() );
+			jails.templates[name] = $.trim( el.html() );
 		},
 
 		component :function(type, el, modules){
@@ -92,7 +122,7 @@ define(function(){
 
 			$.each( components, function(i, n){
 
-				m = Jails.components[n];
+				m = jails.components[n];
 				m = m? new m( el, n in anno? anno[n]:{} ) :new Module[type]._class( n, el );
 
 				modules.push( m );
@@ -132,254 +162,87 @@ define(function(){
 			modules = null;
 		},
 
-		common :{
+		common :function(name, element){
 
-			_class :function(name, element){
+			var _self = this;
 
-				var _self = this;
+			this.name = name;
 
-				this.name = name;
-
-				element.on('execute', function(e, o){
-
-					var
-						newargs = [].concat(o.args),
-						n = newargs.shift(),
-						method = _self[n];
-
-					if( method )
-						method.apply(_self, newargs);
-					else
-						console.warn('Jails@warning =>', name, 'has no method :', n);
-					e.stopPropagation();
-				});
-			}
-		},
-
-		app :{
-
-			_class :function( name, element ){
-
-				Module.common._class.apply(this, [name, element]);
-
-				var dom = element.get(0);
-
-				this.watch = function(target, ev, method){
-					element.on(ev, target, method);
-				};
-
-				this.x = function(target){
-					target = element.find(target);
-					return function(){
-						var args = slice.call( arguments );
-						target.trigger('execute', {args :args});
-					};
-				};
-
-				this.listen = function(name, method){
-					element.on(name, function(e, o){
-						method.apply(o.element, [e].concat(o.args));
-					});
-				};
-
-				this.emit = function( simbol, args ){
-					args = slice.call(arguments);
-					args.shift();
-					element.trigger(name+':'+simbol, { args :args, element :dom });
-				};
-
-				this.publish = function(simbol, args){
-					args = slice.call(arguments);
-					args.shift();
-					publisher.trigger(simbol, { args :args, element :dom });
-				};
-
-				this.subscribe = function(name, method){
-					publisher.on(name, function(e, o){
-						method.apply(o.element, [e].concat(o.args));
-					});
-				};
-			}
-		},
-
-		controller :{
-
-			_class :function( name, element ){
-
-				Module.app._class.apply(this, [name, element]);
-			}
-		},
-
-		model :{
-
-			_class :function( name, element ){
+			element.on('execute', function(e, o){
 
 				var
-					data = {}, _self = this;
+					newargs = [].concat(o.args),
+					n = newargs.shift(),
+					method = _self[n];
 
-				this.name = name;
-
-				this.data = function(response, id){
-					if(response){
-						data = response;
-						if(id){
-							data = this.transform(id, response);
-						}
-						$? $(this).trigger('change', data) :null;
-					}
-					else return data;
-				};
-
-				this.on = function(action, method){
-					$(this).on(action, function(e, o){
-						method.call(this, o);
-					});
-				};
-
-				this.trigger = function(action, params){
-					$(this).trigger(action, params);
-				};
-
-				this.find = function(id){
-					return data[id];
-				};
-
-				this.remove = function(id){
-					delete data[id];
-					this.trigger( 'change', data );
-				};
-
-				this.update = function(id, value){
-					data[id] = value;
-					this.trigger( 'change', data );
-				};
-
-				this.to_array = function(){
-					return $.map( data, function(item){ return [item]; });
-				};
-
-				this.transform = function(primary, response){
-
-					response = response || data;
-					response = response.push? response :[ response ];
-					var json = {}, l = response.length, i, item;
-
-					for(i = 0; i < l; i++){
-						item = response[i];
-						json[ item[primary || i] ] = item;
-					}
-
-					count = i;
-					return json;
-				};
-			}
+				if( method )
+					method.apply(_self, newargs);
+				else
+					console.warn('jails@warning =>', name, 'has no method :', n);
+				e.stopPropagation();
+			});
 		},
 
-		component :{
+		app :function( name, element ){
 
-			_class :function( name, element ){
+			Module.common.apply(this, arguments);
 
-				var _self = this;
+			var dom = element.get(0);
 
-				Module.common._class.apply(this, [name, element]);
-
-				this.emit = function( simbol, args ){
-					args = slice.call(arguments);
-					args.shift();
-					element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
-				};
-
-				this.listen = function(name, method){
-					element.on(name, function(e, o){
-						method.apply(o.element, [e].concat(o.args));
-					});
-				};
-			}
-		}
-	};
-
-	var Interface = {
-
-		_class :function(){
-
-			this.apps = {};
-			this.controllers = {};
-			this.models = {};
-			this.components = {};
-			this.templates = {};
-			this.filters = {};
-
-			this.template = {
-
-				promises:{},
-
-				load :function(url, name){
-
-					var p, template, t, l;
-					name = name || filename(url);
-					template = Jails.templates;
-					t = template[name];
-					pm = this.promises[name];
-
-					if(t) return t;
-					if(pm) return pm;
-
-					l = $.get(url).done(function(tpl){ template[name] = tpl; });
-					this.promises[name] = l;
-
-					return l;
-				}
+			this.watch = function(target, ev, method){
+				element.on(ev, target, method);
 			};
 
-			this.controller = function(name, method){
-				return create.call(this, 'controller', name, method);
-			};
-
-			this.component = function(name, method){
-				create.call(this, 'component', name, method);
-			};
-
-			this.app = function(name, method){
-				create.call(this, 'app', name, method);
-			};
-
-			this.filter = function(name, method){
-
-				this.filters[name] = function(){
-					return function(text, render){
-						return method( render(text) );
-					};
+			this.x = function(target){
+				target = element.find(target);
+				return function(){
+					var args = slice.call( arguments );
+					target.trigger('execute', {args :args});
 				};
 			};
 
-			this.model = function(name, method){
-
-				if(this instanceof Jails.model){
-					Module.model._class.call(this, name);
-				}else{
-					Jails.models[ name ] = method;
-					var model = new Module.model._class(name);
-					method.apply(model);
-					return model;
-				}
+			this.listen = function(name, method){
+				element.on(name, function(e, o){
+					method.apply(o.element, [e].concat(o.args));
+				});
 			};
 
-			//Default Filters
-			this.filter('out', function(text){
-				var h = $(text), aux  = $('<div />'), script = h.data('out');
-					h.html((new Function('return ' +script))());
-					aux.append(h);
-				return aux.html();
-			});
+			this.emit = function( simbol, args ){
+				args = slice.call(arguments);
+				args.shift();
+				element.trigger(name+':'+simbol, { args :args, element :dom });
+			};
 
-			function create(type, name, method){
-				if(this instanceof Jails[type])
-					Module[type]._class.call( this, arguments[2], arguments[1] );
-				else return this[type+'s'][ name ] = function(element, global){
-					Module[type]._class.call( this, name, element );
-					method.call(this, element, global);
-				};
-			}
+			this.publish = function(simbol, args){
+				args = slice.call(arguments);
+				args.shift();
+				publisher.trigger(simbol, { args :args, element :dom });
+			};
+
+			this.subscribe = function(name, method){
+				publisher.on(name, function(e, o){
+					method.apply(o.element, [e].concat(o.args));
+				});
+			};
+		},
+
+		component :function( name, element ){
+
+			Module.common.apply(this, arguments);
+
+			var _self = this;
+
+			this.emit = function( simbol, args ){
+				args = slice.call(arguments);
+				args.shift();
+				element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+			};
+
+			this.listen = function(name, method){
+				element.on(name, function(e, o){
+					method.apply(o.element, [e].concat(o.args));
+				});
+			};
 		}
 	};
 
@@ -387,7 +250,23 @@ define(function(){
 		return url.split(/\//).pop().split(/\./).shift();
 	}
 
-	Interface._class.apply( Jails );
-	return Jails;
+	function create( type ){
+
+		var _class = type != 'component' ? 'app' :type;
+
+		return function(name, method){
+
+			if( this instanceof jails[ type ] ){
+				Module[ _class ].call(this, arguments[2], arguments[1]);
+			}else{
+				jails[ type+'s' ][ name ] = function( element, global ){
+					Module[ _class ].call( this, name, element );
+					method.call(this, element, global);
+				};
+			}
+		};
+	}
+
+	return jails;
 
 });
