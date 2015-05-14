@@ -177,9 +177,12 @@ define(function(){
 
 				if( method )
 					method.apply(_self, newargs);
-				else
-					console.warn('jails@warning =>', name, 'has no method :', n);
+
 				e.stopPropagation();
+			});
+
+			element.on('instance', function(e, callback){
+				callback.call(_self, name, element);
 			});
 		},
 
