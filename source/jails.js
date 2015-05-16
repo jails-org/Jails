@@ -99,7 +99,7 @@ define(function(){
 			name = el.data(type);
 
 			m = jails[ type + sufix ][ name ];
-			m = m? new m( el, global ) :new Module[ type ]._class( name, el, type );
+			m = m? new m( el, global ) :new Module[ type ]( name, el, type );
 
 			modules.push( m );
 		},
@@ -123,7 +123,7 @@ define(function(){
 			$.each( components, function(i, n){
 
 				m = jails.components[n];
-				m = m? new m( el, n in anno? anno[n]:{} ) :new Module[type]._class( n, el );
+				m = m? new m( el, n in anno? anno[n]:{} ) :new Module[type]( n, el );
 
 				modules.push( m );
 			});
@@ -138,8 +138,8 @@ define(function(){
 
 			if(comment && comment.nodeType == 8){
 				code = comment.data
-					.replace(/[\n\s\t]/g, '')
-					.replace(/\@(\w*)\(([^@]*)\)/g, function(text, component, param){
+					.replace(/[\n\t]/g, '')
+					.replace(/\@([a-zA-z0-9-]*)\(([^@]*)\)/g, function(text, component, param){
 						ann[component] = new Function('return '+ param)();
 					});
 			}
