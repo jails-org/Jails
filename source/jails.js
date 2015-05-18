@@ -168,6 +168,12 @@ define(function(){
 
 			this.name = name;
 
+			this.listen = function(name, method){
+				element.on(name, function(e, o){
+					method.apply(o.element, [e].concat(o.args));
+				});
+			};
+
 			element.on('execute', function(e, o){
 
 				var
@@ -204,12 +210,6 @@ define(function(){
 				};
 			};
 
-			this.listen = function(name, method){
-				element.on(name, function(e, o){
-					method.apply(o.element, [e].concat(o.args));
-				});
-			};
-
 			this.emit = function( simbol, args ){
 				args = slice.call(arguments);
 				args.shift();
@@ -239,12 +239,6 @@ define(function(){
 				args = slice.call(arguments);
 				args.shift();
 				element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
-			};
-
-			this.listen = function(name, method){
-				element.on(name, function(e, o){
-					method.apply(o.element, [e].concat(o.args));
-				});
 			};
 		}
 	};
