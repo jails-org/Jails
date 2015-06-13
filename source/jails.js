@@ -256,7 +256,7 @@ define(function(){
 			if( this instanceof jails[ type ] ){
 				Module[ _class ].call(this, arguments[2], arguments[1]);
 			}else{
-				jails[ type+'s' ][ name ] = function( element, global ){
+				return jails[ type+'s' ][ name ] = function( element, global ){
 					Module[ _class ].call( this, name, element );
 					method.call(this, element, global);
 				};
