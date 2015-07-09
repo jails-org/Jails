@@ -7,12 +7,11 @@ define(function(){
 	jails = {
 
 		context:null,
-		config :{ templates :{ type :'x-tmpl-mustache'} },
+		config 		:{},
 
 		apps 		: {},
 		controllers : {},
 		components 	: {},
-		templates 	: {},
 		filters 	: {},
 
 		app			:create('app'),
@@ -53,24 +52,14 @@ define(function(){
 
 	};
 
-	//Default Filter
-	jails.filters.out = function(text){
-		var h = $(text), aux  = $('<div />'), script = h.data('out');
-			h.html((new Function('return ' +script))());
-			aux.append(h);
-		return aux.html();
-	};
-
 	var Scanner = {
 
 		start :function(context){
 
-			var type, modules = [];
+			var modules = [];
 
 			context = context || jails.context;
-			type = jails.config.templates.type;
 
-			Scanner.scan( 'partial', 'script[type='+type+']', context, modules);
 			Scanner.scan( 'component', '[data-component]', context, modules);
 			Scanner.scan( 'controller', '[data-controller]', context, modules);
 			Scanner.scan( 'app', '[data-app]', context, modules );
@@ -102,14 +91,6 @@ define(function(){
 			m = m? new m( el, global ) :new Module[ type ]( name, el, type );
 
 			modules.push( m );
-		},
-
-		partial :function(type, el){
-
-			var cfg = jails.config.templates.prefix;
-			var name = el.prop('id').split( cfg || 'tmpl-').pop();
-
-			jails.templates[name] = $.trim( el.html() );
 		},
 
 		component :function(type, el, modules){
@@ -242,10 +223,6 @@ define(function(){
 			};
 		}
 	};
-
-	function filename(url){
-		return url.split(/\//).pop().split(/\./).shift();
-	}
 
 	function create( type ){
 
