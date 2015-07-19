@@ -150,9 +150,13 @@ define(function(){
 			this.name = name;
 
 			this.listen = function(name, method){
-				element.on(name, function(e, o){
-					method.apply(o.element, [e].concat(o.args));
-				});
+				if( method )
+					element.on(name, function(e, o){
+						method.apply(o.element, [e].concat(o.args));
+					});
+				else for(var i in name){
+					_self.listen(i, name[i]);
+				}
 			};
 
 			element.on('execute', function(e, o){
