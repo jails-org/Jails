@@ -45,8 +45,8 @@ It's light, fast it's easy...
 Are you interested? Do you want to know more about it?
 Check out some examples, documentations, screencasts and more.
 
+
 - [Documentations & Screencasts](//jails-org.github.io/Jails/docs)
 - [Jails-org Repository](//github.com/jails-org)
+- [Site](//jails-org.github.io/Jails)
 
-- [todomvc](//jails-org.github.io/Jails/todomvc)
-- [todomvc - Source](//github.com/jails-org/Jails/tree/gh-pages/todomvc)
