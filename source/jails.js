@@ -20,7 +20,7 @@ define(function(){
 
 		filter :function(name, method){
 
-			this.filters[name] = function(){
+			return this.filters[name] = function(){
 				return function(text, render){
 					return method( render(text) );
 				};
