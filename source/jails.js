@@ -8,13 +8,12 @@ define(function(){
 
 		context:null,
 		config 		:{},
-
 		apps 		: {},
 		controllers : {},
 		components 	: {},
 		filters 	: {},
 
-		app			:create('app'),
+		app		:create('app'),
 		controller	:create('controller'),
 		component	:create('component'),
 
@@ -188,10 +187,9 @@ define(function(){
 			};
 
 			this.x = function(target){
-				target = element.find(target);
 				return function(){
 					var args = slice.call( arguments );
-					target.trigger('execute', {args :args});
+					element.find(target).trigger('execute', {args :args});
 				};
 			};
 
