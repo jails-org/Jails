@@ -1,0 +1,26 @@
+{
+  "name": "jails-js",
+  "version": "0.8.2",
+  "description": "Jails the AMD Micro-Framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jails-org/Jails.git"
+  },
+  "keywords": [
+    "Jails",
+    "AMD",
+    "MVC",
+    "Javascript",
+    "Microframework"
+  ],
+  "author": "javiani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jails-org/Jails/issues"
+  },
+  "homepage": "https://github.com/jails-org/Jails"
+}
