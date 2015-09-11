@@ -1,6 +1,6 @@
 define(function(){
 
-	var jails, config, $, global = {}, publisher, slice;
+	var jails, config, $, global = {}, publisher = PubSub(), slice;
 
 	slice = Array.prototype.slice;
 
@@ -8,29 +8,21 @@ define(function(){
 
 		context:null,
 		config 		:{},
-		apps 		: {},
-		controllers : {},
-		components 	: {},
-		filters 	: {},
+		apps 		:{},
+		controllers :{},
+		components 	:{},
 
-		app		:create('app'),
+		app			:create('app'),
 		controller	:create('controller'),
 		component	:create('component'),
 
-		filter :function(name, method){
-
-			return this.filters[name] = function(){
-				return function(text, render){
-					return method( render(text) );
-				};
-			};
-		},
+		publish 	:publisher.publish,
+		subscribe 	:publisher.subscribe,
 
 		start :function(cfg, ctx){
 
 			$ = cfg.base;
 			jails.context = $( document.documentElement );
-			publisher = $('<i />');
 
 			$.extend( true, jails.config, cfg );
 			Scanner.start( ctx );
@@ -148,6 +140,12 @@ define(function(){
 
 			this.name = name;
 
+			this.emit = function( simbol, args ){
+				args = slice.call(arguments);
+				args.shift();
+				element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
+			};
+
 			this.listen = function(name, method){
 				if( method )
 					element.on(name, function(e, o){
@@ -182,6 +180,9 @@ define(function(){
 
 			var dom = element.get(0);
 
+			this.publish = publisher.publish;
+			this.subscribe = publisher.subscribe;
+
 			this.watch = function(target, ev, method){
 				element.on(ev, target, method);
 			};
@@ -199,32 +200,42 @@ define(function(){
 				element.trigger(name+':'+simbol, { args :args, element :dom });
 			};
 
-			this.publish = function(simbol, args){
-				args = slice.call(arguments);
-				args.shift();
-				publisher.trigger(simbol, { args :args, element :dom });
-			};
-
-			this.subscribe = function(name, method){
-				publisher.on(name, function(e, o){
-					method.apply(o.element, [e].concat(o.args));
-				});
-			};
 		},
 
 		component :function( name, element ){
-
-			Module.common.apply(this, arguments);
-
-			var _self = this;
-
-			this.emit = function( simbol, args ){
-				args = slice.call(arguments);
-				args.shift();
-				element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
-			};
+			Module.common.apply( this, arguments );
 		}
 	};
+
+	//Inspired by:
+	//http://dev.housetrip.com/2014/09/15/decoupling-javascript-apps-using-pub-sub-pattern/
+	function PubSub(){
+
+		var topics = {};
+
+		return{
+
+			subscribe :function(){
+
+				var args = slice.call( arguments );
+				var key = args[0], method = args[1];
+
+				topics[key] = topics[key] || [];
+				topics[key].push( method );
+			},
+
+			publish :function(){
+
+				var args = slice.call( arguments );
+				var key = args.shift();
+
+				topics[key] = topics[key] || [];
+				topics[key].forEach(function( f ) {
+					if( f ) f.apply( this, args );
+				});
+			}
+		};
+	}
 
 	function create( type ){
 
@@ -244,5 +255,4 @@ define(function(){
 	}
 
 	return jails;
-
 });
