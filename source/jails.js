@@ -1,44 +1,37 @@
 define(function(){
 
-	var jails, config, $, global = {}, publisher, slice;
+	var Jails, config, $, global = {}, publisher = PubSub(), slice;
 
 	slice = Array.prototype.slice;
 
-	jails = {
+	Jails = {
 
-		context:null,
+		context		:null,
 		config 		:{},
-		apps 		: {},
-		controllers : {},
-		components 	: {},
-		filters 	: {},
 
-		app		:create('app'),
-		controller	:create('controller'),
-		component	:create('component'),
+		apps 		:{},
+		controllers	:{},
+		components 	:{},
 
-		filter :function(name, method){
+		app 		:_Class('apps', Controller),
+		controller 	:_Class('controllers', Controller),
+		component	:_Class('components', Component),
 
-			return this.filters[name] = function(){
-				return function(text, render){
-					return method( render(text) );
-				};
-			};
-		},
+		publish 	:publisher.publish,
+		subscribe 	:publisher.subscribe,
 
-		start :function(cfg, ctx){
+		start :function( cfg, ctx ){
 
 			$ = cfg.base;
-			jails.context = $( document.documentElement );
-			publisher = $('<i />');
+			this.context = $( document.documentElement );
 
-			$.extend( true, jails.config, cfg );
-			Scanner.start( ctx );
-			jails.context.addClass('ready');
+			$.extend( true, this.config, cfg );
+			Scanner.scan( ctx );
+			this.context.addClass('ready');
 		},
 
-		refresh :function(ctx){
-			Scanner.start( ctx );
+		refresh :function( ctx ){
+			Scanner.start( ctx.get? ctx[0] :ctx );
 		},
 
 		data :function(){
@@ -48,201 +41,178 @@ define(function(){
 		scanner :function(){
 			return Scanner;
 		}
-
 	};
 
 	var Scanner = {
 
-		start :function(context){
+		scan :function( context ){
 
-			var modules = [];
+			var current, list, entities = this.entities;
 
-			context = context || jails.context;
-
-			Scanner.scan( 'component', '[data-component]', context, modules);
-			Scanner.scan( 'controller', '[data-controller]', context, modules);
-			Scanner.scan( 'app', '[data-app]', context, modules );
-
-			Module.start( modules );
-		},
-
-		scan :function( name, query, context, modules ){
-
-			context = context || jails.context;
-			var el, els, len, scan;
-
-			els = context.get(0).querySelectorAll(query);
-			len = els.length;
-
-			for(var i = 0; i < len; i++){
-				el = $(els[i]);
-				scan = Scanner[name];
-				scan? scan(name, el, modules) :Scanner.module( name, el, modules );
+			for( var entity in entities ){
+				current = entities[ entity ];
+				list = slice.call( (context || document).querySelectorAll( current.selector ) );
+				list.forEach( current.method );
 			}
 		},
 
-		module :function(type, el, modules){
+		entities :{
 
-			var name, object, m, sufix = 's';
-			name = el.data(type);
+			components :{
+				selector:'[data-component]',
+				method 	:component
+			},
 
-			m = jails[ type + sufix ][ name ];
-			m = m? new m( el, global ) :new Module[ type ]( name, el, type );
+			controllers:{
+				selector:'[data-controller]',
+				method 	:controller('controller')
+			},
 
-			modules.push( m );
-		},
-
-		component :function(type, el, modules){
-
-			var name, components, object, m, anno;
-
-			name = el.data(type);
-			anno = Scanner.annotations( name, el );
-			components = name.replace(/\s/g, '').split(/\,/);
-
-			$.each( components, function(i, n){
-
-				m = jails.components[n];
-				m = m? new m( el, n in anno? anno[n]:{} ) :new Module[type]( n, el );
-
-				modules.push( m );
-			});
-		},
-
-		annotations :function( name, el ){
-
-			var ann = {}, comment, code;
-
-			comment = el.get(0).previousSibling;
-			comment = comment? comment.previousSibling :null;
-
-			if(comment && comment.nodeType == 8){
-				code = comment.data
-					.replace(/[\n\t]/g, '')
-					.replace(/\@([a-zA-z0-9-]*)\(([^@]*)\)/g, function(text, component, param){
-						ann[component] = new Function('return '+ param)();
-					});
+			app :{
+				selector :'[data-app]',
+				method	 :controller('app')
 			}
-			return ann;
 		}
-
 	};
 
-	var Module = {
+	function create( T, Class, name, element, data ){
+		var el = $( element ), object = new T( name, el );
+		if( Class ) Class.apply( object, [el, data] );
+		if( object.init ) object.init();
+	}
 
-		start :function(modules){
+	function component( element ){
 
-			var len = modules.length;
-			for(var i = 0; i < len; i++){
-				if( modules[i].init ){
-					modules[i].init();
-				}
+		var names = element.getAttribute('data-component').replace(/\s/, '').split(/\,/);
+			names.forEach( init );
+
+		function init( item ){
+			if( item in Jails.components ){
+				create( Component, Jails.components[ item ], item, element );
 			}
+		}
+	}
 
-			modules = null;
-		},
+	function controller( T ){
+		return function( element ){
+			var name, object;
+			name = element.getAttribute( 'data-' + T );
+			create( Controller, Jails[ T + 's' ][name], name, element, global);
+		};
+	}
 
-		common :function(name, element){
+	function Component( name, element ){
+		Common.apply( this, arguments );
+	}
 
-			var _self = this;
+	function Common(name, element){
 
-			this.name = name;
+		var _self = this;
 
-			this.listen = function(name, method){
-				if( method )
-					element.on(name, function(e, o){
-						method.apply(o.element, [e].concat(o.args));
-					});
-				else for(var i in name){
-					_self.listen(i, name[i]);
-				}
-			};
+		this.name = name;
 
-			element.on('execute', function(e, o){
+		this.emit = function( simbol, args ){
+			args = slice.call( arguments );
+			args.shift();
+			element.trigger(name+':'+simbol, { args :args, element :element[0] });
+		};
 
-				var
-					newargs = [].concat(o.args),
-					n = newargs.shift(),
-					method = _self[n];
-
-				if( method )
-					method.apply(_self, newargs);
-
-				e.stopPropagation();
-			});
-
-			element.on('instance', function(e, callback){
-				callback.call(_self, name, element);
-			});
-		},
-
-		app :function( name, element ){
-
-			Module.common.apply(this, arguments);
-
-			var dom = element.get(0);
-
-			this.watch = function(target, ev, method){
-				element.on(ev, target, method);
-			};
-
-			this.x = function(target){
-				return function(){
-					var args = slice.call( arguments );
-					element.find(target).trigger('execute', {args :args});
-				};
-			};
-
-			this.emit = function( simbol, args ){
-				args = slice.call(arguments);
-				args.shift();
-				element.trigger(name+':'+simbol, { args :args, element :dom });
-			};
-
-			this.publish = function(simbol, args){
-				args = slice.call(arguments);
-				args.shift();
-				publisher.trigger(simbol, { args :args, element :dom });
-			};
-
-			this.subscribe = function(name, method){
-				publisher.on(name, function(e, o){
+		this.listen = function(name, method){
+			if( method ){
+				element.on(name, function(e, o){
 					method.apply(o.element, [e].concat(o.args));
 				});
+			}
+			else for(var i in name){
+				_self.listen(i, name[i]);
+			}
+		};
+
+		element.on('execute', function(e, o){
+
+			var
+				newargs = [].concat(o.args),
+				n = newargs.shift(),
+				method = _self[n];
+
+			if( method ) method.apply(_self, newargs);
+			e.stopPropagation();
+		});
+
+		element.on('instance', function(e, callback){
+			callback.call(_self, name, element);
+		});
+	}
+
+	function Controller( name, element ){
+
+		Common.apply( this, arguments );
+
+		var dom = element[0];
+
+		this.watch = function(target, ev, method){
+			element.on(ev, target, method);
+		};
+
+		this.x = function(target){
+			return function(){
+				var args = slice.call( arguments );
+				element.find(target).trigger('execute', {args :args});
 			};
-		},
+		};
 
-		component :function( name, element ){
+		this.publish = function(simbol, args){
+			args = slice.call(arguments);
+			args.shift();
+			publisher.trigger(simbol, { args :args, element :dom });
+		};
 
-			Module.common.apply(this, arguments);
+		this.subscribe = function(name, method){
+			publisher.on(name, function(e, o){
+				method.apply(o.element, [e].concat(o.args));
+			});
+		};
+	}
 
-			var _self = this;
+	//Inspired by:
+	//http://dev.housetrip.com/2014/09/15/decoupling-javascript-apps-using-pub-sub-pattern/
+	function PubSub(){
 
-			this.emit = function( simbol, args ){
-				args = slice.call(arguments);
-				args.shift();
-				element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
-			};
-		}
-	};
+		var topics = {};
 
-	function create( type ){
+		return{
 
-		var _class = type != 'component' ? 'app' :type;
+			subscribe :function(){
 
-		return function(name, method){
+				var args = slice.call( arguments );
+				var key = args[0], method = args[1];
 
-			if( this instanceof jails[ type ] ){
-				Module[ _class ].call(this, arguments[2], arguments[1]);
-			}else{
-				return jails[ type+'s' ][ name ] = function( element, global ){
-					Module[ _class ].call( this, name, element );
-					method.call(this, element, global);
-				};
+				topics[key] = topics[key] || [];
+				topics[key].push( method );
+			},
+
+			publish :function(){
+
+				var args = slice.call( arguments );
+				var key = args.shift();
+
+				topics[key] = topics[key] || [];
+				topics[key].forEach(function( f ) {
+					if( f ) f.apply( this, args );
+				});
 			}
 		};
 	}
 
-	return jails;
+	function _Class( t, T ){
+		return function( name, Subclass ){
+			Jails[ t ][ name ] = Subclass;
+			return function( element, data ){
+				T.apply( this, [name, element] );
+				Subclass.apply( this, [element, data] );
+			};
+		};
+	}
 
+	return Jails;
 });
