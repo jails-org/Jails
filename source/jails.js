@@ -132,7 +132,7 @@ define(function(){
 
 		this.listen = function( name, method ){
 			element.addEventListener( name, function(e){
-				method.call(element, e, e.detail || {});
+				method.call(e.target, e, e.detail || {});
 			});
 		};
 
