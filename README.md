@@ -46,7 +46,4 @@ Are you interested? Do you want to know more about it?
 Check out some examples, documentations, screencasts and more.
 
 
-- [Documentations & Screencasts](//jails-org.github.io/Jails/docs)
-- [Jails-org Repository](//github.com/jails-org)
-- [Site](//jails-org.github.io/Jails)
-
+- [Documentations & Screencasts](//github.com/jails-org/Jails/wiki)
