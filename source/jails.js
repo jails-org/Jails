@@ -132,7 +132,7 @@ define(function(){
 
 		this.listen = function( name, method ){
 			element.addEventListener( name, function(e){
-				method(e, e.detail || {});
+				method.call(element, e, e.detail || {});
 			});
 		};
 
@@ -152,12 +152,15 @@ define(function(){
 		this.publish = publisher.publish;
 		this.subscribe = publisher.subscribe;
 
-		this.watch = function(target, ev, method){
-			target = target.replace? element.querySelectorAll(target) :[target];
+		this.watch = function(query, ev, method){
+
 			element.addEventListener(ev, function(e){
-				[].forEach.call( target, function(item){
-					if(e.target == item) method.call(item, e);
-				});
+				var target = e.target;
+				while(target != element){
+					if (target == target.parentNode.querySelector(query))
+						method.call(target, e);
+					target = target.parentNode;
+				}
 			});
 		};
 
