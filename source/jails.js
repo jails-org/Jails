@@ -21,7 +21,7 @@ define(function(){
 		start :function( ctx ){
 
 			Scanner.scan( ctx );
-			document.documentElement.className+= 'ready';
+			document.documentElement.className += 'ready';
 		},
 
 		refresh :function( ctx ){
@@ -115,11 +115,7 @@ define(function(){
 		};
 	}
 
-	function Component( name, element ){
-		Common.apply( this, arguments );
-	}
-
-	function Common(name, element){
+	function Component(name, element){
 
 		this.name = name;
 		var instance = this;
@@ -147,7 +143,7 @@ define(function(){
 
 	function Controller( name, element ){
 
-		Common.apply( this, arguments );
+		Component.apply( this, arguments );
 
 		this.publish = publisher.publish;
 		this.subscribe = publisher.subscribe;
