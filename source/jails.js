@@ -152,7 +152,7 @@ define(function(){
 
 			element.addEventListener(ev, function(e){
 				var target = e.target;
-				while(target != element){
+				while( target && target != element && target.parentNode ){
 					if (target == target.parentNode.querySelector(query))
 						method.call(target, e);
 					target = target.parentNode;
