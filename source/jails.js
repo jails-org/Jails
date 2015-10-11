@@ -133,7 +133,7 @@ define(function(){
 		};
 
 		function execute(e){
-			var d = e.detail;
+			var d = dup( e.detail );
 			if(d){
 				var method = instance[d.shift()];
 				if(method) method.apply(instance, d);
@@ -208,6 +208,12 @@ define(function(){
 				});
 			}
 		};
+	}
+
+	function dup(o){
+		var f = function(){};
+		f.prototype = o;
+		return new f();
 	}
 
 	Event = (function(){
