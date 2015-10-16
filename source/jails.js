@@ -135,12 +135,12 @@ define(function(){
 			}
 
 			Jails.events.on(element, ev, function(e){
-				if(!query) method.call(element, e);
+				if(!query) return method.call(element, e);
 				else{
 					var target = e.target;
 					while( target && target != element && target.parentNode ){
 						if ( target.matches? target.matches(query) :matchesSelector(target, query) )
-							method.call(target, e);
+							return method.call(target, e);
 						target = target.parentNode;
 					}
 				}
@@ -173,7 +173,7 @@ define(function(){
 
 		this.listen = function( ev, method ){
 			Jails.events.on( element, ev, function(e){
-				method.call(e.target, e, e.detail || {});
+				method.call(e.target, e, e.detail);
 			});
 		};
 
