@@ -223,23 +223,10 @@ define(function(){
 			if('c' === p.type && 'b' === p.detail.foo)
 				return CustomEvent;
 		} catch (e) {
-			return 'function' === typeof document.createEvent ? function(type, params) {
+			return function(type, params) {
 				var e = document.createEvent('CustomEvent');
 				params = params || {};
 				e.initCustomEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
-				return e;
-			} :function(type, params) {
-				var e = document.createEventObject();
-				e.type = type;
-				if (params) {
-					e.bubbles = Boolean(params.bubbles);
-					e.cancelable = Boolean(params.cancelable);
-					e.detail = params.detail;
-				} else {
-					e.bubbles = false;
-					e.cancelable = false;
-					e.detail = void 0;
-				}
 				return e;
 			};
 		}
