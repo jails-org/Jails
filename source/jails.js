@@ -10,6 +10,7 @@ define(function(){
 		apps 		:{},
 		controllers	:{},
 		components 	:{},
+		events 		:On(),
 
 		app 		:_Class('apps', Controller),
 		controller 	:_Class('controllers', Controller),
@@ -115,48 +116,64 @@ define(function(){
 		};
 	}
 
-	function Component(name, element){
+	function Common(name, element){
 
 		this.name = name;
 		var instance = this;
 
-		element.addEventListener('execute', execute);
+		Jails.events.on(element, 'execute', execute);
 
 		this.emit = function( simbol, args ){
-			element.dispatchEvent( new Event( name + ':' + simbol, { bubbles :true, detail :args } ) );
+			Jails.events.trigger( element, name+':'+simbol, args );
 		};
 
-		this.listen = function( name, method ){
-			element.addEventListener( name, function(e){
-				method.call(e.target, e, e.detail || {});
+		this.on = function(ev, query, method){
+
+			if(!method){
+				method = query;
+				query = null;
+			}
+
+			Jails.events.on(element, ev, function(e){
+				if(!query) method.call(element, e);
+				else{
+					var target = e.target;
+					while( target && target != element && target.parentNode ){
+						if ( target.matches? target.matches(query) :matchesSelector(target, query) )
+							method.call(target, e);
+						target = target.parentNode;
+					}
+				}
 			});
 		};
 
 		function execute(e){
-			var d = dup( e.detail );
-			if(d){
-				var method = instance[d.shift()];
-				if(method) method.apply(instance, d);
+
+			if(e.detail){
+				var method = instance[e.detail.shift()];
+				if(method) method.apply(instance, e.detail);
 			}
+
+			e.stopPropagation();
 		}
+	}
+
+	function Component(name, element){
+
+		Common.apply(this, arguments);
+		this.trigger = Jails.events.trigger;
 	}
 
 	function Controller( name, element ){
 
-		Component.apply( this, arguments );
+		Common.apply( this, arguments );
 
 		this.publish = publisher.publish;
 		this.subscribe = publisher.subscribe;
 
-		this.watch = function(query, ev, method){
-
-			element.addEventListener(ev, function(e){
-				var target = e.target;
-				while( target && target != element && target.parentNode ){
-					if ( target.matches? target.matches(query) :matchesSelector(target, query) )
-						method.call(target, e);
-					target = target.parentNode;
-				}
+		this.listen = function( ev, method ){
+			Jails.events.on( element, ev, function(e){
+				method.call(e.target, e, e.detail || {});
 			});
 		};
 
@@ -164,7 +181,7 @@ define(function(){
 			return function(){
 				var args = slice.call( arguments );
 				forEach(element.querySelectorAll(target), function(children){
-					children.dispatchEvent( new Event( 'execute', { detail :args } ) );
+					Jails.events.trigger(children, 'execute', args );
 				});
 			};
 		};
@@ -224,17 +241,35 @@ define(function(){
 	// http://tanalin.com/en/blog/2012/12/matches-selector-ie8/
 	function matchesSelector(elem, selector) {
 
-	var elems = elem.parentNode.querySelectorAll(selector),
-		count = elems.length;
+		var elems = elem.parentNode.querySelectorAll(selector),
+			count = elems.length;
 
-	for (var i = 0; i < count; i++) {
-		if (elems[i] === elem) {
-			return true;
+		for (var i = 0; i < count; i++) {
+			if (elems[i] === elem) {
+				return true;
+			}
 		}
+
+		return false;
 	}
 
-	return false;
-}
+	function On(){
+
+		return {
+
+			on :function(el, e, fn){
+				el.addEventListener(e, fn, false);
+			},
+
+			off :function(el, event, fn){
+				el.removeEventListener(event, fn, false);
+			},
+
+			trigger :function(el, name, args){
+				el.dispatchEvent( new Event( name, { bubbles :true, detail :args } ) );
+			}
+		};
+	}
 
 	Event = (function(){
 
