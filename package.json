@@ -1,24 +1,27 @@
 {
-    "name": "jails-js",
-    "version": "1.0.0",
-    "description": "Jails Orpheus Release - No jQuery dependency",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/jails-org/Jails.git/tree/rebuild/jails"
-    },
-    "author": "Javiani",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/jails-org/Jails/issues"
-    },
-    "homepage": "https://github.com/jails-org/Jails/tree/rebuild/jails",
-    "keywords": [
-        "AMD",
-        "Jails",
-        "Modules"
-    ]
+  "name": "jails-js",
+  "version": "1.0.0",
+  "description": "Jails the AMD Micro-Framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jails-org/Jails.git"
+  },
+  "keywords": [
+    "Jails",
+    "AMD",
+    "MVC",
+    "Javascript",
+    "Microframework"
+  ],
+  "author": "javiani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jails-org/Jails/issues"
+  },
+  "homepage": "https://github.com/jails-org/Jails"
+
 }
