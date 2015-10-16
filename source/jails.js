@@ -45,8 +45,8 @@ define(function(){
 
 			for( var entity in entities ){
 				current = entities[ entity ];
-				list = slice.call( (context || document).querySelectorAll( current.selector ) );
-				list.forEach( current.method );
+				list = (context || document).querySelectorAll( current.selector );
+				forEach(list, current.method);
 			}
 		},
 
@@ -80,7 +80,7 @@ define(function(){
 		var anno = annotations( element ),
 		names = element.getAttribute('data-component').replace(/\s/, '').split(/\,/);
 
-		names.forEach( init );
+		forEach(names, init);
 
 		function init( item ){
 			if( item in Jails.components ){
@@ -153,7 +153,7 @@ define(function(){
 			element.addEventListener(ev, function(e){
 				var target = e.target;
 				while( target && target != element && target.parentNode ){
-					if (target == target.parentNode.querySelector(query))
+					if ( target.matches? target.matches(query) :matchesSelector(target, query) )
 						method.call(target, e);
 					target = target.parentNode;
 				}
@@ -163,7 +163,7 @@ define(function(){
 		this.x = function(target){
 			return function(){
 				var args = slice.call( arguments );
-				[].forEach.call( element.querySelectorAll(target), function(children){
+				forEach(element.querySelectorAll(target), function(children){
 					children.dispatchEvent( new Event( 'execute', { detail :args } ) );
 				});
 			};
@@ -203,11 +203,16 @@ define(function(){
 				var key = args.shift();
 
 				topics[key] = topics[key] || [];
-				topics[key].forEach(function( f ) {
+				forEach(topics[key], function( f ) {
 					if( f ) f.apply( this, args );
 				});
 			}
 		};
+	}
+
+	function forEach(array, fn){
+		for(var i = 0, len = array.length; i < len; i++)
+			fn(array[i], i);
 	}
 
 	function dup(o){
@@ -215,6 +220,21 @@ define(function(){
 		f.prototype = o;
 		return new f();
 	}
+
+	// http://tanalin.com/en/blog/2012/12/matches-selector-ie8/
+	function matchesSelector(elem, selector) {
+
+	var elems = elem.parentNode.querySelectorAll(selector),
+		count = elems.length;
+
+	for (var i = 0; i < count; i++) {
+		if (elems[i] === elem) {
+			return true;
+		}
+	}
+
+	return false;
+}
 
 	Event = (function(){
 
