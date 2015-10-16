@@ -1,36 +1,32 @@
 define(function(){
 
-	var jails, config, $, global = {}, publisher = PubSub(), slice;
+	var Jails, config, global = {}, publisher = PubSub(), slice, Event;
 
 	slice = Array.prototype.slice;
 
-	jails = {
+	Jails = {
 
-		context:null,
-		config 		:{},
+		context		:null,
 		apps 		:{},
-		controllers :{},
+		controllers	:{},
 		components 	:{},
+		events 		:On(),
 
-		app			:create('app'),
-		controller	:create('controller'),
-		component	:create('component'),
+		app 		:_Class('apps', Controller),
+		controller 	:_Class('controllers', Controller),
+		component	:_Class('components', Component),
 
 		publish 	:publisher.publish,
 		subscribe 	:publisher.subscribe,
 
-		start :function(cfg, ctx){
+		start :function( ctx ){
 
-			$ = cfg.base;
-			jails.context = $( document.documentElement );
-
-			$.extend( true, jails.config, cfg );
-			Scanner.start( ctx );
-			jails.context.addClass('ready');
+			Scanner.scan( ctx );
+			document.documentElement.className += 'ready';
 		},
 
-		refresh :function(ctx){
-			Scanner.start( ctx );
+		refresh :function( ctx ){
+			Scanner.scan( ctx );
 		},
 
 		data :function(){
@@ -40,172 +36,166 @@ define(function(){
 		scanner :function(){
 			return Scanner;
 		}
-
 	};
 
 	var Scanner = {
 
-		start :function(context){
+		scan :function( context ){
 
-			var modules = [];
+			var current, list, entities = this.entities;
 
-			context = context || jails.context;
-
-			Scanner.scan( 'component', '[data-component]', context, modules);
-			Scanner.scan( 'controller', '[data-controller]', context, modules);
-			Scanner.scan( 'app', '[data-app]', context, modules );
-
-			Module.start( modules );
-		},
-
-		scan :function( name, query, context, modules ){
-
-			context = context || jails.context;
-			var el, els, len, scan;
-
-			els = context.get(0).querySelectorAll(query);
-			len = els.length;
-
-			for(var i = 0; i < len; i++){
-				el = $(els[i]);
-				scan = Scanner[name];
-				scan? scan(name, el, modules) :Scanner.module( name, el, modules );
+			for( var entity in entities ){
+				current = entities[ entity ];
+				list = (context || document).querySelectorAll( current.selector );
+				forEach(list, current.method);
 			}
 		},
 
-		module :function(type, el, modules){
+		entities :{
 
-			var name, object, m, sufix = 's';
-			name = el.data(type);
+			components :{
+				selector:'[data-component]',
+				method 	:component
+			},
 
-			m = jails[ type + sufix ][ name ];
-			m = m? new m( el, global ) :new Module[ type ]( name, el, type );
+			controllers:{
+				selector:'[data-controller]',
+				method 	:controller('controller')
+			},
 
-			modules.push( m );
-		},
-
-		component :function(type, el, modules){
-
-			var name, components, object, m, anno;
-
-			name = el.data(type);
-			anno = Scanner.annotations( name, el );
-			components = name.replace(/\s/g, '').split(/\,/);
-
-			$.each( components, function(i, n){
-
-				m = jails.components[n];
-				m = m? new m( el, n in anno? anno[n]:{} ) :new Module[type]( n, el );
-
-				modules.push( m );
-			});
-		},
-
-		annotations :function( name, el ){
-
-			var ann = {}, comment, code;
-
-			comment = el.get(0).previousSibling;
-			comment = comment? comment.previousSibling :null;
-
-			if(comment && comment.nodeType == 8){
-				code = comment.data
-					.replace(/[\n\t]/g, '')
-					.replace(/\@([a-zA-z0-9-]*)\(([^@]*)\)/g, function(text, component, param){
-						ann[component] = new Function('return '+ param)();
-					});
+			app :{
+				selector :'[data-app]',
+				method	 :controller('app')
 			}
-			return ann;
-		}
-
-	};
-
-	var Module = {
-
-		start :function(modules){
-
-			var len = modules.length;
-			for(var i = 0; i < len; i++){
-				if( modules[i].init ){
-					modules[i].init();
-				}
-			}
-
-			modules = null;
-		},
-
-		common :function(name, element){
-
-			var _self = this;
-
-			this.name = name;
-
-			this.emit = function( simbol, args ){
-				args = slice.call(arguments);
-				args.shift();
-				element.trigger(name+':'+simbol, { args :args, element :element.get(0) });
-			};
-
-			this.listen = function(name, method){
-				if( method )
-					element.on(name, function(e, o){
-						method.apply(o.element, [e].concat(o.args));
-					});
-				else for(var i in name){
-					_self.listen(i, name[i]);
-				}
-			};
-
-			element.on('execute', function(e, o){
-
-				var
-					newargs = [].concat(o.args),
-					n = newargs.shift(),
-					method = _self[n];
-
-				if( method )
-					method.apply(_self, newargs);
-
-				e.stopPropagation();
-			});
-
-			element.on('instance', function(e, callback){
-				callback.call(_self, name, element);
-			});
-		},
-
-		app :function( name, element ){
-
-			Module.common.apply(this, arguments);
-
-			var dom = element.get(0);
-
-			this.publish = publisher.publish;
-			this.subscribe = publisher.subscribe;
-
-			this.watch = function(target, ev, method){
-				element.on(ev, target, method);
-			};
-
-			this.x = function(target){
-				return function(){
-					var args = slice.call( arguments );
-					element.find(target).trigger('execute', {args :args});
-				};
-			};
-
-			this.emit = function( simbol, args ){
-				args = slice.call(arguments);
-				args.shift();
-				element.trigger(name+':'+simbol, { args :args, element :dom });
-			};
-
-		},
-
-		component :function( name, element ){
-			Module.common.apply( this, arguments );
 		}
 	};
+
+	function create( T, Class, name, element, data ){
+		var object = new T( name, element );
+		if( Class ) Class.apply( object, [element, data] );
+		if( object.init ) object.init();
+	}
+
+	function component( element ){
+
+		var anno = annotations( element ),
+		names = element.getAttribute('data-component').replace(/\s/, '').split(/\,/);
+
+		forEach(names, init);
+
+		function init( item ){
+			if( item in Jails.components ){
+				create( Component, Jails.components[ item ], item, element, anno[item] || {} );
+			}
+		}
+	}
+
+	function annotations( el ){
+
+		var ann = {}, comment, code;
+
+		comment = el.previousSibling;
+		comment = comment? comment.previousSibling :null;
+
+		if(comment && comment.nodeType == 8){
+			code = comment.data
+				.replace(/[\n\t]/g, '')
+				.replace(/\@([a-zA-z0-9-]*)\(([^@]*)\)/g, function( text, component, param ){
+					ann[component] = new Function('return '+ param)();
+				});
+		}
+
+		return ann;
+	}
+
+	function controller( T ){
+		return function( element ){
+			var name, object;
+			name = element.getAttribute( 'data-' + T );
+			create( Controller, Jails[ T + 's' ][name], name, element, global);
+		};
+	}
+
+	function Common(name, element){
+
+		this.name = name;
+		var instance = this;
+
+		Jails.events.on(element, 'execute', execute);
+
+		this.emit = function( simbol, args ){
+			Jails.events.trigger( element, name+':'+simbol, args );
+		};
+
+		this.on = function(ev, query, method){
+
+			if(!method){
+				method = query;
+				query = null;
+			}
+
+			Jails.events.on(element, ev, function(e){
+				if(!query) return method.call(element, e);
+				else{
+					var target = e.target;
+					while( target && target != element && target.parentNode ){
+						if ( target.matches? target.matches(query) :matchesSelector(target, query) )
+							return method.call(target, e);
+						target = target.parentNode;
+					}
+				}
+			});
+		};
+
+		function execute(e){
+
+			if(e.detail){
+				var method = instance[e.detail.shift()];
+				if(method) method.apply(instance, e.detail);
+			}
+
+			e.stopPropagation();
+		}
+	}
+
+	function Component(name, element){
+
+		Common.apply(this, arguments);
+		this.trigger = Jails.events.trigger;
+	}
+
+	function Controller( name, element ){
+
+		Common.apply( this, arguments );
+
+		this.publish = publisher.publish;
+		this.subscribe = publisher.subscribe;
+
+		this.listen = function( ev, method ){
+			Jails.events.on( element, ev, function(e){
+				method.call(e.target, e, e.detail);
+			});
+		};
+
+		this.x = function(target){
+			return function(){
+				var args = slice.call( arguments );
+				forEach(element.querySelectorAll(target), function(children){
+					Jails.events.trigger(children, 'execute', args );
+				});
+			};
+		};
+	}
+
+	function _Class( t, T ){
+		return function( name, Subclass ){
+			Jails[ t ][ name ] = Subclass;
+			return function( element, data ){
+				T.apply( this, [name, element] );
+				Subclass.apply( this, [element, data] );
+			};
+		};
+	}
 
 	//Inspired by:
 	//http://dev.housetrip.com/2014/09/15/decoupling-javascript-apps-using-pub-sub-pattern/
@@ -230,29 +220,73 @@ define(function(){
 				var key = args.shift();
 
 				topics[key] = topics[key] || [];
-				topics[key].forEach(function( f ) {
+				forEach(topics[key], function( f ) {
 					if( f ) f.apply( this, args );
 				});
 			}
 		};
 	}
 
-	function create( type ){
+	function forEach(array, fn){
+		for(var i = 0, len = array.length; i < len; i++)
+			fn(array[i], i);
+	}
 
-		var _class = type != 'component' ? 'app' :type;
+	function dup(o){
+		var f = function(){};
+		f.prototype = o;
+		return new f();
+	}
 
-		return function(name, method){
+	// http://tanalin.com/en/blog/2012/12/matches-selector-ie8/
+	function matchesSelector(elem, selector) {
 
-			if( this instanceof jails[ type ] ){
-				Module[ _class ].call(this, arguments[2], arguments[1]);
-			}else{
-				return jails[ type+'s' ][ name ] = function( element, global ){
-					Module[ _class ].call( this, name, element );
-					method.call(this, element, global);
-				};
+		var elems = elem.parentNode.querySelectorAll(selector),
+			count = elems.length;
+
+		for (var i = 0; i < count; i++) {
+			if (elems[i] === elem) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	function On(){
+
+		return {
+
+			on :function(el, e, fn){
+				el.addEventListener(e, fn, false);
+			},
+
+			off :function(el, event, fn){
+				el.removeEventListener(event, fn, false);
+			},
+
+			trigger :function(el, name, args){
+				el.dispatchEvent( new Event( name, { bubbles :true, detail :args } ) );
 			}
 		};
 	}
 
-	return jails;
+	Event = (function(){
+
+		try {
+			var p = new CustomEvent('c', { detail: { foo: 'b' } });
+			if('c' === p.type && 'b' === p.detail.foo)
+				return CustomEvent;
+		} catch (e) {
+			return function(type, params) {
+				var e = document.createEvent('CustomEvent');
+				params = params || {};
+				e.initCustomEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
+				return e;
+			};
+		}
+
+	})();
+
+	return Jails;
 });

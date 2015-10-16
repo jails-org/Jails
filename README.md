@@ -8,6 +8,7 @@
 - [Refactory is Easy](#refactory-is-easy)
 - [Fast, Light and Easy](#fast-light-and-easy)
 - [Dive in](#dive-in)
+- [Browser Support](#browser-support)
 
 ## The Framework
 
@@ -45,5 +46,12 @@ It's light, fast it's easy...
 Are you interested? Do you want to know more about it?
 Check out some examples, documentations, screencasts and more.
 
-
 - [Documentations & Screencasts](//github.com/jails-org/Jails/wiki)
+
+## Browser Support
+
+Jails supports all modern browsers plus IE 9 +.
+It also supports IE8 if you use a polyfill for `Event Listeners`.
+
+The most practical way to do that is by using some jQuery or any other library that handle events and custom events.
+For bigger support for most browser, I recommend to use the [jQuery.Adapter](//github.com/jails-org/Modules/tree/master/jquery.adapter) module.
