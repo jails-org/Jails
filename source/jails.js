@@ -150,8 +150,9 @@ define(function(){
 		function execute(e){
 
 			if(e.detail){
-				var method = instance[e.detail.shift()];
-				if(method) method.apply(instance, e.detail);
+				var d = dup(e.detail);
+				var method = instance[d.shift()];
+				if(method) method.apply(instance, d);
 			}
 
 			e.stopPropagation();
