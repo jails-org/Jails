@@ -95,7 +95,7 @@ define(function(){
 		var ann = {}, comment, code;
 
 		comment = el.previousSibling;
-		comment = comment? comment.previousSibling :null;
+		comment = comment && comment.nodeType == 8? comment :comment.previousSibling;
 
 		if(comment && comment.nodeType == 8){
 			code = comment.data
