@@ -71,6 +71,12 @@ define(function(){
 	};
 
 	function create( T, Class, name, element, data ){
+
+		var instantiated = element['jails-'+name];
+		if( instantiated ) return;
+
+		element['jails-'+name] = true;
+
 		var object = new T( name, element );
 		if( Class ) Class.apply( object, [element, data] );
 		if( object.init ) object.init();
