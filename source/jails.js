@@ -1,6 +1,6 @@
 define(function(){
 
-	var Jails, config, global = {}, publisher = PubSub(), slice, Event;
+	var Jails, config, global = {}, publisher = PubSub(), slice, CustomEv;
 
 	slice = Array.prototype.slice;
 
@@ -273,13 +273,23 @@ define(function(){
 			},
 
 			trigger :function(el, name, args){
-				el.dispatchEvent( new Event( name, { bubbles :true, detail :args } ) );
+				try{
+					el.dispatchEvent( new Ev( name, { bubbles :true, detail :args } ) );
+				}catch(e){
+					el.dispatchEvent( new CustomEv( name, { bubbles :true, detail :args } ) );
+				}
 			}
 		};
 	}
 
-	Event = (function(){
+	function Ev(type, params) {
+		var e = document.createEvent(type);
+		params = params || {};
+		e.initEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
+		return e;
+	}
 
+	CustomEv = (function(){
 		try {
 			var p = new CustomEvent('c', { detail: { foo: 'b' } });
 			if('c' === p.type && 'b' === p.detail.foo)
@@ -292,7 +302,6 @@ define(function(){
 				return e;
 			};
 		}
-
 	})();
 
 	return Jails;
