@@ -9,7 +9,7 @@ define(function(){
 		context		:null,
 		apps 		:{},
 		controllers	:{},
-		components a	:{},
+		components	:{},
 		events 		:On(),
 
 		app 		:_Class('apps', Controller),
