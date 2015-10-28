@@ -9,7 +9,7 @@ define(function(){
 		context		:null,
 		apps 		:{},
 		controllers	:{},
-		components 	:{},
+		components a	:{},
 		events 		:On(),
 
 		app 		:_Class('apps', Controller),
@@ -101,7 +101,7 @@ define(function(){
 		var ann = {}, comment, code;
 
 		comment = el.previousSibling;
-		comment = comment && comment.nodeType == 8? comment :comment.previousSibling;
+		comment = comment && comment.nodeType == 8? comment :comment?comment.previousSibling:null;
 
 		if(comment && comment.nodeType == 8){
 			code = comment.data
