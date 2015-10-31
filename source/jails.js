@@ -1,6 +1,6 @@
 define(function(){
 
-	var Jails, config, global = {}, publisher = PubSub(), slice, CustomEv;
+	var Jails, config, global = {}, publisher = PubSub(), slice;
 
 	slice = Array.prototype.slice;
 
@@ -274,6 +274,28 @@ define(function(){
 
 	function On(){
 
+		var CustomEv = (function(){
+			try {
+				var p = new CustomEvent('c', { detail: { foo: 'b' } });
+				if('c' === p.type && 'b' === p.detail.foo)
+					return CustomEvent;
+			} catch (e) {
+				return function(type, params) {
+					var e = document.createEvent('CustomEvent');
+					params = params || {};
+					e.initCustomEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
+					return e;
+				};
+			}
+		})();
+
+		function Ev(type, params) {
+			var e = document.createEvent(type);
+			params = params || {};
+			e.initEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
+			return e;
+		}
+
 		return {
 
 			on :function(el, e, fn){
@@ -293,28 +315,6 @@ define(function(){
 			}
 		};
 	}
-
-	function Ev(type, params) {
-		var e = document.createEvent(type);
-		params = params || {};
-		e.initEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
-		return e;
-	}
-
-	CustomEv = (function(){
-		try {
-			var p = new CustomEvent('c', { detail: { foo: 'b' } });
-			if('c' === p.type && 'b' === p.detail.foo)
-				return CustomEvent;
-		} catch (e) {
-			return function(type, params) {
-				var e = document.createEvent('CustomEvent');
-				params = params || {};
-				e.initCustomEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
-				return e;
-			};
-		}
-	})();
 
 	return Jails;
 });
