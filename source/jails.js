@@ -209,6 +209,7 @@ define(function(){
 	function PubSub(){
 
 		var topics = {};
+		var _async = {};
 
 		return{
 
@@ -216,9 +217,15 @@ define(function(){
 
 				var args = slice.call( arguments );
 				var key = args[0], method = args[1];
+				var _self = this;
 
-				topics[key] = topics[key] || [];
-				topics[key].push( method );
+				if( key in _async && topics[key] ){
+					topics[key].push( method );
+					_self.publish.apply(null, [key].concat(_async[key]));
+				}else{
+					topics[key] = topics[key] || [];
+					topics[key].push( method );
+				}
 			},
 
 			publish :function(){
@@ -227,7 +234,12 @@ define(function(){
 				var key = args.shift();
 
 				topics[key] = topics[key] || [];
-				forEach(topics[key], function( f ) {
+
+				if(!topics[key].length){
+					_async[key] = args;
+				}
+
+				else forEach(topics[key], function( f ) {
 					if( f ) f.apply( this, args );
 				});
 			}
