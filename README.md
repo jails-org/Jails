@@ -46,7 +46,7 @@ It's light, fast it's easy...
 Are you interested? Do you want to know more about it?
 Check out some examples, documentations, screencasts and more.
 
-- [Documentations & Screencasts](//github.com/jails-org/Jails/wiki)
+- [Documentations](http://jails-org.github.io/Jails/documentation)
 
 ## Browser Support
 
