@@ -54,4 +54,4 @@ Jails supports all modern browsers plus IE 9 +.
 It also supports IE8 if you use a polyfill for `Event Listeners`.
 
 The most practical way to do that is by using some jQuery or any other library that handle events and custom events.
-For bigger support for most browser, I recommend to use the [jQuery.Adapter](//github.com/jails-org/Modules/tree/master/jquery.adapter) module.
+I recommend to use the [jQuery.Adapter](//github.com/jails-org/Modules/tree/master/jquery.adapter) module to augment support.
