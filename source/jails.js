@@ -35,6 +35,12 @@ define(function(){
 
 		scanner :function(){
 			return Scanner;
+		},
+
+		render :function( container, html ){
+			while( container.firstChild )
+				container.removeChild( container.firstChild );
+			container.innerHTML = html;
 		}
 	};
 
