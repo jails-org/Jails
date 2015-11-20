@@ -6,7 +6,6 @@ define(function(){
 
 	Jails = {
 
-		context		:null,
 		apps 		:{},
 		controllers	:{},
 		components	:{},
@@ -35,6 +34,10 @@ define(function(){
 
 		scanner :function(){
 			return Scanner;
+		},
+
+		render :function( target, html ){
+			target.innerHTML = html;
 		}
 	};
 
