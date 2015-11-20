@@ -124,8 +124,10 @@ define(function(){
 
 	function Common(name, element){
 
-		this.name = name;
 		var instance = this;
+
+		this.name = name;
+		this.trigger = Jails.events.trigger;
 
 		Jails.events.on(element, 'execute', execute);
 
@@ -166,9 +168,7 @@ define(function(){
 	}
 
 	function Component(name, element){
-
 		Common.apply(this, arguments);
-		this.trigger = Jails.events.trigger;
 	}
 
 	function Controller( name, element ){
