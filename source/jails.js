@@ -38,22 +38,23 @@ define(function(){
 		},
 
 		render :function( container, html ){
-			while( container.firstChild )
-				container.removeChild( container.firstChild );
+			Scanner.scan(container, function(item){
+				Jails.events.trigger(item, 'execute', 'destroy' );
+			});
 			container.innerHTML = html;
 		}
 	};
 
 	var Scanner = {
 
-		scan :function( context ){
+		scan :function( context, callback ){
 
-			var current, list, entities = this.entities;
-
+			var current, list, entities = this.entities, ctx;
+			ctx = context || document;
 			for( var entity in entities ){
 				current = entities[ entity ];
-				list = (context || document).querySelectorAll( current.selector );
-				forEach(list, current.method);
+				list = ctx.querySelectorAll( current.selector );
+				forEach(list, callback || current.method);
 			}
 		},
 
