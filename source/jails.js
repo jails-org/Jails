@@ -149,13 +149,17 @@ define(function(){
 			}
 
 			Jails.events.on(element, ev, function(e){
+
 				if(!query) return method.call(element, e);
 				else{
 					var target = e.target;
-					while( target && target != element && target.parentNode ){
+					if ( target.matches? target.matches(query) :matchesSelector(target, query) ){
+						return method.call(target, e);
+					}
+					else while( target && target != element && target.parentNode ){
 						if ( target.matches? target.matches(query) :matchesSelector(target, query) ){
-							e.target = target;
-							return method.call(target, e);
+							Jails.events.trigger(target, ev);
+							break;
 						}
 						target = target.parentNode;
 					}
