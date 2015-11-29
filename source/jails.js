@@ -153,8 +153,10 @@ define(function(){
 				else{
 					var target = e.target;
 					while( target && target != element && target.parentNode ){
-						if ( target.matches? target.matches(query) :matchesSelector(target, query) )
+						if ( target.matches? target.matches(query) :matchesSelector(target, query) ){
+							e.target = target;
 							return method.call(target, e);
+						}
 						target = target.parentNode;
 					}
 				}
