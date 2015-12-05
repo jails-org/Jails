@@ -311,8 +311,10 @@ define(function(){
 		return {
 
 			on :function(el, e, fn){
-				e = e == 'focus'? 'focusin' :e == 'blur'? 'focusout':e;
-				el.addEventListener(e, fn, false);
+				var newe = e == 'focus'? 'focusin' :e == 'blur'? 'focusout':e;
+				el.addEventListener(newe, fn, false);
+				if(e == 'focus' || e == 'blur')
+					el.addEventListener(e, fn, true);
 			},
 
 			off :function(el, event, fn){
