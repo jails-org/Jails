@@ -286,6 +286,22 @@ define(function(){
 
 	function On(){
 
+		//http://gist.github.com/jonathantneal/7366668
+		var hasfocusin = (function() {
+				var
+				support = false,
+				parent = document.lastChild,
+				a = document.createElement('a'),
+				addSupport = function () {
+					support = true;
+				};
+				a.href = '#';
+				a.addEventListener ? a.addEventListener('focusin', addSupport) : a.onfocusin = addSupport;
+				parent.appendChild(a).focus();
+				parent.removeChild(a);
+				return support;
+		})();
+
 		var CustomEv = (function(){
 			try {
 				var p = new CustomEvent('c', { detail: { foo: 'b' } });
@@ -310,12 +326,14 @@ define(function(){
 
 		return {
 
-			on :function(el, e, fn){
-				var newe = e == 'focus'? 'focusin' :e == 'blur'? 'focusout':e;
-				el.addEventListener(newe, fn, false);
-				if(e == 'focus' || e == 'blur')
-					el.addEventListener(e, fn, true);
-			},
+			on :(function(){
+				return hasfocusin? function(el, e, fn){
+					var newe = e == 'focus'? 'focusin' :e == 'blur'? 'focusout':e;
+					el.addEventListener(newe, fn, false);
+				}:function(el, e, fn){
+					el.addEventListener(e, fn, (e == 'focus' || e == 'blur'));
+				};
+			})(),
 
 			off :function(el, event, fn){
 				el.removeEventListener(event, fn, false);
