@@ -43,7 +43,7 @@ easily isolate your damaged module and repair it without dealing with spaghetti 
 Are you interested? Do you want to know more about it?
 Check out some examples, documentations, screencasts and more.
 
-- [Documentations](http://jails-org.github.io/Jails/documentation)
+- [Documentation](//jails-org.github.io/Jails/)
 
 ## Browser Support
 
