@@ -130,12 +130,16 @@ define(function(){
 
 	function Common(name, element){
 
-		var instance = this;
+		var instance = this, events = {};
 
 		this.name = name;
 		this.trigger = Jails.events.trigger;
 
 		Jails.events.on(element, 'execute', execute);
+
+		this.off = function(ev, fn){
+			Jails.events.off(element, ev, events[fn]);
+		};
 
 		this.emit = function( simbol, args ){
 			Jails.events.trigger( element, name+':'+simbol, args );
@@ -148,7 +152,7 @@ define(function(){
 				query = null;
 			}
 
-			Jails.events.on(element, ev, function(e){
+			events[method] = function(e){
 				if(!query) return method.call(element, e);
 				else{
 					var target = e.target;
@@ -160,7 +164,9 @@ define(function(){
 						target = target.parentNode;
 					}
 				}
-			});
+			};
+
+			Jails.events.on(element, ev, events[method]);
 		};
 
 		function execute(e){
