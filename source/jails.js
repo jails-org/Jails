@@ -1,6 +1,20 @@
-define(function(){
+(function (root, factory) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD
+		define(['jails'], factory);
+	} else if (typeof exports === 'object') {
+		// Node, CommonJS-like
+		module.exports = factory(require('jails'));
+	} else {
+		// Browser globals (root is window)
+		root.returnExports = factory(root.Jails);
+	}
+}(this, function () {
 
-	var Jails, config, global = {}, publisher = PubSub(), slice;
+	var Jails, config, slice,
+		global = {},
+		publisher = PubSub(),
+		root = document.documentElement;
 
 	slice = Array.prototype.slice;
 
@@ -21,7 +35,7 @@ define(function(){
 		start :function( ctx ){
 
 			Scanner.scan( ctx );
-			document.documentElement.className += 'ready';
+			root.className = root.className.replace('jls-ready', '') + ' jls-ready';
 		},
 
 		refresh :function( ctx ){
@@ -352,4 +366,4 @@ define(function(){
 	}
 
 	return Jails;
-});
+}));
