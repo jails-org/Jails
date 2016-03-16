@@ -7,7 +7,7 @@
 		module.exports = factory(require('jails'));
 	} else {
 		// Browser globals (root is window)
-		root.returnExports = factory(root.Jails);
+		root.jails = factory();
 	}
 }(this, function () {
 
