@@ -139,7 +139,7 @@ In the example above we made everything from scratch, but the idea is to write a
 You can also compose several components in the same markup, if you want to build a modal component which will only deal with DOM modifications to open a dialog and after that updating the content with `Virtual DOM`, you can do it just like that:
 
 ```html
-<div class="modal" data-component="litemodal, riot-view">
+<div class="modal" data-component="litemodal riot-view">
 	<h1>My name is {username}</h1>
 </div>
 ```
