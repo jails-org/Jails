@@ -8,6 +8,10 @@ It's event driven and follows the DOM event pattern, lowering the learning curve
 
 [Check out more information about  Jails](http://jails-org.github.io/Jails/)
 
+## Quick Setups
+
+![Webpack](http://webpack.github.io/assets/favicon.png) [Webpack setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails-webpack.zip)
+
 ## Examples
 
 Let's get a message from a `<form />` and send it a list `<ul />`.
