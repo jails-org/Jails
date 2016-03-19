@@ -113,7 +113,7 @@ jails.start()
 - Very small learning curve, only **6/7** methods to learn.
 - Jails is short, minimalistic, and it weights almost **nothing**.
 - Works pretty well with small projects and also with large scale applications.
-- Doesn't depend on jQuery, events are native with `Event Delegation` support :
+- Doesn't depends on jQuery, events are native with `Event Delegation` support :
 
 ```js
 jails.component('my-component', function( ulElement, annotation ){
