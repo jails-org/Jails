@@ -12,6 +12,9 @@ It's event driven and follows the DOM event pattern, lowering the learning curve
 
 ![Webpack](http://webpack.github.io/assets/favicon.png) [Webpack setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails-webpack.zip)
 
+![RequireJS](https://raw.githubusercontent.com/legacy-icons/vendor-icons/master/dist/32x32/requirejs.png) [RequireJS setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails-requirejs.zip)
+
+
 ## Examples
 
 Let's get a message from a `<form />` and send it a list `<ul />`.
