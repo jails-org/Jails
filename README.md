@@ -1,6 +1,8 @@
 # Jails ||\\| 
 > A Modular & Event Driven Micro-Framework
 
+--- 
+
 Jails is a javascript micro-framework for building simple applications and large scale applications without a huge stack dependencies.
 
 Good projects should rely on good architectures, and Jails aim to solve architecture and organization problems.
