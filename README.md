@@ -1,5 +1,8 @@
-> # Jails ||\\|  
-> A Modular & Event Driven Micro-Framework
+
+# Jails ||/|
+
+> A Modular & Event Driven 
+> Micro-Framework
 
 --- 
 
