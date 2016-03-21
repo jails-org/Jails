@@ -20,6 +20,8 @@ It's event driven and follows the DOM event pattern, lowering the learning curve
 
 ![RequireJS](https://raw.githubusercontent.com/legacy-icons/vendor-icons/master/dist/32x32/requirejs.png) [RequireJS setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails-requirejs.zip)
 
+![Vanilla](http://dev.bowdenweb.com/a/i/js/icons/javascript-icon-32.png) [Vanilla setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails-vanilla.zip)
+
 
 ## Examples
 
