@@ -186,9 +186,17 @@
 		function execute(e){
 
 			if(e.detail){
-				var d = dup(e.detail);
-				var method = instance[d.shift()];
-				if(method) method.apply(instance, d);
+				var d, n, namespace, method;
+					d = dup( e.detail );
+					n = d.shift();
+					namespace = n.split(/\:/);
+
+				if( namespace.length > 1 && namespace[0] == name)
+					method = instance[ namespace[1] ];
+				else
+					method = instance[ namespace[0] ];
+
+				if( method ) method.apply(instance, d);
 			}
 
 			e.stopPropagation();
