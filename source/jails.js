@@ -311,21 +311,7 @@
 	function On(){
 
 		//http://gist.github.com/jonathantneal/7366668
-		var hasfocusin = (function() {
-				var
-				support = false,
-				parent = document.lastChild,
-				a = document.createElement('a'),
-				addSupport = function () {
-					support = true;
-				};
-				a.href = '#';
-				a.addEventListener ? a.addEventListener('focusin', addSupport) : a.onfocusin = addSupport;
-				parent.appendChild(a).focus();
-				parent.removeChild(a);
-				return support;
-		})();
-
+		var hasfocusin = true; 
 		var CustomEv = (function(){
 			try {
 				var p = new CustomEvent('c', { detail: { foo: 'b' } });
