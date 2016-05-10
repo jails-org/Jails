@@ -1,7 +1,7 @@
 (function (root, factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD
-		define(['jails'], factory);
+		define('jails', factory);
 	} else if (typeof exports === 'object') {
 		// Node, CommonJS-like
 		module.exports = factory(require('jails'));
@@ -311,7 +311,7 @@
 	function On(){
 
 		//http://gist.github.com/jonathantneal/7366668
-		var hasfocusin = true; 
+		var hasfocusin = true;
 		var CustomEv = (function(){
 			try {
 				var p = new CustomEvent('c', { detail: { foo: 'b' } });
