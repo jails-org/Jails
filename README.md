@@ -1,8 +1,8 @@
 
 # Jails ||/|
 
-> A Modular & Event Driven 
-> Micro-Framework
+> A Modular, Event Driven & Non-obstructive
+> Javascript Micro-Framework
 
 --- 
 
