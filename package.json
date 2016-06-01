@@ -1,6 +1,6 @@
 {
   "name": "jails-js",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Jails the AMD Micro-Framework",
   "main": "index.js",
   "scripts": {
