@@ -142,7 +142,7 @@ jails.component('my-component', function( ulElement, annotation ){
 
 - Simplicity, it'll work very well with other libraries or micro-libraries.
 
-- You don't have write html sintax on your js file, keep your js logic away from html markup.
+- No need to write html sintax on your js file, keep your js logic away from html markup.
 
 And many others advantages...
 
