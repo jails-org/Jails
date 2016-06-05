@@ -174,10 +174,16 @@
 
 	function module( type ){
 		return function( element ){
-			var name = element.getAttribute('data-'+type), instance;
+			var instance, Clss,
+				name = element.getAttribute('data-'+type);
+
 			if( instantiated(element, name, type) || !name )
 				return;
-			instance = new Jails[type+'s'][name]( element, global );
+
+			Clss = Jails[type+'s'][name];
+			if( !Clss ) return;
+
+			instance = new Clss( element, global );
 			if( instance.init )
 				instance.init();
 		};
