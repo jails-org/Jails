@@ -32,7 +32,7 @@
 	Jails.App 		 = Controller;
 	Jails.Controller = Controller;
 	Jails.Component  = Component;
-	
+
 	Jails.start = function( ctx ){
 		Jails.scanner.scan( ctx );
 		Jails.publish('jails:ready');
@@ -175,7 +175,7 @@
 	function module( type ){
 		return function( element ){
 			var name = element.getAttribute('data-'+type), instance;
-			if( instantiated(element, name, type) )
+			if( instantiated(element, name, type) || !name )
 				return;
 			instance = new Jails[type+'s'][name]( element, global );
 			if( instance.init )
