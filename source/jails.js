@@ -29,10 +29,10 @@
 	Jails.component = factory( Component, 'components' );
 	Jails.controller = factory( Controller, 'controllers');
 
+	Jails.App 		 = Controller;
 	Jails.Controller = Controller;
 	Jails.Component  = Component;
-	Jails.App 		 = Controller;
-
+	
 	Jails.start = function( ctx ){
 		Jails.scanner.scan( ctx );
 		Jails.publish('jails:ready');
@@ -51,6 +51,38 @@
 			Jails.events.trigger( element, 'destroy');
 		});
 		container.innerHTML = html;
+	};
+
+	Jails.scanner = {
+
+		entities :{
+
+			components :{
+				selector:'[data-component]',
+				method 	:component
+			},
+
+			controllers:{
+				selector:'[data-controller]',
+				method 	:module('controller')
+			},
+
+			app :{
+				selector :'[data-app]',
+				method	 :module('app')
+			}
+		},
+
+		scan :function( context, callback ){
+
+			var current, list, entities = this.entities, ctx;
+			ctx = context || document;
+			for( var entity in entities ){
+				current = entities[ entity ];
+				list = ctx.querySelectorAll( current.selector );
+				forEach(list, callback || current.method);
+			}
+		}
 	};
 
 	function Component( name, element ){
@@ -139,38 +171,6 @@
 			return this.x('[data-'+type+'*='+name+']');
 		return this.x(type);
 	}
-
-	Jails.scanner = {
-
-		entities :{
-
-			components :{
-				selector:'[data-component]',
-				method 	:component
-			},
-
-			controllers:{
-				selector:'[data-controller]',
-				method 	:module('controller')
-			},
-
-			app :{
-				selector :'[data-app]',
-				method	 :module('app')
-			}
-		},
-
-		scan :function( context, callback ){
-
-			var current, list, entities = this.entities, ctx;
-			ctx = context || document;
-			for( var entity in entities ){
-				current = entities[ entity ];
-				list = ctx.querySelectorAll( current.selector );
-				forEach(list, callback || current.method);
-			}
-		}
-	};
 
 	function module( type ){
 		return function( element ){
