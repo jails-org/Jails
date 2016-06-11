@@ -167,8 +167,11 @@
 	}
 
 	Controller.prototype.get = function( type, name ){
-		if( name )
+		if( name ){
+			name = name.replace(/\//, '\\/');
 			return this.x('[data-'+type+'*='+name+']');
+		}
+
 		return this.x(type);
 	}
 
