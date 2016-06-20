@@ -276,6 +276,7 @@
 			}
 			Class.prototype = C.prototype;
 			Jails[ prop ][ name ] = Class;
+			return Class;
 		};
 	}
 
