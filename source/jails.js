@@ -145,7 +145,7 @@
 		Component.apply(this, arguments);
 	}
 
-	Controller.prototype = Component.prototype;
+	Controller.prototype = dup(Component.prototype);
 
 	Controller.prototype.publish = publisher.publish;
 	Controller.prototype.subscribe = publisher.subscribe;
