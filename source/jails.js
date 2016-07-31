@@ -11,20 +11,25 @@
 	}
 }(this, function () {
 
-	var Jails 		= {},
-		publisher 	= pubsub(),
+	var publisher 	= pubsub(),
 		slice 		= Array.prototype.slice,
 		root		= document.documentElement;
+
+	function Jails( name, Mixin ){
+		Jails.components[ name ] = function ( html, data ){
+			var component = new Component( name, html );
+			return Mixin( component, html, data ) || component;
+		}
+	}
 
 	Jails.events = on();
 	Jails.publish = publisher.publish;
 	Jails.subscribe = publisher.subscribe;
 
 	Jails.data = {};
-	Jails.components = {};
-	Jails.component = factory();
 
 	Jails.Component  = Component;
+	Jails.components = {};
 
 	Jails.start = function( ctx ){
 		Jails.scanner.scan( ctx );
@@ -158,7 +163,7 @@
 			if( name in Jails.components ){
 				if( instantiated( element, name) )
 					return;
-				instance = new Jails.components[name](element, anno[name] || {});
+				instance = Jails.components[name](element, anno[name] || {});
 				if( instance.init )
 					instance.init();
 			}
@@ -221,18 +226,6 @@
 				instance[i] = null;
 			instance = null;
 			e.stopPropagation();
-		};
-	}
-
-	function factory(){
-		return function( name, Mixin ){
-			function Class( html, data ){
-				Component.call(this, name, html);
-				Mixin.call(this, html, data);
-			}
-			Class.prototype = Component.prototype;
-			Jails.components[ name ] = Class;
-			return Class;
 		};
 	}
 
