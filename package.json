@@ -1,7 +1,7 @@
 {
   "name": "jails-js",
   "version": "2.0.0",
-  "description": "Jails the AMD Micro-Framework",
+  "description": "Jails Functional and Event-Driven Micro-Framework",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
