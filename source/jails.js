@@ -11,27 +11,25 @@
 	}
 }(this, function () {
 
-	var Jails 		= {},
-		global 		= {},
-		publisher 	= pubsub(),
+	var publisher 	= pubsub(),
 		slice 		= Array.prototype.slice,
 		root		= document.documentElement;
+
+	function Jails( name, Mixin ){
+		Jails.components[ name ] = function ( html, data ){
+			var component = new Component( name, html );
+			return Mixin( component, html, data ) || component;
+		}
+	}
 
 	Jails.events = on();
 	Jails.publish = publisher.publish;
 	Jails.subscribe = publisher.subscribe;
 
-	Jails.apps = {};
-	Jails.controllers = {};
-	Jails.components = {};
+	Jails.data = {};
 
-	Jails.app = factory( Controller, 'apps' );
-	Jails.component = factory( Component, 'components' );
-	Jails.controller = factory( Controller, 'controllers');
-
-	Jails.App 		 = Controller;
-	Jails.Controller = Controller;
 	Jails.Component  = Component;
+	Jails.components = {};
 
 	Jails.start = function( ctx ){
 		Jails.scanner.scan( ctx );
@@ -40,10 +38,6 @@
 
 	Jails.refresh = function( ctx ){
 		Jails.scanner.scan( ctx );
-	};
-
-	Jails.data = function(){
-		return global;
 	};
 
 	Jails.render = function( container, html ){
@@ -60,16 +54,6 @@
 			components :{
 				selector:'[data-component]',
 				method 	:component
-			},
-
-			controllers:{
-				selector:'[data-controller]',
-				method 	:module('controller')
-			},
-
-			app :{
-				selector :'[data-app]',
-				method	 :module('app')
 			}
 		},
 
@@ -79,8 +63,8 @@
 			ctx = context || document;
 			for( var entity in entities ){
 				current = entities[ entity ];
-				list = ctx.querySelectorAll( current.selector );
-				forEach(list, callback || current.method);
+				list = slice.call(ctx.querySelectorAll( current.selector ));
+				forEach(list.reverse(), callback || current.method);
 			}
 		}
 	};
@@ -103,11 +87,17 @@
 		}else{
 			Jails.events.trigger( this.element, ev, args );
 		}
-	}
+	};
 
 	Component.prototype.emit = function( simbol, args ){
 		Jails.events.trigger( this.element, this.name+':'+simbol, args );
-	}
+	};
+
+	Component.prototype.listen = function( ev, method ){
+		Jails.events.on( this.element, ev, function(e){
+			method.call(e.target, e, e.detail);
+		});
+	};
 
 	Component.prototype.on = function( ev, query, method ){
 
@@ -139,82 +129,52 @@
 			Jails.events.off( element, ev, events[method] );
 			delete events[method];
 		};
-	}
-
-	function Controller( name, element ){
-		Component.apply(this, arguments);
-	}
-
-	Controller.prototype = dup(Component.prototype);
-
-	Controller.prototype.publish = publisher.publish;
-	Controller.prototype.subscribe = publisher.subscribe;
-
-	Controller.prototype.listen = function( ev, method ){
-		Jails.events.on( this.element, ev, function(e){
-			method.call(e.target, e, e.detail);
-		});
 	};
 
-	Controller.prototype.x = function( target ){
-		var element = this.element;
-		return function(){
-			var args = slice.call( arguments );
-			forEach(element.querySelectorAll(target), function(children){
-				Jails.events.trigger(children, 'execute', args );
-			});
-		};
-	}
+	Component.prototype.publish = publisher.publish;
+	Component.prototype.subscribe = publisher.subscribe;
 
-	Controller.prototype.get = function( type, name ){
-		if( name ){
-			name = name.replace(/\//, '\\/');
-			return this.x('[data-'+type+'*='+name+']');
+	Component.prototype.get = function( query ){
+
+		var element = this.element;
+		query = query.replace(/\//g, '\\/');
+
+		function x( target ){
+			return function(){
+				var args = slice.call( arguments );
+				forEach(element.querySelectorAll(target), function(children){
+					Jails.events.trigger(children, 'execute', args );
+				});
+				Jails.events.trigger(element, 'execute', args );
+			};
 		}
 
-		return this.x(type);
-	}
-
-	function module( type ){
-		return function( element ){
-			var instance, Clss,
-				name = element.getAttribute('data-'+type);
-
-			if( instantiated(element, name, type) || !name )
-				return;
-
-			Clss = Jails[type+'s'][name];
-			if( !Clss ) return;
-
-			instance = new Clss( element, global );
-			if( instance.init )
-				instance.init();
-		};
-	}
+		return x( query );
+	};
 
 	function component( element ){
 		var instance,
 			anno = annotations( element ),
-			names = element.getAttribute('data-component').split(/\s/);
+			names = element.getAttribute('component').split(/\s/);
 
-		forEach(names, init);
+		forEach( names, init );
 
 		function init( name ){
 			if( name in Jails.components ){
-				if( instantiated( element, name, 'component') )
+				if( instantiated( element, name) )
 					return;
-				instance = new Jails.components[name](element, anno[name] || {});
+				instance = Jails.components[name](element, anno[name] || {});
 				if( instance.init )
 					instance.init();
 			}
 		}
 	}
 
-	function instantiated( element, name, type ){
-		var setted = element['jails#'+type+'#'+name];
+	function instantiated( element, name ){
+		var setted = element['jails#component#'+name];
 		if( setted ) return true;
 
-		element['jails#'+type+'#'+name] = true;
+		element['jails#component#'+name] = true;
 		return false;
 	}
 
@@ -259,24 +219,13 @@
 	}
 
 	function destroy( instance ){
-		return function(){
+		return function(e){
 			for(var i in instance._events)
 				Jails.events.off(instance.element, instance._events[i]);
 			for( i in instance )
 				instance[i] = null;
 			instance = null;
-		};
-	}
-
-	function factory( C, prop ){
-		return function( name, Mixin ){
-			function Class( html, data ){
-				C.call(this, name, html);
-				Mixin.call(this, html, data);
-			}
-			Class.prototype = C.prototype;
-			Jails[ prop ][ name ] = Class;
-			return Class;
+			e.stopPropagation();
 		};
 	}
 
@@ -387,7 +336,6 @@
 	}
 
 	function forEach(array, fn){
-
 		for(var i = 0, len = array? array.length :0; i < len; i++)
 			fn(array[i], i);
 	}

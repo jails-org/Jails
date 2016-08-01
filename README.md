@@ -5,7 +5,7 @@
 
 > Javascript Micro-Framework
 
---- 
+---
 
 Jails is a javascript micro-framework for building simple applications and large scale applications without a huge stack dependencies.
 
@@ -31,7 +31,7 @@ Let's get a message from a `<form />` and send it a list `<ul />`.
 You just have to create a name for component and set it on markup.
 
 ```html
-<form class="form" data-component="form-message">
+<form class="form" component="form-message">
 	<input type="text" name="message" class="message" />
 </form>
 ```
@@ -73,21 +73,19 @@ jails.component('list-messages', function( list, annotation ){
 })
 ```
 
-Public methods can be executed using events by other wrappers structures, like controllers.
+Public methods can be executed through events by parent components structures.
 
-Components knows nothing about other components, so we need a controller to make that relationship with `form-message` and `list-messages`.
+### component/box-message.js
 
-### controller/box-message.js
-
-Controllers deal with Business logic and Components relationships. The controller below `listen` to a bubling dom event `emmited` by `form-message` component, gets a reference of the list and fire up the `add` public method using event emitting.
+The component below `listen` to a bubling dom event `emmited` by `form-message` component, gets a reference of the list and fire up the `add` public method using event emitting.
 
 ```js
-jails.controller('box-message', function(section, data){
+jails.component('box-message', function( section, annotation ){
 
 	let list
 
 	this.init = ()=>{
-		list = this.x('.list')
+		list = this.get('.list')
 		this.listen('form-message:post', onPost)
 	}
 
@@ -98,10 +96,10 @@ jails.controller('box-message', function(section, data){
 })
 ```
 
-After that, controller `publishes` a message globally, to any other controllers/apps in the page. In this case, the `app` subscribe to that global publish event and logs it:
+After that, component `publishes` a message globally, to any other components in the page. In this case, the `app` subscribe to that global publish event and logs it:
 
 ```js
-jails.app('home', function(body, data){
+jails.component('app', function(body, annotation){
 
 	this.init = ()=>{
 		console.log('App home loaded', body)
@@ -119,7 +117,7 @@ jails.start()
 
 ## Advantages
 
-- Very small learning curve, only **6/7** methods to learn.
+- Very small learning curve, only **7** methods to learn.
 - Jails is short, minimalistic, and it weights almost **nothing**.
 - Works pretty well with small projects and also with large scale applications.
 - Doesn't depends on jQuery, events are native with `Event Delegation` support :
@@ -155,7 +153,7 @@ In the example above we made everything from scratch, but the idea is to write a
 You can also compose several components in the same markup, if you want to build a modal component which will only deal with DOM modifications to open a dialog and after that updating the content with `Virtual DOM`, you can do it just like that:
 
 ```html
-<div class="modal" data-component="litemodal riot-view">
+<div class="modal" component="litemodal riot-view">
 	<h1>My name is {username}</h1>
 </div>
 ```
@@ -167,9 +165,9 @@ import 'jails-components/litemodal/litemodal'
 
 import jails from 'jails'
 
-jails.controller('my-controller', function(){
+jails.component('my-controller', function(){
 
-	var modal = this.x('.modal')
+	var modal = this.get('.modal')
 
 	this.init = ()=>{
 		this.on('click', 'a[rel=modal]', openModal)
@@ -182,8 +180,6 @@ jails.controller('my-controller', function(){
 })
 
 ```
-
-Your controller should only deal with integration, and business logic. It should delegate DOM issues to components.
 
 ---
 
