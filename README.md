@@ -14,6 +14,18 @@ Also, Jails focus on some **functional programming** principles, it's not class 
 
 ---
 
+## Quick Setups
+
+Here are some useful quick setups to help you to start your project. =)
+
+![Webpack](http://webpack.github.io/assets/favicon.png) [Webpack setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-webpack.zip)
+
+![RequireJS](https://raw.githubusercontent.com/legacy-icons/vendor-icons/master/dist/32x32/requirejs.png) [RequireJS setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-requirejs.zip)
+
+![Vanilla](http://dev.bowdenweb.com/a/i/js/icons/javascript-icon-32.png) [Vanilla setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-vanilla.zip)
+
+---
+
 ## Creating a Component
 
 ### Markup
@@ -311,18 +323,6 @@ You can bypass these events making an *adapter*, using jQuery if you will.
 
 ### Jails.publish( `string`, `:any`) / Jails.subscribe( `string`, `:any`)
 The same `.publish()` and `.subscribe()` events used on components interface, you can use it on third-party modules using the pub/sub pattern.
-
----
-
-## Quick Setups
-
-Here are some useful quick setups to help you to start your project. =)
-
-![Webpack](http://webpack.github.io/assets/favicon.png) [Webpack setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-webpack.zip)
-
-![RequireJS](https://raw.githubusercontent.com/legacy-icons/vendor-icons/master/dist/32x32/requirejs.png) [RequireJS setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-requirejs.zip)
-
-![Vanilla](http://dev.bowdenweb.com/a/i/js/icons/javascript-icon-32.png) [Vanilla setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-vanilla.zip)
 
 ---
 
