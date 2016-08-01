@@ -52,7 +52,7 @@
 		entities :{
 
 			components :{
-				selector:'[component]',
+				selector:'[data-component]',
 				method 	:component
 			}
 		},
