@@ -1,9 +1,7 @@
 
 # Jails ||/|
 
-> A Modular, Event Driven & Non-obstructive
-
-> Javascript Micro-Framework
+> Modular, Event Driven & Non-obstructive Micro-Framework
 
 ---
 
@@ -13,7 +11,6 @@ Good projects should rely on good architectures, and Jails aim to solve architec
 
 It's event driven and follows the DOM event pattern, lowering the learning curve and trying to be predictable.
 
-[Check out more information about  Jails](http://jails-org.github.io/Jails/)
 
 ## Quick Setups
 
@@ -31,7 +28,7 @@ Let's get a message from a `<form />` and send it a list `<ul />`.
 You just have to create a name for component and set it on markup.
 
 ```html
-<form class="form" component="form-message">
+<form class="form" data-component="form-message">
 	<input type="text" name="message" class="message" />
 </form>
 ```
@@ -41,16 +38,16 @@ You just have to create a name for component and set it on markup.
 Now we have to match that markup with the javascript `Function` mixin.
 
 ```js
-jails.component('form-message', function( form, annotation ){
+jails('form-message', ( component, form, annotation ) =>{
 
-	this.init = ()=>{
+	component.init = ()=>{
 		this.on('submit', send)
 	}
 
 	let send = (e)=>{
 
 		var msg = form.querySelector('.message')
-		self.emit('post', { message :msg.value })
+		component.emit('post', { message :msg.value })
 		form.reset()
 
 		e.preventDefault()
@@ -63,11 +60,11 @@ jails.component('form-message', function( form, annotation ){
 We need a component to handle the messages adding actions:
 
 ```js
-jails.component('list-messages', function( list, annotation ){
+jails('list-messages', ( component, list, annotation )=>{
 
-	this.init = ()=>{}
+	component.init = ()=>{}
 
-	this.add = ( message ) =>{
+	component.add = ( message ) =>{
 		list.innerHTML += `<li>${message}</li>`
 	}
 })
@@ -80,18 +77,18 @@ Public methods can be executed through events by parent components structures.
 The component below `listen` to a bubling dom event `emmited` by `form-message` component, gets a reference of the list and fire up the `add` public method using event emitting.
 
 ```js
-jails.component('box-message', function( section, annotation ){
+jails('box-message', ( component, section, annotation ) =>{
 
 	let list
 
-	this.init = ()=>{
-		list = this.get('.list')
-		this.listen('form-message:post', onPost)
+	component.init = ()=>{
+		list = component.get('.list')
+		component.listen('form-message:post', onPost)
 	}
 
 	let onPost = (e, option) =>{
 		list('add', option.message )
-		this.publish('message:added', option.message)
+		component.publish('message:added', option.message)
 	}
 })
 ```
@@ -99,11 +96,11 @@ jails.component('box-message', function( section, annotation ){
 After that, component `publishes` a message globally, to any other components in the page. In this case, the `app` subscribe to that global publish event and logs it:
 
 ```js
-jails.component('app', function(body, annotation){
+jails('app', (component, body, annotation) =>{
 
-	this.init = ()=>{
+	component.init = ()=>{
 		console.log('App home loaded', body)
-		this.subscribe('message:added', logMessage)
+		component.subscribe('message:added', logMessage)
 	}
 
 	let logMessage = (e, message)=>{
@@ -123,10 +120,10 @@ jails.start()
 - Doesn't depends on jQuery, events are native with `Event Delegation` support :
 
 ```js
-jails.component('my-component', function( ulElement, annotation ){
+jails('my-component', ( component, ulElement, annotation ) =>{
 
-	this.init = ()=>{
-		this.on('click', '.my-link', onClick)
+	component.init = ()=>{
+		component.on('click', '.my-link', onClick)
 	}
 
 	let onClick = (e)=>{
@@ -153,24 +150,24 @@ In the example above we made everything from scratch, but the idea is to write a
 You can also compose several components in the same markup, if you want to build a modal component which will only deal with DOM modifications to open a dialog and after that updating the content with `Virtual DOM`, you can do it just like that:
 
 ```html
-<div class="modal" component="litemodal riot-view">
+<div class="modal" data-component="litemodal view">
 	<h1>My name is {username}</h1>
 </div>
 ```
 
 ```js
 // Importing from Jails-org repository
-import 'jails-components/riot-view/riot-view'
+import 'jails-components/view/view'
 import 'jails-components/litemodal/litemodal'
 
 import jails from 'jails'
 
-jails.component('my-controller', function(){
+jails('my-controller', ( component, html, anno ) =>{
 
-	var modal = this.get('.modal')
+	var modal = component.get('.modal')
 
-	this.init = ()=>{
-		this.on('click', 'a[rel=modal]', openModal)
+	component.init = ()=>{
+		component.on('click', 'a[rel=modal]', openModal)
 	}
 
 	let openModal = ()=>{
@@ -187,6 +184,4 @@ There's so much about Jails, please, check out the [Documentation](//jails-org.g
 
 Jails works really well with [Riot.js](//riotjs.com/) for Virtual DOM templates, and [Redux Pattern](//redux.js.org).
 
-There's a [TodoApp](https://github.com/jails-org/Demos/tree/master/TodoApp) already  using `Riot.js` + `Jails` + `Redux`.
-
-Jails supports IE9+, but it can support IE8 if you use `jQuery` and then add the simple [Adapter](//github.com/jails-org/Modules/tree/master/jquery.adapter) already available in `Jails-org` modules.
+- Jails supports IE9+
