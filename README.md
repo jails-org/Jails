@@ -8,180 +8,324 @@
 Jails is a javascript micro-framework for building simple applications and large scale applications without a huge stack dependencies.
 
 Good projects should rely on good architectures, and Jails aim to solve architecture and organization problems.
-
 It's event driven and follows the DOM event pattern, lowering the learning curve and trying to be predictable.
 
-
-## Quick Setups
-
-![Webpack](http://webpack.github.io/assets/favicon.png) [Webpack setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails-webpack.zip)
-
-![RequireJS](https://raw.githubusercontent.com/legacy-icons/vendor-icons/master/dist/32x32/requirejs.png) [RequireJS setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails-requirejs.zip)
-
-![Vanilla](http://dev.bowdenweb.com/a/i/js/icons/javascript-icon-32.png) [Vanilla setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails-vanilla.zip)
-
-
-## Examples
-
-Let's get a message from a `<form />` and send it a list `<ul />`.
-
-You just have to create a name for component and set it on markup.
-
-```html
-<form class="form" data-component="form-message">
-	<input type="text" name="message" class="message" />
-</form>
-```
-
-### component/form-message.js
-
-Now we have to match that markup with the javascript `Function` mixin.
-
-```js
-jails('form-message', ( component, form, annotation ) =>{
-
-	component.init = ()=>{
-		this.on('submit', send)
-	}
-
-	let send = (e)=>{
-
-		var msg = form.querySelector('.message')
-		component.emit('post', { message :msg.value })
-		form.reset()
-
-		e.preventDefault()
-	}
-})
-```
-
-### component/list-messages.js
-
-We need a component to handle the messages adding actions:
-
-```js
-jails('list-messages', ( component, list, annotation )=>{
-
-	component.init = ()=>{}
-
-	component.add = ( message ) =>{
-		list.innerHTML += `<li>${message}</li>`
-	}
-})
-```
-
-Public methods can be executed through events by parent components structures.
-
-### component/box-message.js
-
-The component below `listen` to a bubling dom event `emmited` by `form-message` component, gets a reference of the list and fire up the `add` public method using event emitting.
-
-```js
-jails('box-message', ( component, section, annotation ) =>{
-
-	let list
-
-	component.init = ()=>{
-		list = component.get('.list')
-		component.listen('form-message:post', onPost)
-	}
-
-	let onPost = (e, option) =>{
-		list('add', option.message )
-		component.publish('message:added', option.message)
-	}
-})
-```
-
-After that, component `publishes` a message globally, to any other components in the page. In this case, the `app` subscribe to that global publish event and logs it:
-
-```js
-jails('app', (component, body, annotation) =>{
-
-	component.init = ()=>{
-		console.log('App home loaded', body)
-		component.subscribe('message:added', logMessage)
-	}
-
-	let logMessage = (e, message)=>{
-		console.log('Message added => ', message)
-	}
-})
-
-jails.start()
-
-```
-
-## Advantages
-
-- Very small learning curve, only **7** methods to learn.
-- Jails is short, minimalistic, and it weights almost **nothing**.
-- Works pretty well with small projects and also with large scale applications.
-- Doesn't depends on jQuery, events are native with `Event Delegation` support :
-
-```js
-jails('my-component', ( component, ulElement, annotation ) =>{
-
-	component.init = ()=>{
-		component.on('click', '.my-link', onClick)
-	}
-
-	let onClick = (e)=>{
-		alert( 'Hey You click meeee' )
-		e.preventDefault()
-	}
-})
-```
-
-- Community dependent, Jails grows with community, you don't have to wait for a new Jails version to get a fresh and new `view` module, you can implement your own `component` and share it.
-
-- Simplicity, it'll work very well with other libraries or micro-libraries.
-
-- No need to write html sintax on your js file, keep your js logic away from html markup.
-
-And many others advantages...
-
-### Go Pro
-
-In the example above we made everything from scratch, but the idea is to write and save your components and reuse them later.
-
-`Jails-org` already has some [components](http://jails-org.github.io/Jails/components.htm) and [modules](http://jails-org.github.io/Jails/modules.htm) ready to use.
-
-You can also compose several components in the same markup, if you want to build a modal component which will only deal with DOM modifications to open a dialog and after that updating the content with `Virtual DOM`, you can do it just like that:
-
-```html
-<div class="modal" data-component="litemodal view">
-	<h1>My name is {username}</h1>
-</div>
-```
-
-```js
-// Importing from Jails-org repository
-import 'jails-components/view/view'
-import 'jails-components/litemodal/litemodal'
-
-import jails from 'jails'
-
-jails('my-controller', ( component, html, anno ) =>{
-
-	var modal = component.get('.modal')
-
-	component.init = ()=>{
-		component.on('click', 'a[rel=modal]', openModal)
-	}
-
-	let openModal = ()=>{
-		modal('update', {  username :'Clark Kent' }) // Executes this.update() from riot-view component.
-		modal('open') // Executes this.open() from litemodal component.
-	}
-})
-
-```
+Also, Jails focus on some **functional programming** principles, it's not class oriented, but you can use them if you will.
 
 ---
 
-There's so much about Jails, please, check out the [Documentation](//jails-org.github.io/Jails/) and [Demos](//github.com/jails-org/Demos) to get the principles and fundamentals.
+## Creating a Component
 
-Jails works really well with [Riot.js](//riotjs.com/) for Virtual DOM templates, and [Redux Pattern](//redux.js.org).
+### Markup
 
-- Jails supports IE9+
+```html
+<form class="form" data-component="form">
+	<input type="text" name="message" />
+	<button>Send</button>
+</form>
+
+```
+
+### Javascript
+```js
+jails('form', ( component, form, annotation ) =>{
+
+	component.init = ()=>{
+		component.on('change', 'input' onChange)
+	}
+
+	let onChange = (e)=>{
+		console.log('Hey, some input has changed')
+	}
+})
+```
+---
+
+## Component relashionships
+
+### Passive way
+
+Components can relate to each other using `events`:
+
+- `.on()` : The same interface of jQuery to bind dom events.
+- `.listen()`: Is the way to listen to custom *DOM* event fired by other Components.
+- `.emit()` : Fires the custom *DOM* event.
+- `.publish()` : Publish globally to every component in the page.
+- `.subscribe()` : Subscribe to any global events.
+- `.get()` : Get a function reference to a component.
+
+#### Examples
+
+Component A listen to Component B
+
+```html
+<div data-component="A">
+	<div data-component="B">
+		<button>Ok</button>
+	</div>
+</div>
+```
+
+*Component A*
+```js
+jails('A', (component, div, annotation)=>{
+
+	component.init = ()=>{
+		// To listen to a custom event, you need to follow the standard
+		// componentName:stringEvent
+		component.listen('B:click', e => console.log(e))
+	}
+})
+```
+
+*Component B*
+```js
+jails('B', (component, div, annotation) =>{
+
+	component.init = ()=>{
+		component.on('click', '.button', emit)
+	}
+
+	let emit = (e)=>{
+		component.emit('click', e)
+	}
+})
+```
+
+### Active way
+
+You can execute a public component method through other component.
+
+
+#### Examples
+
+Component A executes Component B public method.
+
+```html
+<div data-component="A">
+	<div data-component="B">
+		<button>Ok</button>
+	</div>
+</div>
+```
+
+*Component A*
+```js
+jails('A', (component, div, annotation)=>{
+
+	//Getting B reference
+	let B = component.get('[data-component*=B]')
+
+	component.init = ()=>{
+		B('update', { someOption:'bla bla bla' })
+	}
+})
+```
+
+*Component B*
+
+```js
+jails('B', ( component, div, annotation )=>{
+
+	component.update = ( option )=>{
+		console.log( option ) // { someOption:'bla bla bla' }
+		component.publish('messageToALL', someOption) // Sends data to any component subscribed to 'messageToALL'.
+	}
+})
+```
+
+The `.get()` functions do not returns an instance, but a reference instead which is a `Function`. That's because you can have several components in the markup, all of them should execute the public method without the looping concerns:
+
+
+```html
+<div data-component="A">
+	<p data-component="B"></p>
+	<p data-component="B"></p>
+	<p data-component="B"></p>
+	<button>Ok</button>
+</div>
+```
+
+`.get( CSSSelector )` method also expects a `CSSSelector` as a parameter you can grab the exactly component you want:
+
+```html
+<div data-component="A">
+	<p data-component="B"></p>
+	<p class="only-this-one" data-component="B"></p>
+	<p data-component="B"></p>
+	<button>Ok</button>
+</div>
+```
+
+*Component A*
+```js
+jails('A', (component, div, annotation)=>{
+
+	//Getting B reference
+	let B = component.get('.only-this-one')
+
+	component.init = ()=>{
+		B('update', { someOption:'bla bla bla' }) // Only the second component will call .update() method.
+	}
+})
+```
+---
+
+## Good to know
+
+Components can live in the same markup:
+
+```html
+<div data-component="Z">
+	<div class="dialog" data-component="modal view">
+		<p>Hello {username}</p>
+	</div>
+</div>
+```
+
+And if both has the methods with the same name, you can distinct which component should respond to the call:
+** Example, Modal and View components has the .update() method but you want that only View component to execute it **
+
+```js
+jails('Z', ( component, html, annotation )=>{
+
+	let dialog = component.get('.dialog')
+
+	component.init = ()=>{
+		dialog('view:update', { username:'Clark Kent' })
+	}
+})
+```
+
+Jails expects you return a component with a `.init()` method to initialize, you can create a new component and compose it with the jails component interface, you can use that to change the way you build your components:
+
+```js
+jails('My-Component', ( component, html, annotation )=>{
+
+	// Returning a new component that uses the jails component interface
+	return {
+
+		init(){
+			//Components supports event delegation!
+			// You should always use that =)
+			component.on('click', '.button', this.click)
+		},
+
+		click(){
+			console.log('Hey I was clicked!')
+		}
+	}
+})
+```
+
+if you don't want to return a component object, jails will use the component interface argument as default.
+
+---
+
+## Annotations
+
+In order to build a generic component in some cases you need to let it configurable, without changing the source code.
+You can use the html data attributes to accomplish that, or you can use Jails `@annotations`.
+
+```html
+	<!--@my-component({ target:'.other-element' })-->
+	<a href="#" data-component="my-component">
+		My Link component
+	</a>
+```
+
+```js
+	jails('my-component', (component, link, annotation)=>{
+		return {
+			init(){
+				console.log( annotation.target ) // 'other-element'
+			}
+		}
+	})
+```
+
+Annotations is just a special comment, the name of component should be referenced in the comment using `@` prefix.
+In the case with 2 or more components in the same markup:
+
+```html
+	<!--
+		@A({  })
+		@B({  })
+		@C({  })
+	-->
+	<a href="#" data-component="A B C">
+		My Link component
+	</a>
+```
+
+**Annotations are optional, if you don't like to mix html comments with your js code, simply don't use it. =)**
+
+
+---
+
+## Api - Components
+
+### .on( Event, Function )
+Bind DOM events on the component itself.
+
+### .on( Event, CssSelector, Function ) : Function off()
+Event delegation, bind DOM events on component child nodes. Returns the `.off()` method to unbind the event.
+
+### .trigger( element, event, [args] )
+Trigger events on some element. Element is required…
+
+### .emit( action, [ data ] )
+Emit a custom event to be bubbled in the DOM tree.
+
+### .listen( Event, Function )
+Listen to custom events fired by Components or Controllers within the controller/app scope.
+
+### .get( CssSelector )
+Creates an reference to components, and returns a function, it accepts the name of public method and arguments to be sent as event. The previous example code illustrates that.
+
+### .publish( Event, [args] )
+Fires a global event to the ecosystem, very recommended to communicate Controllers and Apps with each other.
+
+### .subscribe( Event, Function ) : Function unsubscribe
+Subscribes the Controller/App to a global event. Returns a function to unsubscribe if necessary.
+
+
+## Api - Jails
+
+### Jails.start()
+Start jails internal Scanner, which will scan entire html and instantiate the components.
+
+### Jails.scanner
+Scanner object, scans the html DOM tree and start components.
+
+### Jails.render( DOMElement container, String html)
+Replace html content of a container DOMElement, and destroy all components instances.
+
+### Jails.refresh( [DOMElement container] )
+Executes scanning again, if no option is passed, Jails will scan the entire DOM again.
+It will bypass components already started, it will initialize only new dom elements created.
+
+### Jails.events
+Jails events object has `.on()`, `.off()`, `.trigger()` methods for events, also used on Components interface.
+You can bypass these events making an *adapter*, using jQuery if you will.
+
+### Jails.publish( `string`, `:any`) / Jails.subscribe( `string`, `:any`)
+The same `.publish()` and `.subscribe()` events used on components interface, you can use it on third-party modules using the pub/sub pattern.
+
+---
+
+## Quick Setups
+
+Here are some useful quick setups to help you to start your project. =)
+
+![Webpack](http://webpack.github.io/assets/favicon.png) [Webpack setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-webpack.zip)
+
+![RequireJS](https://raw.githubusercontent.com/legacy-icons/vendor-icons/master/dist/32x32/requirejs.png) [RequireJS setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-requirejs.zip)
+
+![Vanilla](http://dev.bowdenweb.com/a/i/js/icons/javascript-icon-32.png) [Vanilla setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-vanilla.zip)
+
+---
+
+## Browser support
+
+IE9 + and Modern Browsers.
