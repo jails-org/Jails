@@ -155,7 +155,7 @@
 	function component( element ){
 		var instance,
 			anno = annotations( element ),
-			names = element.getAttribute('[data-component]').split(/\s/);
+			names = element.getAttribute('data-component').split(/\s/);
 
 		forEach( names, init );
 
