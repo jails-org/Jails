@@ -209,13 +209,13 @@ jails('Z', ( component, html, annotation )=>{
 })
 ```
 
-Jails expects you return a component with a `.init()` method to initialize, you can create a new component and compose it with the jails component interface, you can use that to change the way you build your components:
+You can create a new component and compose it with the jails component interface to build your components:
 
 ```js
 jails('My-Component', ( component, html, annotation )=>{
 
 	// Returning a new component that uses the jails component interface
-	return {
+	return Object.assign(component, {
 
 		init(){
 			//Components supports event delegation!
@@ -226,7 +226,7 @@ jails('My-Component', ( component, html, annotation )=>{
 		click(){
 			console.log('Hey I was clicked!')
 		}
-	}
+	})
 })
 ```
 
@@ -248,11 +248,11 @@ You can use the html data attributes to accomplish that, or you can use Jails `@
 
 ```js
 	jails('my-component', (component, link, annotation)=>{
-		return {
-			init(){
-				console.log( annotation.target ) // 'other-element'
-			}
+
+		component.init = ()=>{
+			console.log( annotation.target ) // 'other-element'
 		}
+
 	})
 ```
 
