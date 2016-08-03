@@ -215,7 +215,7 @@ You can create a new component and compose it with the jails component interface
 jails('My-Component', ( component, html, annotation )=>{
 
 	// Returning a new component that uses the jails component interface
-	return Object.assign(component, {
+	return{
 
 		init(){
 			//Components supports event delegation!

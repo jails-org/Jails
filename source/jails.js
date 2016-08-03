@@ -18,8 +18,9 @@
 	function Jails( name, Mixin ){
 		Jails.components[ name ] = function ( html, data ){
 			var component = new Component( name, html );
-			return Mixin( component, html, data ) || component;
-		}
+			var newcomponent = Mixin( component, html, data );
+			return newcomponent? Object.assign( component, newcomponent ) : component;
+		};
 	}
 
 	Jails.events = on();
@@ -359,6 +360,23 @@
 		}
 
 		return false;
+	}
+
+	if ( !Object.assign ) {
+		Object.assign = function(target) {
+			target = Object( target );
+			for ( var index = 1, len = arguments.length; index < len; index++) {
+				var source = arguments[index];
+				if ( source != null ) {
+					for ( var key in source) {
+						if ( Object.prototype.hasOwnProperty.call(source, key) ) {
+							target[key] = source[key];
+						}
+					}
+				}
+			}
+			return target;
+		};
 	}
 
 	return Jails;
