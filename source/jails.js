@@ -16,7 +16,7 @@
 		root		= document.documentElement;
 
 	function Jails( name, Mixin ){
-		Jails.components[ name ] = function ( html, data ){
+		return Jails.components[ name ] = function ( html, data ){
 			var component = new Component( name, html );
 			var newcomponent = Mixin( component, html, data );
 			return newcomponent? Object.assign( component, newcomponent ) : component;
@@ -95,9 +95,15 @@
 	};
 
 	Component.prototype.listen = function( ev, method ){
-		Jails.events.on( this.element, ev, function(e){
+		var element = this.element;
+		Jails.events.on( element, ev, handler);
+
+		function handler(e){
 			method.call(e.target, e, e.detail);
-		});
+		}
+		return function(){
+			Jails.events.off( element, ev, handler);
+		};
 	};
 
 	Component.prototype.on = function( ev, query, method ){
