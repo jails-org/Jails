@@ -13,7 +13,8 @@
 
 	var publisher 	= pubsub(),
 		slice 		= Array.prototype.slice,
-		root		= document.documentElement;
+		root		= document.documentElement,
+		starregex	= /\*/;
 
 	function Jails( name, Mixin ){
 		return Jails.components[ name ] = function ( html, data ){
@@ -91,16 +92,28 @@
 	};
 
 	Component.prototype.emit = function( simbol, args ){
-		Jails.events.trigger( this.element, this.name+':'+simbol, args );
+		args._instance = this;
+		Jails.events.trigger( this.element, simbol, args );
 	};
 
 	Component.prototype.listen = function( ev, method ){
-		var element = this.element;
-		Jails.events.on( element, ev, handler);
+
+		var element = this.element,
+			oldev = ev.split(':'),
+			name = oldev.shift();
+
+		Jails.events.on( element, oldev.pop(), handler );
 
 		function handler(e){
-			method.call(e.target, e, e.detail);
+
+			var instance = e.detail._instance;
+			delete e.detail._instance;
+
+			if( starregex.test(name) || name == instance.name ){
+				method.call(e.target, e, e.detail);
+			}
 		}
+
 		return function(){
 			Jails.events.off( element, ev, handler);
 		};
