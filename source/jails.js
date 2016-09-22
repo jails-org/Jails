@@ -92,6 +92,7 @@
 	};
 
 	Component.prototype.emit = function( simbol, args ){
+		args = args || {};
 		args._instance = this;
 		Jails.events.trigger( this.element, simbol, args );
 	};
