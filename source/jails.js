@@ -14,7 +14,8 @@
 	var publisher 	= pubsub(),
 		slice 		= Array.prototype.slice,
 		root		= document.documentElement,
-		starregex	= /\*/;
+		starregex	= /\*/,
+		separator   = ':';
 
 	function Jails( name, Mixin ){
 		return Jails.components[ name ] = function ( html, data ){
@@ -94,7 +95,7 @@
 	Component.prototype.emit = function( simbol, args ){
 		args = args || {};
 		args._instance = this;
-		Jails.events.trigger( this.element, simbol, args );
+		Jails.events.trigger( this.element, separator + simbol, args );
 	};
 
 	Component.prototype.listen = function( ev, method ){
@@ -103,7 +104,7 @@
 			oldev = ev.split(':'),
 			name = oldev.shift();
 
-		Jails.events.on( element, oldev.pop(), handler );
+		Jails.events.on( element, separator + oldev.pop(), handler );
 
 		function handler(e){
 
