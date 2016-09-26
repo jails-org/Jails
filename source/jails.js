@@ -128,6 +128,14 @@
 			query = null;
 		}
 
+		if( !ev.replace ){
+			superon.call( this, ev );
+		}
+
+		if( /\:/.test(ev) ){
+			this.listen( ev, method );
+		}
+
 		var element = this.element;
 		var events = this._events;
 
@@ -249,6 +257,16 @@
 			instance = null;
 			e.stopPropagation();
 		};
+	}
+
+	function superon( evs ){
+		var ev, arr, i;
+		for(ev in evs){
+			arr = evs[ev];
+			arr = arr.push? arr :[arr];
+			for( i = 0; i < arr.length; i++ )
+				this.on.apply(this, [ev].concat(arr[i]));
+		}
 	}
 
 	//Inspired by:
