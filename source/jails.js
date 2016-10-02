@@ -133,7 +133,7 @@
 		}
 
 		if( /\:/.test(ev) ){
-			this.listen( ev, method );
+			return this.listen( ev, method );
 		}
 
 		var element = this.element;
