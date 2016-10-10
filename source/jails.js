@@ -132,7 +132,7 @@
 		}
 
 		if( /\:/.test(ev) ){
-			this.listen( ev, method );
+			return this.listen( ev, method );
 		}
 
 		var element = this.element;
@@ -216,8 +216,7 @@
 
 		if(comment && comment.nodeType == 8){
 			code = comment.data
-				.replace(/[\n\t]/g, '')
-				.replace(/\@([a-zA-z0-9-\/]*)\(([^@]*)\)/g, function( text, component, param ){
+				.replace(/@([a-zA-z0-9-\/]*)(?:\((.*)\))?/g, function( text, component, param ){
 					ann[component] = new Function('return '+ param)();
 				});
 		}
