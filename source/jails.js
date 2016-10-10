@@ -109,7 +109,6 @@
 		function handler(e){
 
 			var instance = e.detail._instance;
-			delete e.detail._instance;
 
 			if( starregex.test(name) || name == instance.name ){
 				method.call(e.target, e, e.detail);
