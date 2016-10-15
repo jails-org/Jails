@@ -92,9 +92,10 @@
 		}
 	};
 
-	Component.prototype.emit = function( simbol, args ){
-		args = args || {};
-		args._instance = this;
+	Component.prototype.emit = function( simbol, value ){
+		var args = {};
+		args.instance = this;
+		args.value = value;
 		Jails.events.trigger( this.element, separator + simbol, args );
 	};
 
@@ -108,11 +109,10 @@
 
 		function handler(e){
 
-			var instance = e.detail._instance;
-			delete e.detail._instance;
+			var instance = e.detail.instance;
 
 			if( starregex.test(name) || name == instance.name ){
-				method.call(e.target, e, e.detail);
+				method.call(e.target, e, e.detail.value);
 			}
 		}
 
