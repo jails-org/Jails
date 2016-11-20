@@ -1,7 +1,7 @@
 
 # Jails ||/|
 
-> Modular, Event Driven & Non-obstructive Micro-Framework
+> Modular, Event Driven & Non-obstructive Micro-Library
 
 ---
 
