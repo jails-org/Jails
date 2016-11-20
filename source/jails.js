@@ -144,7 +144,7 @@
 			else{
 				var target = e.target;
 				while( target && target != element && target.parentNode ){
-					if ( target.matches? target.matches(query) :matchesSelector(target, query) ){
+					if ( target.matches? target.matches(query) :matches(target, query) ){
 						method.call(target, e);
 						break;
 					}
@@ -175,7 +175,9 @@
 				forEach(element.querySelectorAll(target), function(children){
 					Jails.events.trigger(children, 'execute', args );
 				});
-				Jails.events.trigger(element, 'execute', args );
+				if( element.matches? element.matches(target) : matches( element, target ) ){
+					Jails.events.trigger(element, 'execute', args );
+				}
 			};
 		}
 
@@ -385,20 +387,13 @@
 		return new f();
 	}
 
-	// http://tanalin.com/en/blog/2012/12/matches-selector-ie8/
-	function matchesSelector(elem, selector) {
-
-		var elems = elem.parentNode.querySelectorAll(selector),
-			count = elems.length;
-
-		for (var i = 0; i < count; i++) {
-			if (elems[i] === elem) {
-				return true;
-			}
-		}
-
-		return false;
-	}
+	//https://davidwalsh.name/element-matches-selector
+	var matches = (function( body ){
+		var f = body.matches || body.webkitMatchesSelector || body.mozMatchesSelector || body.msMatchesSelector || function(s) {
+			return [].indexOf.call(document.querySelectorAll(s), this) !== -1;
+		};
+		return function( el, selector ){ return f.call(el, selector); };
+	})( document.body );
 
 	if ( !Object.assign ) {
 		Object.assign = function(target) {
