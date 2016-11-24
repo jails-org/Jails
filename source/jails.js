@@ -393,7 +393,7 @@
 			return [].indexOf.call(document.querySelectorAll(s), this) !== -1;
 		};
 		return function( el, selector ){ return f.call(el, selector); };
-	})( document.body );
+	})( document.createElement('div') );
 
 	if ( !Object.assign ) {
 		Object.assign = function(target) {
