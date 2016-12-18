@@ -8,9 +8,7 @@
 Jails is a javascript micro-library for building simple applications and large scale applications without a huge stack dependencies.
 
 Good projects should rely on good architectures, and Jails aim to solve architecture and organization problems.
-It's event driven and follows the DOM event pattern, lowering the learning curve and trying to be predictable.
-
-Also, Jails focus on some **functional programming** principles, it's not class oriented, but you can use them if you will.
+It's event driven and follows the DOM event pattern, low learning curve and trying to be predictable.
 
 ---
 
