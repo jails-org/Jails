@@ -6,8 +6,11 @@
 > Modular, Event Driven & Non-obstructive Micro-Library
 
 > Compatible with :
-- [`jails-components@2.2`](//github.com/jails-org/Components/tree/2.1)
-- [`jails-modules@2.2`](//github.com/jails-org/Modules/tree/2.1)
+- [`jails-components@2.2.x`](//github.com/jails-org/Components/tree/2.2.0)
+- [`jails-modules@2.2.x`](//github.com/jails-org/Modules/tree/2.2.0)
+
+Good projects should rely on good architectures, and Jails aim to solve architecture and organization problems.
+It's event driven and follows the DOM event pattern, low learning curve and trying to be predictable.
 
 ---
 
