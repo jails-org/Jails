@@ -2,7 +2,7 @@
   "name": "jails-js",
   "version": "2.1.8",
   "description": "Jails Functional and Event-Driven Micro-Framework",
-  "main": "index.js",
+  "main": "dist/jails.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +13,8 @@
   "keywords": [
     "Jails",
     "Javascript",
-    "Microframework"
+    "Component",
+	"Micro-Library"
   ],
   "author": "javiani",
   "license": "MIT",
