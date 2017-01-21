@@ -174,7 +174,7 @@
 
 			subscribe :function(){
 
-				var args = slice.call( arguments );
+				var args = Array.from( arguments );
 				var key = args[0], method = args[1];
 				var _self = this;
 
@@ -207,7 +207,7 @@
 
 			publish :function(){
 
-				var args = slice.call( arguments );
+				var args = Array.from( arguments );
 				var key = args.shift();
 
 				topics[key] = topics[key] || [];

@@ -1,1 +1,367 @@
-!function(){Array.from||(Array.from=function(){var n=Object.prototype.toString,t=function(t){return"function"==typeof t||"[object Function]"===n.call(t)},e=function(n){var t=+n;return isNaN(t)?0:0!==t&&isFinite(t)?(t>0?1:-1)*Math.floor(Math.abs(t)):t},r=Math.pow(2,53)-1,o=function(n){var t=e(n);return Math.min(Math.max(t,0),r)};return function(n){var e=this,r=Object(n);if(null==n)throw new TypeError("Array.from requires an array-like object - not null or undefined");var i,u=arguments.length>1?arguments[1]:void 0;if(void 0!==u){if(!t(u))throw new TypeError("Array.from: when provided, the second argument must be a function");arguments.length>2&&(i=arguments[2])}for(var a,c=o(r.length),s=t(e)?Object(new e(c)):Array(c),f=0;c>f;)a=r[f],s[f]=u?void 0===i?u(a,f):u.call(i,a,f):a,f+=1;return s.length=c,s}}()),Object.assign||(Object.assign=function(n){n=Object(n);for(var t=1,e=arguments.length;e>t;t++){var r=arguments[t];if(null!=r)for(var o in r)Object.prototype.hasOwnProperty.call(r,o)&&(n[o]=r[o])}return n}),Element.prototype.matches||(Element.prototype.matches=Element.prototype.matchesSelector||Element.prototype.mozMatchesSelector||Element.prototype.msMatchesSelector||Element.prototype.oMatchesSelector||Element.prototype.webkitMatchesSelector||function(n){for(var t=(this.document||this.ownerDocument).querySelectorAll(n),e=t.length;--e>=0&&t.item(e)!==this;);return e>-1})}(),function(n){function t(n,e){t.components[n]=e}function e(n){var t=n.getAttribute(g);t=t.split(/\s/),d(t,r(n))}function r(n){return function(e){var r="jails#component#"+e;if(!n[r]){var o=t.component(e,n);Object.assign(o,t.components[e](o,n,u(e,n))||o),o.init(),n[r]=!0}}}function o(n,t,e){return function(n){t.__kill(),t=null,i(e),n.stopPropagation()}}function i(n){for(var e in n._events)t.events.off(n,e,n._events[e].eventHandler);n._events=null,n["jails#component#"+name]=null}function u(n,t){var e;return function(r){if(e)return r?e[r]:e;var o=s(t)[n]||{},i={data:{}};return d(Array.from(t.attributes),a(i)),e=Object.assign({},o,i),r?e[r]:e}}function a(n){return function(t){var e,r=t.name.split(/data\-/);try{e=Function("return "+t.value)()}catch(o){e=t.value}return r[1]?n.data[r.pop().replace(/-([a-z])/g,c)]=e:n[t.name]=e,n}}function c(n,t){return t.toUpperCase()}function s(n){var t,e,r={};return t=n.previousSibling,t=t&&8==t.nodeType?t:t?t.previousSibling:null,t&&8==t.nodeType&&(e=t.data.replace(/@([a-zA-z0-9-\/]*)(?:\((.*)\))?/g,function(n,t,e){r[t]=Function("return "+e)()})),r}function f(){var n={},t={};return{subscribe:function(){var e=slice.call(arguments),r=e[0],o=e[1],i=this;return r in t&&n[r]?(n[r].push(o),i.publish.apply(null,[r].concat(t[r]))):(n[r]=n[r]||[],n[r].push(o)),function(){var e=[],i=[];d(n[r],function(n){n!=o&&newarr.push(n)}),n[r]=e,d(t[r],function(n){n!=o&&newarr.push(n)}),t[r]=i}},publish:function(){var e=slice.call(arguments),r=e.shift();n[r]=n[r]||[],n[r].length?d(n[r],function(n){n&&n.apply(this,e)}):t[r]=e}}}function l(n,t,e){return function(r){for(var o=r.target;o&&o!==n;)o.matches(t)&&e.call(r.target,r),o=o.parentNode}}function v(n,t,e){return function(r){if(e==r.target){var o=r.detail.method.split(/\:/),i=o.length>1?o[1]:o[0];(i in t&&!o[1]||o[1]&&n==o[0])&&t[i].apply(t,r.detail.args),r.stopPropagation()}}}function p(n,e){return function(r){t.events.trigger(r,"execute",{args:e,method:n})}}function d(n,t,e){n=e?Array.from(n).reverse():n;for(var r=0,o=n.length;o>r;r++)t(n[r],r)}function m(){function n(n,t){var e=document.createEvent(n);return t=t||{},e.initEvent(n,t.bubbles||!1,t.cancelable||!1,t.detail||null),e}return{on:function(n,e,r,o){function i(t){var r=t.detail||{};n._events[e].map(function(e){r.instance&&u[0]&&r.instance.name!=u[0]||e.apply(n,[t].concat(r.args))})}var u,a,c;return n._events=n._events||{},u=e.split(/\:/),e=u[1]?":"+u[1]:u[0],a=e in n._events,c=i||l(n,r,i),n._events[e]=n._events[e]||[],n._events[e].push(o||r),a||(n.addEventListener(e,c,"focus"==e||"blur"==e),n._events[e].eventHandler=c),function(){t.events.off(n,e,o||r)}},off:function(n,t,e){n.removeEventListener(t,e,!1),n._events[t]=(n._events[t]||[]).filter(function(n){return n!=e})},trigger:function(t,e,r){try{t.dispatchEvent(new n(e,{bubbles:!0,detail:r}))}catch(o){t.dispatchEvent(new CustomEvent(e,{bubbles:!0,detail:r}))}}}}var h=f(),g="data-component",b="["+g+"]";t.components={},t.events=m(),t.publish=h.publish,t.subscribe=h.subscribe,t.start=function(n){n=n||document.documentElement,d(n.querySelectorAll(b),e,!0)},t.destroy=function(n){t.events.trigger(n,"destroy")},t.render=function(n,e){for(var r;r=n.firstChild;)r.getAttribute&&r.getAttribute(g)&&t.destroy(r),n.removeChild(r);n.innerHTML=e},t.component=function(n,e){var r={name:n,publish:h.publish,subscribe:h.subscribe,on:t.events.on,init:function(){},destroy:function(){},on:function(n,r,o){return t.events.on(e,n,r,o)},off:function(n,r){t.events.off(e,n,r)},get:function(n){return function(t,r){var r=Array.from(arguments),o=[].concat(e.matches(n)?e:[]);o=o.concat(Array.from(e.querySelectorAll(n))),d(o,p(r.shift(),r))}},emit:function(){var n=Array.from(arguments);t.events.trigger(e,":"+n.shift(),{args:n,instance:r})},__kill:function(){r.destroy();for(var n in this)delete this[n];r=null}};return t.events.on(e,"execute",v(n,r,e)),t.events.on(e,"destroy",o(n,r,e)),r},"function"==typeof define&&define.amd?define(function(){return t}):"undefined"!=typeof module&&module.exports?module.exports=t:n.jails=t}(window),function(n,t){"function"==typeof define&&define.amd?define(["jquery","jails"],t):"undefined"!=typeof module&&module.exports?module.exports=t(require("jquery"),require("jails")):t(n.jQuery,n.jails)}(this,function(n,t){t.events={on:function(n,t,e,r){function o(n,t){return n.detail=t?t.detail:n.detail,n.detail=n.detail||{},i.apply(this,[n].concat(n.detail.args))}var i=r||e;r?$(n).on(t,e,o):$(n).on(t,o)},off:function(n,t,e){$(n).off(t,e)},trigger:function(n,t,e){$(n).trigger(t,{detail:e})}}});
+;(function( exports ){
+
+	var publisher = pubsub(),
+		data 	  = 'data-component',
+		selector  = '['+data+']';
+
+	function jails( name, fn ){
+		jails.components[ name ] = fn;
+	}
+
+	jails.components = {};
+	jails.events 	 = on();
+	jails.publish 	 = publisher.publish;
+	jails.subscribe	 = publisher.subscribe;
+
+	jails.start = function( ctx ){
+		ctx = ctx || document.documentElement;
+		each( ctx.querySelectorAll(selector), scan, true );
+	};
+
+	jails.destroy = function( node ){
+		jails.events.trigger( node, 'destroy' );
+	};
+
+	jails.render = function( node, html ){
+		var child;
+		while( child = node.firstChild ){
+			if( child.getAttribute && child.getAttribute(data) )
+				jails.destroy( child );
+			node.removeChild( child );
+		}
+		node.innerHTML = html;
+	};
+
+	jails.component = function( name, node ){
+
+		var instance = {
+
+			name 		:name,
+			publish		:publisher.publish,
+			subscribe 	:publisher.subscribe,
+			on 			:jails.events.on,
+
+			init :function(){},
+
+			destroy: function(){},
+
+			on :function( ev, selectorOrCallback, callback ){
+				return jails.events.on( node, ev, selectorOrCallback, callback );
+			},
+
+			off :function( ev, handler ){
+				jails.events.off( node, ev, handler );
+			},
+
+			get :function( cssSelector ){
+				return function( name, args ){
+					var args = Array.from( arguments );
+					var elements = [].concat( node.matches(cssSelector)? node : [] );
+						elements = elements.concat( Array.from( node.querySelectorAll(cssSelector) ) );
+					each( elements, call(args.shift(), args) );
+				};
+			},
+
+			emit :function( ){
+				var args = Array.from( arguments );
+				jails.events.trigger( node, ':' + args.shift(), { args: args, instance : instance });
+			},
+
+			__kill :function(){
+				instance.destroy();
+				for(var i in this ) delete this[i];
+				instance = null;
+			}
+		};
+
+		jails.events.on( node, 'execute', execute( name, instance, node ) );
+		jails.events.on( node, 'destroy', destroy( name, instance, node ) );
+
+		return instance;
+	};
+
+	function scan( element, index ){
+		var names = element.getAttribute(data);
+			names = names.split(/\s/);
+		each( names, mount( element ) );
+	}
+
+	function mount( node ){
+
+		return function( name, index ){
+			var id = 'jails#component#'+name;
+			if( node[id] ) return;
+			var comp  = jails.component( name, node );
+			Object.assign( comp, jails.components[ name ]( comp, node, getter(name, node) ) || comp );
+			comp.init();
+			node[id] = true;
+		};
+	}
+
+	function destroy( name, instance, node ){
+
+		return function(e){
+			instance.__kill();
+			instance = null;
+			clean( node );
+			e.stopPropagation();
+		};
+	}
+
+	function clean( node ){
+		for(var e in node._events)
+			jails.events.off( node, e, node._events[e].eventHandler );
+		node._events = null;
+		node['jails#component#'+name] = null;
+	}
+
+	function getter( name, node ){
+		var props;
+		return function( key ){
+			if( props ) {
+				return key? props[key] : props;
+			}
+			var anno  = annotations( node )[ name ] || {};
+			var attrs = { data:{} };
+			each(Array.from( node.attributes ), propset(attrs) );
+			props = Object.assign({}, anno, attrs);
+			return key? props[key] : props;
+		};
+	}
+
+	function propset( acc ){
+		return function( item ){
+			var value, name = item.name.split(/data\-/);
+			try{ value = (new Function('return '+ item.value))(); }
+			catch(err){ value = item.value; }
+
+			if( name[1] ) acc.data[name.pop().replace(/-([a-z])/g, upper)] = value;
+			else acc[item.name] = value;
+
+			return acc;
+		};
+	}
+
+	function upper( m, string ){
+		return string.toUpperCase();
+	}
+
+	function annotations( el ){
+
+		var ann = {}, comment, code;
+
+		comment = el.previousSibling;
+		comment = comment && comment.nodeType == 8? comment :comment? comment.previousSibling : null;
+
+		if(comment && comment.nodeType == 8){
+			code = comment.data
+				.replace(/@([a-zA-z0-9-\/]*)(?:\((.*)\))?/g, function( text, component, param ){
+					ann[component] = new Function('return '+ param)();
+				});
+		}
+
+		return ann;
+	}
+
+	//Inspired by:
+	//http://dev.housetrip.com/2014/09/15/decoupling-javascript-apps-using-pub-sub-pattern/
+	function pubsub(){
+
+		var topics = {};
+		var _async = {};
+
+		return{
+
+			subscribe :function(){
+
+				var args = Array.from( arguments );
+				var key = args[0], method = args[1];
+				var _self = this;
+
+				if( key in _async && topics[key] ){
+					topics[key].push( method );
+					_self.publish.apply(null, [key].concat(_async[key]));
+				}else{
+					topics[key] = topics[key] || [];
+					topics[key].push( method );
+				}
+				//Unsubscribe
+				return function(){
+					var newtopics = [];
+					var newasync  = [];
+
+					each(topics[key], function( fn){
+						if(fn != method)
+							newarr.push(fn);
+					});
+
+					topics[key] = newtopics;
+
+					each(_async[key], function( fn){
+						if(fn != method)
+							newarr.push(fn);
+					});
+					_async[key] = newasync;
+				};
+			},
+
+			publish :function(){
+
+				var args = Array.from( arguments );
+				var key = args.shift();
+
+				topics[key] = topics[key] || [];
+
+				if(!topics[key].length){
+					_async[key] = args;
+				}
+
+				else each(topics[key], function( f ) {
+					if( f ) f.apply( this, args );
+				});
+			}
+		};
+	}
+
+	function delegate( node, cssSelector, callback ){
+		return function(e){
+			var parent = e.target;
+			while ( parent && parent !== node ) {
+				if (parent.matches(cssSelector))
+					callback.call(e.target, e);
+				parent = parent.parentNode;
+			}
+		};
+	}
+
+	function execute( name, instance, node ){
+		return function(e){
+			if( node != e.target ) return;
+			var scope  = e.detail.method.split(/\:/),
+				method = scope.length > 1? scope[1] : scope[0];
+			if( (method in instance) && (!scope[1]) || (scope[1] && name == scope[0]) )
+				instance[ method ].apply( instance, e.detail.args );
+			e.stopPropagation();
+		};
+	}
+
+	function call( name, args ){
+		return function( element, index ){
+			jails.events.trigger( element, 'execute', { args :args, method :name });
+		};
+	}
+
+	function each( iterable, callback, reverse ){
+		iterable = reverse? Array.from(iterable).reverse() : iterable;
+		for( var i = 0, len = iterable.length; i < len; i++ )
+			callback( iterable[i], i );
+	}
+
+	function on(){
+
+		function Ev(type, params) {
+			var e = document.createEvent(type);
+			params = params || {};
+			e.initEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
+			return e;
+		}
+
+		return {
+
+			on :function( el, ev, selectorOrCallback, callback ){
+
+				var custom, isset, fn;
+
+				el._events 	= el._events || {};
+				custom 		= ev.split(/\:/);
+				ev 			= custom[1]? ':' + custom[1] : custom[0];
+				isset  		= (ev in el._events);
+				fn     		= handler || delegate( el, selectorOrCallback, handler );
+
+				el._events[ev] = el._events[ev] || [];
+				el._events[ev].push( callback || selectorOrCallback );
+
+				if( !isset ){
+					el.addEventListener(ev, fn, (ev == 'focus' || ev == 'blur') );
+					el._events[ev].eventHandler = fn;
+				}
+
+				function handler(e){
+					var detail = e.detail || {};
+					el._events[ev].map(function( cb ){
+						if( !detail.instance || !custom[0] || detail.instance.name == custom[0] )
+							cb.apply( el, [e].concat( detail.args ) );
+					});
+				}
+
+				return function(){
+					jails.events.off( el, ev, callback || selectorOrCallback );
+				};
+			},
+
+			off :function(el, ev, fn){
+				el.removeEventListener(ev, fn, false);
+				el._events[ev] = (el._events[ev] || []).filter(function(cb){ return cb != fn; });
+			},
+
+			trigger :function(el, name, args){
+				try{
+					el.dispatchEvent( new Ev( name, { bubbles :true, detail :args } ) );
+				}catch(e){
+					el.dispatchEvent( new CustomEvent( name, { bubbles :true, detail :args } ) );
+				}
+			}
+		};
+	}
+
+	// UMD export
+	if ( typeof define === 'function' && define.amd ) {
+		define(function () { return jails; });
+	} else if ( typeof module !== 'undefined' && module.exports ){
+		module.exports = jails;
+	} else {
+		exports.jails = jails;
+	}
+})( window );
+
+// For a complete compatibitily across browsers, including IE8, please use jQuery 1.9.1
+// code.jquery.com/jquery-1.9.1.min.js
+;(function( exports, factory ){
+	// UMD export
+	if ( typeof define === 'function' && define.amd ) {
+		define(['jquery', 'jails'], factory);
+	} else if ( typeof module !== 'undefined' && module.exports ){
+		module.exports = factory( require('jquery'), require('jails') );
+	} else {
+		factory( exports.jQuery, exports.jails );
+	}
+})(this, function( jquery, jails ){
+
+	jails.events = {
+
+		on :function(el, ev, selectOrCallback, callback){
+
+			var cb = callback || selectOrCallback;
+
+			if( callback )
+				$(el).on(ev, selectOrCallback, handler);
+			else
+				$(el).on(ev, handler);
+
+			function handler(e, data){
+				e.detail = data? data.detail :e.detail;
+				e.detail = e.detail || {};
+				return cb.apply(this, [e].concat(e.detail.args));
+			}
+		},
+
+		off:function(el, ev, callback){
+			$(el).off(ev, callback);
+		},
+
+		trigger :function(el, ev, args){
+			$(el).trigger(ev, {detail:args} );
+		}
+	};
+
+});
