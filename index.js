@@ -30,6 +30,7 @@
 			node.removeChild( child );
 		}
 		node.innerHTML = html;
+		jails.start( node );
 	};
 
 	jails.component = function( name, node ){
