@@ -275,6 +275,7 @@ Bind DOM events on the component itself.
 Event delegation, bind DOM events on component child nodes. Returns the `.off()` method to unbind the event.
 
 ### .off( Event, Function )
+Removes an event handler, just like `jQuery` api.
 
 ### .trigger( element, event, [args] )
 Trigger events on some element. Element is required…
