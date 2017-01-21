@@ -2,7 +2,12 @@
 # Jails ||/|
 
 [![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)
+
 > Modular, Event Driven & Non-obstructive Micro-Library
+
+> Compatible with :
+- [`jails-components@2.2`](//github.com/jails-org/Components/tree/2.1)
+- [`jails-modules@2.2`](//github.com/jails-org/Modules/tree/2.1)
 
 ---
 
@@ -310,7 +315,7 @@ The same `.publish()` and `.subscribe()` events used on components interface, yo
 
 ### Jails.component( name, node )
 Function used internally to create the `component` interface passing the name and the node element along.
-It's not usefull at development, it's intended to be used as a hoc interface to third-party libraries/modules, like a `logger` for instance. 
+It's not usefull at development, it's intended to be used as a hoc interface to third-party libraries/modules, like a `logger` for instance.
 ---
 
 ## Browser support
