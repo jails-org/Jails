@@ -1,6 +1,6 @@
 {
   "name": "jails-js",
-  "version": "2.1.8",
+  "version": "2.2.0",
   "description": "Jails Functional and Event-Driven Micro-Framework",
   "main": "dist/jails.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "Jails",
     "Javascript",
     "Component",
-	"Micro-Library"
+    "Micro-Library"
   ],
   "author": "javiani",
   "license": "MIT",
