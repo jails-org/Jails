@@ -1,28 +1,19 @@
 
 # Jails ||/|
 
+[![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)
+
 > Modular, Event Driven & Non-obstructive Micro-Library
+
+> Compatible with :
+- [`jails-components@2.2`](//github.com/jails-org/Components/tree/2.1)
+- [`jails-modules@2.2`](//github.com/jails-org/Modules/tree/2.1)
 
 ---
 
 Jails is a javascript micro-library for building simple applications and large scale applications without a huge stack dependencies.
 
-Good projects should rely on good architectures, and Jails aim to solve architecture and organization problems.
-It's event driven and follows the DOM event pattern, lowering the learning curve and trying to be predictable.
-
-Also, Jails focus on some **functional programming** principles, it's not class oriented, but you can use them if you will.
-
----
-
-## Quick Setups
-
-Here are some useful quick setups to help you to start your project. =)
-
-![Webpack](http://webpack.github.io/assets/favicon.png) [Webpack setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-webpack.zip)
-
-![RequireJS](https://raw.githubusercontent.com/legacy-icons/vendor-icons/master/dist/32x32/requirejs.png) [RequireJS setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-requirejs.zip)
-
-![Vanilla](http://dev.bowdenweb.com/a/i/js/icons/javascript-icon-32.png) [Vanilla setup](https://github.com/jails-org/Jails/raw/gh-pages/downloads/jails2-vanilla.zip)
+It follows the old-school phylosophy about separation of concerns, non-obstructive and focus on DOM event system and trying to be predictable.
 
 ---
 
@@ -40,7 +31,7 @@ Here are some useful quick setups to help you to start your project. =)
 
 ### Javascript
 ```js
-jails('form', ( component, form, annotation ) =>{
+jails('form', ( component, form, props ) =>{
 
 	component.init = ()=>{
 		component.on('change', 'input' onChange)
@@ -60,7 +51,6 @@ jails('form', ( component, form, annotation ) =>{
 Components can relate to each other using `events`:
 
 - `.on()` : The same interface of jQuery to bind dom events.
-- `.listen()`: Is the way to listen to custom *DOM* event fired by other Components.
 - `.emit()` : Fires the custom *DOM* event.
 - `.publish()` : Publish globally to every component in the page.
 - `.subscribe()` : Subscribe to any global events.
@@ -80,19 +70,19 @@ Component A listen to Component B
 
 *Component A*
 ```js
-jails('A', (component, div, annotation)=>{
+jails('A', (component, div, props)=>{
 
 	component.init = ()=>{
 		// To listen to a custom event, you need to follow the standard
 		// componentName:stringEvent
-		component.listen('B:click', e => console.log(e))
+		component.on('B:click', e => console.log(e))
 	}
 })
 ```
 
 *Component B*
 ```js
-jails('B', (component, div, annotation) =>{
+jails('B', (component, div, props) =>{
 
 	component.init = ()=>{
 		component.on('click', '.button', emit)
@@ -123,7 +113,7 @@ Component A executes Component B public method.
 
 *Component A*
 ```js
-jails('A', (component, div, annotation)=>{
+jails('A', (component, div, props)=>{
 
 	//Getting B reference
 	let B = component.get('[data-component*=B]')
@@ -137,7 +127,7 @@ jails('A', (component, div, annotation)=>{
 *Component B*
 
 ```js
-jails('B', ( component, div, annotation )=>{
+jails('B', ( component, div, props )=>{
 
 	component.update = ( option )=>{
 		console.log( option ) // { someOption:'bla bla bla' }
@@ -158,7 +148,7 @@ The `.get()` functions do not returns an instance, but a reference instead which
 </div>
 ```
 
-`.get( CSSSelector )` method also expects a `CSSSelector` as a parameter you can grab the exactly component you want:
+`.get( CSSSelector )` method expects a `CSSSelector` as a parameter you can grab the exactly component you want:
 
 ```html
 <div data-component="A">
@@ -171,7 +161,7 @@ The `.get()` functions do not returns an instance, but a reference instead which
 
 *Component A*
 ```js
-jails('A', (component, div, annotation)=>{
+jails('A', (component, div, props)=>{
 
 	//Getting B reference
 	let B = component.get('.only-this-one')
@@ -199,7 +189,7 @@ And if both has the methods with the same name, you can distinct which component
 ** Example, Modal and View components has the .update() method but you want that only View component to execute it **
 
 ```js
-jails('Z', ( component, html, annotation )=>{
+jails('Z', ( component, html, props )=>{
 
 	let dialog = component.get('.dialog')
 
@@ -212,7 +202,7 @@ jails('Z', ( component, html, annotation )=>{
 You can create a new component and compose it with the jails component interface to build your components:
 
 ```js
-jails('My-Component', ( component, html, annotation )=>{
+jails('My-Component', ( component, html, props )=>{
 
 	// Returning a new component that uses the jails component interface
 	return{
@@ -234,25 +224,26 @@ if you don't want to return a component object, jails will use the component int
 
 ---
 
-## Annotations
+## Annotations & Properties
 
-In order to build a generic component in some cases you need to let it configurable, without changing the source code.
-You can use the html data attributes to accomplish that, or you can use Jails `@annotations`.
+You can get all html `attributes`, `data-attributes` and also the unique jails @annotations, by
+using the `props()` function helper.
 
 ```html
 	<!--@my-component({ target:'.other-element' })-->
-	<a href="#" data-component="my-component">
+	<a href="#" id="my-link" data-component="my-component">
 		My Link component
 	</a>
 ```
 
 ```js
-	jails('my-component', (component, link, annotation)=>{
+	jails('my-component', (component, link, props)=>{
 
 		component.init = ()=>{
-			console.log( annotation.target ) // 'other-element'
+			console.log( props('target') ) // '.other-element'
+			console.log( props('id') ) // "my-link"
+			console.log( props('data').component ) // "my-component"
 		}
-
 	})
 ```
 
@@ -280,17 +271,16 @@ In the case with 2 or more components in the same markup:
 ### .on( Event, Function )
 Bind DOM events on the component itself.
 
-### .on( Event, CssSelector, Function ) : Function off()
+### .on( Event, CssSelector, Function ) : off()
 Event delegation, bind DOM events on component child nodes. Returns the `.off()` method to unbind the event.
+
+### .off( Event, Function )
 
 ### .trigger( element, event, [args] )
 Trigger events on some element. Element is required…
 
 ### .emit( action, [ data ] )
 Emit a custom event to be bubbled in the DOM tree.
-
-### .listen( Event, Function )
-Listen to custom events fired by Components or Controllers within the controller/app scope.
 
 ### .get( CssSelector )
 Creates an reference to components, and returns a function, it accepts the name of public method and arguments to be sent as event. The previous example code illustrates that.
@@ -304,18 +294,17 @@ Subscribes the Controller/App to a global event. Returns a function to unsubscri
 
 ## Api - Jails
 
-### Jails.start()
-Start jails internal Scanner, which will scan entire html and instantiate the components.
+### Jails.start( [container] )
+Starts jails scanner in the container or in `document.documentElement` if no container is passed.
+It will find all `data-component` elements and start them calling `.init()` function.
 
-### Jails.scanner
-Scanner object, scans the html DOM tree and start components.
+`jails` knows if an element is already started, so it won't create a new instance if the element is already started.
+
+### Jails.destroy( Node )
+Destroy all the events attached to that Node, and fires the `.destroy()` component method.
 
 ### Jails.render( DOMElement container, String html)
-Replace html content of a container DOMElement, and destroy all components instances.
-
-### Jails.refresh( [DOMElement container] )
-Executes scanning again, if no option is passed, Jails will scan the entire DOM again.
-It will bypass components already started, it will initialize only new dom elements created.
+Just like `.innerHTML` functionality, but it will kill all components instances and also will call `jails.start` on DOMElement container node.
 
 ### Jails.events
 Jails events object has `.on()`, `.off()`, `.trigger()` methods for events, also used on Components interface.
@@ -324,8 +313,11 @@ You can bypass these events making an *adapter*, using jQuery if you will.
 ### Jails.publish( `string`, `:any`) / Jails.subscribe( `string`, `:any`)
 The same `.publish()` and `.subscribe()` events used on components interface, you can use it on third-party modules using the pub/sub pattern.
 
+### Jails.component( name, node )
+Function used internally to create the `component` interface passing the name and the node element along.
+It's not usefull at development, it's intended to be used as a hoc interface to third-party libraries/modules, like a `logger` for instance.
 ---
 
 ## Browser support
-
-IE9 + and Modern Browsers.
+- IE10 + and Modern Browsers
+- IE8+ and Legacy Browsers using `jails.legacy.js`.
