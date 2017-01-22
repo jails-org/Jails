@@ -9,9 +9,6 @@
 - [`jails-components@2.2.x`](//github.com/jails-org/Components/tree/2.2.0)
 - [`jails-modules@2.2.x`](//github.com/jails-org/Modules/tree/2.2.0)
 
-Good projects should rely on good architectures, and Jails aim to solve architecture and organization problems.
-It's event driven and follows the DOM event pattern, low learning curve and trying to be predictable.
-
 ---
 
 Jails is a javascript micro-library for building simple applications and large scale applications without a huge stack dependencies.
@@ -278,6 +275,7 @@ Bind DOM events on the component itself.
 Event delegation, bind DOM events on component child nodes. Returns the `.off()` method to unbind the event.
 
 ### .off( Event, Function )
+Removes an event handler, just like `jQuery` api.
 
 ### .trigger( element, event, [args] )
 Trigger events on some element. Element is required…
@@ -319,6 +317,7 @@ The same `.publish()` and `.subscribe()` events used on components interface, yo
 ### Jails.component( name, node )
 Function used internally to create the `component` interface passing the name and the node element along.
 It's not usefull at development, it's intended to be used as a hoc interface to third-party libraries/modules, like a `logger` for instance.
+
 ---
 
 ## Browser support
