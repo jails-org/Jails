@@ -277,7 +277,7 @@
 				custom 		= ev.split(/\:/);
 				ev 			= custom[1]? ':' + custom[1] : custom[0];
 				isset  		= (ev in el._events);
-				fn     		= handler || delegate( el, selectorOrCallback, handler );
+				fn     		= callback? delegate( el, selectorOrCallback, handler ) :handler;
 
 				el._events[ev] = el._events[ev] || [];
 				el._events[ev].push( callback || selectorOrCallback );
