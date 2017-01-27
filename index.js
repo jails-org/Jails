@@ -193,14 +193,14 @@
 
 					each(topics[key], function( fn){
 						if(fn != method)
-							newarr.push(fn);
+							newtopics.push(fn);
 					});
 
 					topics[key] = newtopics;
 
 					each(_async[key], function( fn){
 						if(fn != method)
-							newarr.push(fn);
+							newasync.push(fn);
 					});
 					_async[key] = newasync;
 				};
