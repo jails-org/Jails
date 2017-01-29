@@ -131,9 +131,11 @@
 	}
 
 	function propset( acc ){
+
 		return function( item ){
 			var value, name = item.name.split(/data\-/);
-			try{ value = (new Function('return '+ item.value))(); }
+
+			try{ value = (new Function('return this.value')).call(item); }
 			catch(err){ value = item.value; }
 
 			if( name[1] ) acc.data[name.pop().replace(/-([a-z])/g, upper)] = value;
