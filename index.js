@@ -91,7 +91,7 @@
 
 		return function( name, index ){
 			var id = 'jails#component#'+name;
-			if( node[id] ) return;
+			if( node[id] || !(name in jails.components) ) return;
 			var comp  = jails.component( name, node );
 			Object.assign( comp, jails.components[ name ]( comp, node, getter(name, node) ) || comp );
 			comp.init();
