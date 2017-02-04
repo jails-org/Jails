@@ -9,7 +9,7 @@
 - [`jails-components@2.2.x`](//github.com/jails-org/Components/tree/2.2.0)
 - [`jails-modules@2.2.x`](//github.com/jails-org/Modules/tree/2.2.0)
 
-> Download Es6 Setup:
+> Download Es2015 Setup:
 - [jails-lab](//github.com/jails-org/Jails/raw/gh-pages/downloads/jails-lab.zip)
 
 ---
