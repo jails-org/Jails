@@ -134,8 +134,7 @@
 
 		return function( item ){
 			var value, name = item.name.split(/data\-/);
-
-			try{ value = (new Function('return this.value')).call(item); }
+			try{ value = item.value in window? item.value :(new Function('return '+ item.value))();}
 			catch(err){ value = item.value; }
 
 			if( name[1] ) acc.data[name.pop().replace(/-([a-z])/g, upper)] = value;
