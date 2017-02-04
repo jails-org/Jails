@@ -292,7 +292,7 @@ Creates an reference to components, and returns a function, it accepts the name 
 #### .publish( Event, [args] )
 Fires a global event to the ecosystem, very recommended to communicate Controllers and Apps with each other.
 
-### .subscribe( Event, Function ) : Function unsubscribe
+#### .subscribe( Event, Function ) : Function unsubscribe
 Subscribes the Controller/App to a global event. Returns a function to unsubscribe if necessary.
 
 ---
