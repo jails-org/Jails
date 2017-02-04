@@ -271,53 +271,54 @@ In the case with 2 or more components in the same markup:
 
 ## Api - Components
 
-### .on( Event, Function )
+#### .on( Event, Function )
 Bind DOM events on the component itself.
 
-### .on( Event, CssSelector, Function ) : off()
+#### .on( Event, CssSelector, Function ) : off()
 Event delegation, bind DOM events on component child nodes. Returns the `.off()` method to unbind the event.
 
-### .off( Event, Function )
+#### .off( Event, Function )
 Removes an event handler, just like `jQuery` api.
 
-### .trigger( element, event, [args] )
+#### .trigger( element, event, [args] )
 Trigger events on some element. Element is required…
 
-### .emit( action, [ data ] )
+#### .emit( action, [ data ] )
 Emit a custom event to be bubbled in the DOM tree.
 
-### .get( CssSelector )
+#### .get( CssSelector )
 Creates an reference to components, and returns a function, it accepts the name of public method and arguments to be sent as event. The previous example code illustrates that.
 
-### .publish( Event, [args] )
+#### .publish( Event, [args] )
 Fires a global event to the ecosystem, very recommended to communicate Controllers and Apps with each other.
 
 ### .subscribe( Event, Function ) : Function unsubscribe
 Subscribes the Controller/App to a global event. Returns a function to unsubscribe if necessary.
 
+---
 
 ## Api - Jails
 
-### Jails.start( [container] )
+#### Jails.start( [container] )
 Starts jails scanner in the container or in `document.documentElement` if no container is passed.
 It will find all `data-component` elements and start them calling `.init()` function.
 
 `jails` knows if an element is already started, so it won't create a new instance if the element is already started.
 
-### Jails.destroy( Node )
+#### Jails.destroy( Node )
 Destroy all the events attached to that Node, and fires the `.destroy()` component method.
 
-### Jails.render( DOMElement container, String html)
+#### Jails.render( DOMElement container, String html)
 Just like `.innerHTML` functionality, but it will kill all components instances and also will call `jails.start` on DOMElement container node.
 
-### Jails.events
+#### Jails.events
 Jails events object has `.on()`, `.off()`, `.trigger()` methods for events, also used on Components interface.
 You can bypass these events making an *adapter*, using jQuery if you will.
 
-### Jails.publish( `string`, `:any`) / Jails.subscribe( `string`, `:any`)
+#### Jails.publish( `string`, `:any`) / Jails.subscribe( `string`, `:any`)
 The same `.publish()` and `.subscribe()` events used on components interface, you can use it on third-party modules using the pub/sub pattern.
 
-### Jails.component( name, node )
+#### Jails.component( name, node )
 Function used internally to create the `component` interface passing the name and the node element along.
 It's not usefull at development, it's intended to be used as a hoc interface to third-party libraries/modules, like a `logger` for instance.
 
