@@ -176,11 +176,12 @@
 		}
 
 		function delegate( callback ){
-			return function(){
-				var element = this;
-				var args = arguments;
+			return function(e){
+				var element = this,
+					args    = arguments,
+					target  = e.target || e;
 				Object.keys(callback).forEach( function(key){
-					if( element.matches( key ) )
+					if( target.matches( key ) )
 						callback[key].apply(element, args);
 				});
 			};
