@@ -11,18 +11,22 @@
 	jails.publish = publisher.publish;
 	jails.subscribe = publisher.subscribe;
 
+	jails.start = function( ctx ){
+		ctx = ctx || document.documentElement;
+		each(ctx.querySelectorAll('[data-component]'), scan, true);
+	};
+
 	jails.destroy = function( ctx, query ){
-		each((ctx || document.documentElement).querySelectorAll( query || '[data-component]' ), function( node ){
+
+		ctx = ctx || document.documentElement;
+		query = query || '[data-component]';
+
+		each(ctx.querySelectorAll( query ), function( node ){
 			(node.__eventHandlers[':destroy'] || function(){}).call( node, node );
 			node.__events = null;
 			node.__eventHandlers = null;
 			node.j = null;
 		}, true);
-	};
-
-	jails.start = function( ctx ){
-		ctx = ctx || document.documentElement;
-		each(ctx.querySelectorAll('[data-component]'), scan, true);
 	};
 
 	jails.component = function( name, node, fn ){
@@ -90,7 +94,7 @@
 		};
 
 		fn( base, node, base.props );
-		init( base, node, base.props );
+		init( base );
 	};
 
 	function annotations( node ){
