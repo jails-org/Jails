@@ -15,13 +15,13 @@
 
 	jails.start = function( ctx ){
 		ctx = ctx || document.documentElement;
-		each(ctx.querySelectorAll(attribute), scan, true);
+		each(ctx.querySelectorAll(selector), scan, true);
 	};
 
 	jails.destroy = function( ctx, query ){
 
 		ctx = ctx || document.documentElement;
-		query = query || attribute;
+		query = query || selector;
 
 		each(ctx.querySelectorAll( query ), function( node ){
 			(node.__eventHandlers[':destroy'] || function(){}).call( node, node );
