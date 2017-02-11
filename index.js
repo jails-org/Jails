@@ -1,265 +1,149 @@
 ;(function( exports ){
 
-	var publisher = pubsub(),
-		data 	  = 'data-component',
-		selector  = '['+data+']';
+	var publisher = pubsub();
 
-	function jails( name, fn ){
-		jails.components[ name ] = fn;
+	function jails( name, mixin ){
+		jails.components[ name ] = mixin;
 	}
 
+	jails.events = events();
 	jails.components = {};
-	jails.events 	 = on();
-	jails.publish 	 = publisher.publish;
-	jails.subscribe	 = publisher.subscribe;
+	jails.publish = publisher.publish;
+	jails.subscribe = publisher.subscribe;
 
 	jails.start = function( ctx ){
 		ctx = ctx || document.documentElement;
-		each( ctx.querySelectorAll(selector), scan, true );
+		each(ctx.querySelectorAll('[data-component]'), scan, true);
 	};
 
-	jails.destroy = function( node ){
-		jails.events.trigger( node, 'destroy' );
-	};
+	jails.component = function( name, node, fn ){
 
-	jails.render = function( node, html ){
-		var child;
-		while( child = node.firstChild ){
-			if( child.getAttribute && child.getAttribute(data) )
-				jails.destroy( child );
-			node.removeChild( child );
-		}
-		node.innerHTML = html;
-		jails.start( node );
-	};
+		var data = {}, init;
 
-	jails.component = function( name, node ){
+		var base = {
 
-		var instance = {
-
-			name 		:name,
-			publish		:publisher.publish,
+			elm 		:node,
 			subscribe 	:publisher.subscribe,
-			on 			:jails.events.on,
+			publish   	:publisher.publish,
 
-			init :function(){},
-
-			destroy: function(){},
-
-			on :function( ev, selectorOrCallback, callback ){
-				return jails.events.on( node, ev, selectorOrCallback, callback );
+			on :function( ev, callback ){
+				jails.events.on( node, ev, callback );
 			},
 
-			off :function( ev, handler ){
-				jails.events.off( node, ev, handler );
+			init :function( callback ){
+				init = callback || function(){};
 			},
 
-			get :function( cssSelector ){
-				return function( name, args ){
-					var args = Array.from( arguments );
-					var elements = [].concat( node.matches(cssSelector)? node : [] );
-						elements = elements.concat( Array.from( node.querySelectorAll(cssSelector) ) );
-					each( elements, call(args.shift(), args) );
-				};
+			props :function( key ){
+				data.props = data.props || properties( node );
+				return key? data.props[key] : data.props;
 			},
 
-			emit :function( ){
-				var args = Array.from( arguments );
-				jails.events.trigger( node, ':' + args.shift(), { args: args, instance : instance });
+			annotations :function( key ){
+				data.annotations = data.annotations || annotations( node )[ name ] || {};
+				return key? data.annotations[key] : data.annotations;
 			},
 
-			__kill :function(){
-				instance.destroy();
-				for(var i in this ) delete this[i];
-				instance = null;
+			set( n, f ){
+				node.j[name].methods[n] = f;
+			},
+
+			get :function( n, query ){
+				return function(){
+					var args   = Array.from( arguments );
+					var method = args.shift();
+					query = query? '[data-component*='+n+']' + query : '[data-component*='+n+']';
+					each( node.querySelectorAll(query), function( el ){
+						if( el.j && method in el.j[n].methods )
+							el.j[n].methods[method].apply(null, args);
+						if( node.matches(query) )
+							node.j[n].methods[method].apply(null, args);
+					});
+				}
+			},
+
+			emit( n, params ){
+
+				var p = node.parentNode;
+				var ev = ':' + n;
+
+				while( p ){
+					if( p.j ){
+						Object.keys(p.j).forEach(function( name ){
+							if( p.__eventHandlers[ev] ){
+								p.__eventHandlers[ev].call( node, node, params );
+							}
+						});
+					}
+					p = p.parentNode;
+				}
 			}
 		};
 
-		jails.events.on( node, 'execute', execute( name, instance, node ) );
-		jails.events.on( node, 'destroy', destroy( name, instance, node ) );
-
-		return instance;
+		fn( base, node, base.props );
+		init();
 	};
 
-	function scan( element, index ){
-		var names = element.getAttribute(data);
-			names = names.split(/\s/);
-		each( names, mount( element ) );
-	}
+	function annotations( node ){
 
-	function mount( node ){
+		let ann = {}, comment;
 
-		return function( name, index ){
-			var id = 'jails#component#'+name;
-			if( node[id] || !(name in jails.components) ) return;
-			var comp  = jails.component( name, node );
-			Object.assign( comp, jails.components[ name ]( comp, node, getter(name, node) ) || comp );
-			comp.init();
-			node[id] = true;
-		};
-	}
-
-	function destroy( name, instance, node ){
-
-		return function(e){
-			instance.__kill();
-			instance = null;
-			clean( node );
-			e.stopPropagation();
-		};
-	}
-
-	function clean( node ){
-		for(var e in node._events)
-			jails.events.off( node, e, node._events[e].eventHandler );
-		node._events = null;
-		node['jails#component#'+name] = null;
-	}
-
-	function getter( name, node ){
-		var props;
-		return function( key ){
-			if( props ) {
-				return key? props[key] : props;
-			}
-			var anno  = annotations( node )[ name ] || {};
-			var attrs = { data:{} };
-			each(Array.from( node.attributes ), propset(attrs) );
-			props = Object.assign({}, anno, attrs);
-			return key? props[key] : props;
-		};
-	}
-
-	function propset( acc ){
-
-		return function( item ){
-			var value, name = item.name.split(/data\-/);
-			try{ value = item.value in window? item.value :(new Function('return '+ item.value))();}
-			catch(err){ value = item.value; }
-
-			if( name[1] ) acc.data[name.pop().replace(/-([a-z])/g, upper)] = value;
-			else acc[item.name] = value;
-
-			return acc;
-		};
-	}
-
-	function upper( m, string ){
-		return string.toUpperCase();
-	}
-
-	function annotations( el ){
-
-		var ann = {}, comment, code;
-
-		comment = el.previousSibling;
+		comment = node.previousSibling;
 		comment = comment && comment.nodeType == 8? comment :comment? comment.previousSibling : null;
 
-		if(comment && comment.nodeType == 8){
-			code = comment.data
-				.replace(/@([a-zA-z0-9-\/]*)(?:\((.*)\))?/g, function( text, component, param ){
-					ann[component] = new Function('return '+ param)();
-				});
+		if( comment && comment.nodeType == 8 ){
+			comment.data.replace(/@([a-zA-z0-9-\/]*)(?:\((.*)\))?/g, function( text, component, param ){
+				ann[component] = new Function('return '+ param)();
+			});
 		}
 
 		return ann;
 	}
 
-	//Inspired by:
-	//http://dev.housetrip.com/2014/09/15/decoupling-javascript-apps-using-pub-sub-pattern/
-	function pubsub(){
+	function scan( node ){
+		var components = node.getAttribute('data-component').split(/\s/);
+		each( components, mount(node) );
+	}
 
-		var topics = {};
-		var _async = {};
-
-		return{
-
-			subscribe :function(){
-
-				var args = Array.from( arguments );
-				var key = args[0], method = args[1];
-				var _self = this;
-
-				if( key in _async && topics[key] ){
-					topics[key].push( method );
-					_self.publish.apply(null, [key].concat(_async[key]));
-				}else{
-					topics[key] = topics[key] || [];
-					topics[key].push( method );
-				}
-				//Unsubscribe
-				return function(){
-					var newtopics = [];
-					var newasync  = [];
-
-					each(topics[key], function( fn){
-						if(fn != method)
-							newtopics.push(fn);
-					});
-
-					topics[key] = newtopics;
-
-					each(_async[key], function( fn){
-						if(fn != method)
-							newasync.push(fn);
-					});
-					_async[key] = newasync;
-				};
-			},
-
-			publish :function(){
-
-				var args = Array.from( arguments );
-				var key = args.shift();
-
-				topics[key] = topics[key] || [];
-
-				if(!topics[key].length){
-					_async[key] = args;
-				}
-
-				else each(topics[key], function( f ) {
-					if( f ) f.apply( this, args );
-				});
+	function mount( node ){
+		return function( name ){
+			if( name in jails.components ){
+				node.j = node.j || {};
+				node.j[name] = { methods :{} };
+				jails.component( name, node, jails.components[name] );
 			}
 		};
 	}
 
-	function delegate( node, cssSelector, callback ){
-		return function(e){
-			var parent = e.target;
-			while ( parent && parent !== node ) {
-				if (parent.matches(cssSelector))
-					callback.call(e.target, e);
-				parent = parent.parentNode;
-			}
+	function properties( node ){
+		var props = { data:{} };
+		each( node.attributes, propset(props) );
+		return props;
+	}
+
+	function propset( acc ){
+		return function( item ){
+			var value, name = item.name.split(/data\-/);
+			try{ value = item.value in window? item.value :(new Function('return '+ item.value))(); }
+			catch(err){ value = item.value; }
+
+			if( name[1] ) acc.data[name.pop().replace(/-([a-z])/g, upper)] = value;
+			else acc[item.name] = value;
+			return acc;
 		};
 	}
 
-	function execute( name, instance, node ){
-		return function(e){
-			if( node != e.target ) return;
-			var scope  = e.detail.method.split(/\:/),
-				method = scope.length > 1? scope[1] : scope[0];
-			if( (method in instance) && (!scope[1]) || (scope[1] && name == scope[0]) )
-				instance[ method ].apply( instance, e.detail.args );
-			e.stopPropagation();
-		};
+	function upper(m, string){
+		return string.toUpperCase();
 	}
 
-	function call( name, args ){
-		return function( element, index ){
-			jails.events.trigger( element, 'execute', { args :args, method :name });
-		};
+	function each( list, callback, reverse ){
+		list = reverse? Array.from( list ).reverse() : list;
+		for( var i = 0, len = list.length; i < len; i ++ )
+			callback( list[i], i, list );
 	}
 
-	function each( iterable, callback, reverse ){
-		iterable = reverse? Array.from(iterable).reverse() : iterable;
-		for( var i = 0, len = iterable.length; i < len; i++ )
-			callback( iterable[i], i );
-	}
-
-	function on(){
+	function events(){
 
 		function Ev(type, params) {
 			var e = document.createEvent(type);
@@ -268,42 +152,51 @@
 			return e;
 		}
 
+		function handler(node, ev){
+			return function(e){
+				var args = arguments;
+				node.__events[ev].forEach(function(cb){ cb.apply(this, args); });
+			};
+		}
+
+		function delegate( callback ){
+			return function(){
+				var element = this;
+				var args = arguments;
+				Object.keys(callback).forEach( function(key){
+					if( element.matches( key ) ){
+						callback[key].apply(element, args);
+					}
+				});
+			};
+		}
+
 		return {
 
-			on :function( el, ev, selectorOrCallback, callback ){
+			on :function( node, ev, callback ){
 
-				var custom, isset, fn;
+				node.__eventHandlers = node.__eventHandlers || {};
+				node.__events = node.__events || {};
 
-				el._events 	= el._events || {};
-				custom 		= ev.split(/\:/);
-				ev 			= custom[1]? ':' + custom[1] : custom[0];
-				isset  		= (ev in el._events);
-				fn     		= callback? delegate( el, selectorOrCallback, handler ) :handler;
-
-				el._events[ev] = el._events[ev] || [];
-				el._events[ev].push( callback || selectorOrCallback );
-
-				if( !isset ){
-					el.addEventListener(ev, fn, (ev == 'focus' || ev == 'blur') );
-					el._events[ev].eventHandler = fn;
+				if( !node.__eventHandlers[ev] ){
+					var cb = callback.call? handler(node, ev) : delegate(callback);
+					node.__eventHandlers[ev] = cb;
+					node.addEventListener( ev, cb, (ev == 'focus' || ev == 'blur') );
 				}
-
-				function handler(e){
-					var detail = e.detail || {};
-					el._events[ev].map(function( cb ){
-						if( !detail.instance || !custom[0] || detail.instance.name == custom[0] )
-							cb.apply( el, [e].concat( detail.args ) );
+				if( callback.call ){
+					node.__events[ev] = (node.__events[ev] || []).concat(callback);
+				}else{
+					Object.keys(callback).forEach(function(key){
+						(node.__events[ev] || []).concat(callback).concat( callback[key] );
 					});
 				}
-
-				return function(){
-					jails.events.off( el, ev, callback || selectorOrCallback );
-				};
 			},
 
 			off :function(el, ev, fn){
-				el.removeEventListener(ev, fn, false);
-				el._events[ev] = (el._events[ev] || []).filter(function(cb){ return cb != fn; });
+				if( fn && el.__events[ev] && el.__events[ev].length )
+					el.__events[ev] = (el.__events[ev] || []).filter(function(cb){ return cb != fn; });
+				else
+					el.removeEventListener(ev, el.__eventHandlers[ev], false);
 			},
 
 			trigger :function(el, name, args){
@@ -312,6 +205,32 @@
 				}catch(e){
 					el.dispatchEvent( new CustomEvent( name, { bubbles :true, detail :args } ) );
 				}
+			}
+		};
+	}
+
+	function pubsub( topics, async ){
+
+		topics = {};
+		async  = {};
+
+		return {
+			publish :function( name, params ){
+				if( !(name in topics) )
+					async[name] = params;
+				else
+					each( topics[name], function( topic ){ topic( params ); });
+			},
+			subscribe :function( name, method ){
+				topics[name] = topics[name] || [];
+				topics[name].push( method );
+				if( name in async )
+					each( topics[name], function( topic ){ topic( async[name] ); });
+				return function(){
+					topics[name] = topics[name].filter(function( topic ){
+						return topic == method;
+					});
+				};
 			}
 		};
 	}
