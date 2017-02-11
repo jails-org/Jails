@@ -11,6 +11,15 @@
 	jails.publish = publisher.publish;
 	jails.subscribe = publisher.subscribe;
 
+	jails.destroy = function( ctx, query ){
+		each((ctx || document.documentElement).querySelectorAll( query || '[data-component]' ), function( node ){
+			(node.__eventHandlers[':destroy'] || function(){}).call( node, node );
+			node.__events = null;
+			node.__eventHandlers = null;
+			node.j = null;
+		}, true);
+	};
+
 	jails.start = function( ctx ){
 		ctx = ctx || document.documentElement;
 		each(ctx.querySelectorAll('[data-component]'), scan, true);
@@ -18,7 +27,7 @@
 
 	jails.component = function( name, node, fn ){
 
-		var data = {}, init;
+		var data = {}, init = function(){};
 
 		var base = {
 
@@ -31,7 +40,7 @@
 			},
 
 			init :function( callback ){
-				init = callback || function(){};
+				init = callback;
 			},
 
 			props :function( key ){
@@ -81,7 +90,7 @@
 		};
 
 		fn( base, node, base.props );
-		init();
+		init( base, node, base.props );
 	};
 
 	function annotations( node ){
