@@ -1,25 +1,27 @@
 ;(function( exports ){
 
-	var publisher = pubsub();
+	var publisher 	  = pubsub(),
+		attribute 	  = 'data-component',
+		selector  	  = '['+attribute+']';
 
 	function jails( name, mixin ){
 		jails.components[ name ] = mixin;
 	}
 
-	jails.events = events();
+	jails.events 	 = events();
 	jails.components = {};
-	jails.publish = publisher.publish;
-	jails.subscribe = publisher.subscribe;
+	jails.publish 	 = publisher.publish;
+	jails.subscribe  = publisher.subscribe;
 
 	jails.start = function( ctx ){
 		ctx = ctx || document.documentElement;
-		each(ctx.querySelectorAll('[data-component]'), scan, true);
+		each(ctx.querySelectorAll(attribute), scan, true);
 	};
 
 	jails.destroy = function( ctx, query ){
 
 		ctx = ctx || document.documentElement;
-		query = query || '[data-component]';
+		query = query || attribute;
 
 		each(ctx.querySelectorAll( query ), function( node ){
 			(node.__eventHandlers[':destroy'] || function(){}).call( node, node );
@@ -41,6 +43,10 @@
 
 			on :function( ev, callback ){
 				jails.events.on( node, ev, callback );
+			},
+
+			off :function( ev, callback ){
+				jails.events.off( node, ev, callback );
 			},
 
 			init :function( callback ){
@@ -76,10 +82,7 @@
 			},
 
 			emit( n, params ){
-
-				var p = node.parentNode;
-				var ev = ':' + n;
-
+				var p = node.parentNode, ev = ':' + n;
 				while( p ){
 					if( p.j ){
 						Object.keys(p.j).forEach(function( name ){
@@ -114,7 +117,7 @@
 	}
 
 	function scan( node ){
-		var components = node.getAttribute('data-component').split(/\s/);
+		var components = node.getAttribute(attribute).split(/\s/);
 		each( components, mount(node) );
 	}
 
@@ -177,9 +180,8 @@
 				var element = this;
 				var args = arguments;
 				Object.keys(callback).forEach( function(key){
-					if( element.matches( key ) ){
+					if( element.matches( key ) )
 						callback[key].apply(element, args);
-					}
 				});
 			};
 		}
