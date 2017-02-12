@@ -63,7 +63,7 @@
 				return key? data.annotations[key] : data.annotations;
 			},
 
-			set( n, f ){
+			set :function( n, f ){
 				node.j[name].methods[n] = f;
 			},
 
@@ -81,7 +81,7 @@
 				}
 			},
 
-			emit( n, params ){
+			emit :function( n, params ){
 				var p = node.parentNode, ev = ':' + n;
 				while( p ){
 					if( p.j ){
@@ -102,7 +102,7 @@
 
 	function annotations( node ){
 
-		let ann = {}, comment;
+		var ann = {}, comment;
 
 		comment = node.previousSibling;
 		comment = comment && comment.nodeType == 8? comment :comment? comment.previousSibling : null;
