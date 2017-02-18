@@ -286,7 +286,7 @@ It will find all `data-component` elements and start them calling `.init()` func
 > Jails events object has `.on()`, `.off()`, `.trigger()` methods for events, also used on Components interface.
 You can bypass these events making an *adapter*, using jQuery if you will.
 
-#### Jails.publish( `string`, `:any`) / Jails.subscribe( `string`, `:any`)
+#### Jails.publish( `string`, `:any`) & Jails.subscribe( `string`, `Function`)
 > The same `.publish()` and `.subscribe()` events used on components interface, you can use it on third-party modules using the pub/sub pattern.
 
 #### Jails.component( String name, HTMLElement node, Function fn )
