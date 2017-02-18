@@ -25,7 +25,7 @@
 jails('form', ( component, form, props ) =>{
 
 	component.init(()=>{
-		component.on('change', 'input' onChange)
+		component.on('change', {'input':onChange })
 	})
 
 	let onChange = (e)=>{
@@ -66,7 +66,7 @@ jails('A', (component, div, props)=>{
 	component.init(()=>{
 		// To listen to a custom event, you need to follow the standard
 		// componentName:stringEvent
-		component.on('B:click', e => console.log(e))
+		component.on(':click', {'[data-component*=B]':e => console.log(e) })
 	})
 })
 ```
@@ -76,7 +76,7 @@ jails('A', (component, div, props)=>{
 jails('B', (component, div, props) =>{
 
 	component.init(()=>{
-		component.on('click', '.button', emit)
+		component.on('click', {'.button' :emit})
 	})
 
 	let emit = (e)=>{
@@ -184,9 +184,9 @@ jails('Z', ( component, html, props )=>{
 
 	let dialog = component.get('modal')
 
-	component.init = ()=>{
+	component.init(()=>{
 		dialog('update', { username:'Clark Kent' })
-	}
+	})
 })
 ```
 
@@ -207,11 +207,11 @@ using the `annotations()` function helper.
 ```js
 	jails('my-component', (component, link, props)=>{
 
-		component.init = ()=>{
+		component.init(()=>{
 			console.log( annotations('target') ) // '.other-element'
 			console.log( props('id') ) // "my-link"
 			console.log( props('data').component ) // "my-component"
-		}
+		})
 	})
 ```
 
