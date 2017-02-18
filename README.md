@@ -6,6 +6,7 @@
 
 > It follows the old-school phylosophy about separation of concerns, non-obstructive, focus on DOM event system and predictable.
 
+<br />
 
 ## Creating a Component
 
