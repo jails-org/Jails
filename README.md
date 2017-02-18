@@ -289,7 +289,7 @@ You can bypass these events making an *adapter*, using jQuery if you will.
 #### Jails.publish( `string`, `:any`) / Jails.subscribe( `string`, `:any`)
 > The same `.publish()` and `.subscribe()` events used on components interface, you can use it on third-party modules using the pub/sub pattern.
 
-### Jails.component( String name, HTMLElement node, Function fn )
+#### Jails.component( String name, HTMLElement node, Function fn )
 > Function used internally to create the `component` interface passing the name and the node element along.
 It's not usefull at development, it's intended to be used as a hoc interface to third-party libraries/modules, like a `logger` for instance.
 
