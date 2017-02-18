@@ -1,4 +1,4 @@
-<img src="http://jails-org.github.io/Jails/assets/jails.svg" align="left" width="100" />
+<img src="http://jails-org.github.io/Jails/assets/jails.svg" align="left" width="140" />
 
 
 > Jails is a javascript micro-library for building simple applications and large scale applications without a huge stack dependencies.
