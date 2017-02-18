@@ -236,7 +236,7 @@ In the case with 2 or more components in the same markup:
 
 ## Api - Components
 
-#### elm
+#### .elm
 > The `htmlElement` node.
 
 #### .on( Event, Function )
