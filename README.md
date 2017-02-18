@@ -1,11 +1,5 @@
-![jails](http://jails-org.github.io/Jails/assets/jails.png)
+<img src="http://jails-org.github.io/Jails/assets/jails.svg" align="left" width="80" />
 
-> A Event Driven & Non-obstructive component Library
-
-> Download Es2015 Setup:
-- [jails-lab](//github.com/jails-org/Jails/raw/gh-pages/downloads/jails-lab.zip)
-
----
 
 Jails is a javascript micro-library for building simple applications and large scale applications without a huge stack dependencies.
 
