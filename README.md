@@ -1,9 +1,8 @@
 <img src="http://jails-org.github.io/Jails/assets/jails.svg" align="left" width="80" />
 
 
-Jails is a javascript micro-library for building simple applications and large scale applications without a huge stack dependencies.
-
-It follows the old-school phylosophy about separation of concerns, non-obstructive, focus on DOM event system and predictable.
+> Jails is a javascript micro-library for building simple applications and large scale applications without a huge stack dependencies.
+> It follows the old-school phylosophy about separation of concerns, non-obstructive, focus on DOM event system and predictable.
 
 ---
 
