@@ -238,10 +238,11 @@ In the case with 2 or more components in the same markup:
 
 ## Api - Components
 
+#### elm
+> The `htmlElement` node.
 
 #### .on( Event, Function )
 > Bind DOM events on the component itself.
-
 
 #### .on( Event, CssSelector, Function ) : off()
 > Event delegation, bind DOM events on component child nodes. Returns the `.off()` method to unbind the event.
@@ -252,8 +253,17 @@ In the case with 2 or more components in the same markup:
 #### .trigger( element, event, [args] )
 > Trigger events on some element. Element is required…
 
+#### .props( [String key] )
+> Get a single property or a set of `htmlElement` properties.
+
+#### .annotations( [String key] )
+> Get a single property or a set of `@annotations` properties.
+
 #### .emit( action, [ data ] )
 > Emit a custom event to be bubbled in the DOM tree.
+
+#### .set( String methodName, Function )
+> Set a public method to be called by a parent Component.
 
 #### .get( String, [ CssSelector ] )
 > Creates an reference to components, and returns a function, it accepts the name of public method and arguments to be sent as event. The previous example code illustrates that.
