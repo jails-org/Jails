@@ -208,18 +208,18 @@
 				}
 			},
 
-			off :function(el, ev, fn){
-				if( fn && el.__events[ev] && el.__events[ev].length )
-					el.__events[ev] = (el.__events[ev] || []).filter(function(cb){ return cb != fn; });
+			off :function( node, ev, fn ){
+				if( fn && node.__events[ev] && node.__events[ev].length )
+					node.__events[ev] = (node.__events[ev] || []).filter(function(cb){ return cb != fn; });
 				else
-					el.removeEventListener(ev, el.__eventHandlers[ev], false);
+					node.removeEventListener(ev, node.__eventHandlers[ev], false);
 			},
 
-			trigger :function(el, name, args){
+			trigger :function( node, name, args ){
 				try{
-					el.dispatchEvent( new Ev( name, { bubbles :true, detail :args } ) );
+					node.dispatchEvent( new Ev( name, { bubbles :true, detail :args } ) );
 				}catch(e){
-					el.dispatchEvent( new CustomEvent( name, { bubbles :true, detail :args } ) );
+					node.dispatchEvent( new CustomEvent( name, { bubbles :true, detail :args } ) );
 				}
 			}
 		};
