@@ -7,6 +7,8 @@
 
 <br />
 <br />
+<br />
+<br />
 
 ## Creating a Component
 
