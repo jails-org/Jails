@@ -24,10 +24,12 @@
 		query = query || selector;
 
 		each(ctx.querySelectorAll( query ), function( node ){
-			(node.__eventHandlers[':destroy'] || function(){}).call( node, node );
-			node.__events = null;
-			node.__eventHandlers = null;
-			node.j = null;
+			if(node.__eventHandlers){
+				node.__events = null;
+				node.__eventHandlers = null;
+				node.j = null;
+			}
+			jails.events.trigger(node, ':destroy');
 		}, true);
 	};
 
@@ -82,16 +84,9 @@
 			},
 
 			emit :function( n, params ){
-				var p = node.parentNode, ev = ':' + n;
-				while( p ){
-					if( p.j ){
-						Object.keys(p.j).forEach(function( name ){
-							if( p.__eventHandlers[ev] ){
-								p.__eventHandlers[ev].call( node, node, params );
-							}
-						});
-					}
-					p = p.parentNode;
+				var args = Array.from( arguments );
+				if( n.match(/^\:/) ){
+					jails.events.trigger(node, args.shift(), { args:args });
 				}
 			}
 		};
@@ -170,19 +165,17 @@
 
 		function handler(node, ev){
 			return function(e){
-				var args = arguments;
-				node.__events[ev].forEach(function(cb){ cb.apply(this, args); });
+				node.__events[ev].forEach(function(cb){ cb.apply(this, [e].concat(e.detail.args)); });
 			};
 		}
 
 		function delegate( callback ){
 			return function(e){
 				var element = this,
-					args    = arguments,
-					target  = e.target || e;
+					target  = e.target;
 				Object.keys(callback).forEach( function(key){
 					if( target.matches( key ) )
-						callback[key].apply(element, args);
+						callback[key].apply(element, [e].concat(e.detail.args));
 				});
 			};
 		}
@@ -203,7 +196,7 @@
 					node.__events[ev] = (node.__events[ev] || []).concat(callback);
 				}else{
 					Object.keys(callback).forEach(function(key){
-						(node.__events[ev] || []).concat(callback).concat( callback[key] );
+						node.__events[ev] = (node.__events[ev] || []).concat( callback[key] );
 					});
 				}
 			},
