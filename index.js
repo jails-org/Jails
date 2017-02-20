@@ -69,9 +69,8 @@
 				return key? data.annotations[key] : data.annotations;
 			},
 
-			set :function( n, f ){
-				if( f ) node.j[name].methods[n] = f;
-				else node.j[name].methods = n;
+			methods :function( n, f ){
+				node.j[name].methods = n;
 			},
 
 			get :function( n, query ){
