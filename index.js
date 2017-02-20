@@ -33,15 +33,18 @@
 		}, true);
 	};
 
-	jails.component = function( name, node, fn ){
+	jails.component = function( name, node ){
 
-		var data = {}, init = function(){};
+		var data = {};
+		var base;
 
-		var base = {
+		return base = {
 
 			elm 		:node,
 			subscribe 	:publisher.subscribe,
 			publish   	:publisher.publish,
+
+			__initialize:function(){},
 
 			on :function( ev, callback ){
 				jails.events.on( node, ev, callback );
@@ -52,7 +55,8 @@
 			},
 
 			init :function( callback ){
-				init = callback;
+				base.__initialize = callback && callback.call?
+					callback :base.__initialize;
 			},
 
 			props :function( key ){
@@ -70,16 +74,25 @@
 			},
 
 			get :function( n, query ){
+
 				return function(){
-					var args   = Array.from( arguments );
-					var method = args.shift();
-					query = query? '[data-component*='+n+']' + query : '[data-component*='+n+']';
-					each( node.querySelectorAll(query), function( el ){
-						if( el.j && method in el.j[n].methods )
+
+					var args   = Array.from( arguments ),
+						method = args.shift(),
+						selector = '[data-component*='+n+']';
+
+					query = query? selector + query : selector;
+
+					each( node.querySelectorAll( query ), function( el ){
+						if( el.j && el.j[n] && method in el.j[n].methods )
 							el.j[n].methods[method].apply(null, args);
-						if( node.matches(query) )
-							node.j[n].methods[method].apply(null, args);
 					});
+
+					if( node.matches(query) ){
+						if( node.j && node.j[n] && method in node.j[n].methods )
+							node.j[n].methods[method].apply(null, args);
+					}
+
 				}
 			},
 
@@ -91,8 +104,6 @@
 			}
 		};
 
-		fn( base, node, base.props );
-		init( base );
 	};
 
 	function annotations( node ){
@@ -118,10 +129,13 @@
 
 	function mount( node ){
 		return function( name ){
+			var base;
 			if( name in jails.components ){
 				node.j = node.j || {};
 				node.j[name] = { methods :{} };
-				jails.component( name, node, jails.components[name] );
+				base = jails.component( name, node );
+				jails.components[name]( base, node, base.props );
+				base.__initialize();
 			}
 		};
 	}
