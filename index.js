@@ -135,7 +135,7 @@
 				node.j[name] = { methods :{} };
 				base = jails.component( name, node );
 				jails.components[name]( base, node, base.props );
-				base.__initialize();
+				base.__initialize( base );
 			}
 		};
 	}
