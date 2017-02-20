@@ -70,7 +70,8 @@
 			},
 
 			set :function( n, f ){
-				node.j[name].methods[n] = f;
+				if( f ) node.j[name].methods[n] = f;
+				else node.j[name].methods = n;
 			},
 
 			get :function( n, query ){
