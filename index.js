@@ -44,6 +44,10 @@
 			subscribe 	:publisher.subscribe,
 			publish   	:publisher.publish,
 
+			$public 	:function( n, f ){
+				node.j[name].methods = n;
+			},
+
 			__initialize:function(){},
 
 			on :function( ev, callback ){
@@ -67,10 +71,6 @@
 			annotations :function( key ){
 				data.annotations = data.annotations || annotations( node )[ name ] || {};
 				return key? data.annotations[key] : data.annotations;
-			},
-
-			methods :function( n, f ){
-				node.j[name].methods = n;
 			},
 
 			get :function( n, query ){
