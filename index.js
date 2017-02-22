@@ -179,17 +179,27 @@
 
 		function handler(node, ev){
 			return function(e){
-				node.__events[ev].forEach(function(cb){ cb.apply(this, [e].concat(e.detail.args)); });
+				var scope = this;
+
+				node.__events[ev].forEach(function(o){ o.handler.apply(scope, [e].concat(e.detail.args)); });
 			};
 		}
 
-		function delegate( callback ){
+		function removeListener( node, ev ){
+			node.removeEventListener(ev, node.__events[ev].listener, false);
+			delete node.__events[ev];
+		}
+
+		function delegate( node, callback ){
 			return function(e){
-				var element = this,
-					target  = e.target;
+				var element = this, target = e.target;
 				Object.keys(callback).forEach( function(key){
-					if( target.matches( key ) )
-						callback[key].apply(element, [e].concat(e.detail.args));
+					parent = target;
+					while( parent && parent !== node ){
+						if( parent.matches(key) )
+							callback[key].apply(element, [e].concat(e.detail.args));
+						parent = parent.parentNode;
+					}
 				});
 			};
 		}
@@ -198,28 +208,30 @@
 
 			on :function( node, ev, callback ){
 
-				node.__eventHandlers = node.__eventHandlers || {};
-				node.__events = node.__events || {};
+				node.__events 	  = node.__events || {};
+				node.__events[ev] = (node.__events[ev] || []);
 
-				if( !node.__eventHandlers[ev] ){
-					var cb = callback.call? handler(node, ev) : delegate(callback);
-					node.__eventHandlers[ev] = cb;
-					node.addEventListener( ev, cb, (ev == 'focus' || ev == 'blur') );
+				if(!node.__events[ev].length){
+					var fn = handler(node, ev);
+					node.addEventListener(ev, fn, (ev == 'focus' || ev == 'blur'));
+					node.__events[ev].listener = fn;
 				}
-				if( callback.call ){
-					node.__events[ev] = (node.__events[ev] || []).concat(callback);
-				}else{
-					Object.keys(callback).forEach(function(key){
-						node.__events[ev] = (node.__events[ev] || []).concat( callback[key] );
-					});
-				}
+
+				var cb = callback.call? callback :delegate( node, callback );
+				node.__events[ev].push({ handler :cb, callback :callback });
 			},
 
 			off :function( node, ev, fn ){
-				if( fn && node.__events[ev] && node.__events[ev].length )
-					node.__events[ev] = (node.__events[ev] || []).filter(function(cb){ return cb != fn; });
-				else
-					node.removeEventListener(ev, node.__eventHandlers[ev], false);
+
+				if( fn && node.__events[ev] && node.__events[ev].length ){
+					var old = node.__events[ev];
+					node.__events[ev] = node.__events[ev].filter(function(o){ return o.callback != fn; });
+					node.__events.listener = old.listener;
+					if( !node.__events[ev].length )
+						removeListener( node, ev );
+				}else{
+					removeListener( node, ev );
+				}
 			},
 
 			trigger :function( node, name, args ){
