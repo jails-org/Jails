@@ -180,7 +180,6 @@
 		function handler(node, ev){
 			return function(e){
 				var scope = this;
-
 				node.__events[ev].forEach(function(o){ o.handler.apply(scope, [e].concat(e.detail.args)); });
 			};
 		}
@@ -190,17 +189,14 @@
 			delete node.__events[ev];
 		}
 
-		function delegate( node, callback ){
+		function delegate( node, selector, callback ){
 			return function(e){
-				var element = this, target = e.target;
-				Object.keys(callback).forEach( function(key){
-					parent = target;
-					while( parent && parent !== node ){
-						if( parent.matches(key) )
-							callback[key].apply(element, [e].concat(e.detail.args));
-						parent = parent.parentNode;
-					}
-				});
+				var element = this, parent = e.target;
+				while( parent && parent !== node ){
+					if( parent.matches(selector) )
+						callback.apply(element, [e].concat(e.detail.args));
+					parent = parent.parentNode;
+				}
 			};
 		}
 
@@ -217,15 +213,22 @@
 					node.__events[ev].listener = fn;
 				}
 
-				var cb = callback.call? callback :delegate( node, callback );
-				node.__events[ev].push({ handler :cb, callback :callback });
+				if( callback.call ){
+					node.__events[ev].push({ handler :callback, callback :callback });
+				}else{
+					Object.keys(callback).forEach(function(key){
+						node.__events[ev].push({ handler :delegate(node, key, callback[key]), callback :callback[key] });
+					});
+				}
 			},
 
 			off :function( node, ev, fn ){
 
 				if( fn && node.__events[ev] && node.__events[ev].length ){
 					var old = node.__events[ev];
+					console.log('antes', node.__events[ev]);
 					node.__events[ev] = node.__events[ev].filter(function(o){ return o.callback != fn; });
+					console.log('depois', node.__events[ev]);
 					node.__events.listener = old.listener;
 					if( !node.__events[ev].length )
 						removeListener( node, ev );
