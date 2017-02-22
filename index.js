@@ -226,9 +226,7 @@
 
 				if( fn && node.__events[ev] && node.__events[ev].length ){
 					var old = node.__events[ev];
-					console.log('antes', node.__events[ev]);
 					node.__events[ev] = node.__events[ev].filter(function(o){ return o.callback != fn; });
-					console.log('depois', node.__events[ev]);
 					node.__events.listener = old.listener;
 					if( !node.__events[ev].length )
 						removeListener( node, ev );
