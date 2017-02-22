@@ -37,6 +37,7 @@
 
 		var data = {};
 		var base;
+		var events = jails.events;
 
 		return base = {
 
@@ -51,11 +52,11 @@
 			__initialize:function(){},
 
 			on :function( ev, callback ){
-				jails.events.on( node, ev, callback );
+				events.on( node, ev, callback );
 			},
 
 			off :function( ev, callback ){
-				jails.events.off( node, ev, callback );
+				events.off( node, ev, callback );
 			},
 
 			init :function( callback ){
@@ -97,10 +98,7 @@
 			},
 
 			emit :function( n, params ){
-				var args = Array.from( arguments );
-				if( n.match(/^\:/) ){
-					jails.events.trigger(node, args.shift(), { args:args });
-				}
+				events.trigger(node, args.shift(), { args:Array.from( arguments ) });
 			}
 		};
 
@@ -180,7 +178,8 @@
 		function handler(node, ev){
 			return function(e){
 				var scope = this;
-				node.__events[ev].forEach(function(o){ o.handler.apply(scope, [e].concat(e.detail.args)); });
+				var detail = e.detail || {};
+				node.__events[ev].forEach(function(o){ o.handler.apply(scope, [e].concat(detail.args)); });
 			};
 		}
 
@@ -191,10 +190,10 @@
 
 		function delegate( node, selector, callback ){
 			return function(e){
-				var element = this, parent = e.target;
+				var element = this, parent = e.target, detail = e.detail || {};
 				while( parent && parent !== node ){
 					if( parent.matches(selector) )
-						callback.apply(element, [e].concat(e.detail.args));
+						callback.apply(element, [e].concat(detail.args));
 					parent = parent.parentNode;
 				}
 			};
@@ -236,11 +235,11 @@
 			},
 
 			trigger :function( node, name, args ){
-				try{
-					node.dispatchEvent( new Ev( name, { bubbles :true, detail :args } ) );
-				}catch(e){
-					node.dispatchEvent( new CustomEvent( name, { bubbles :true, detail :args } ) );
-				}
+				node.dispatchEvent(
+					/\:/.test(name)
+					?new CustomEvent( name, { bubbles :true, detail :args } )
+					:new Ev( name, { bubbles :true, detail :args } )
+				);
 			}
 		};
 	}
