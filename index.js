@@ -24,9 +24,8 @@
 		query = query || selector;
 
 		each(ctx.querySelectorAll( query ), function( node ){
-			if(node.__eventHandlers){
+			if(node.__events){
 				node.__events = null;
-				node.__eventHandlers = null;
 				node.j = null;
 			}
 			jails.events.trigger(node, ':destroy');
