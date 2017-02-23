@@ -128,8 +128,8 @@
 	function mount( node ){
 		return function( name ){
 			var base;
-			if( name in jails.components ){
-				node.j = node.j || {};
+			node.j = node.j || {};
+			if( name in jails.components && !node.j[name] ){
 				node.j[name] = { methods :{} };
 				base = jails.component( name, node );
 				jails.components[name]( base, node, base.props );
