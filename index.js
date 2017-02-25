@@ -97,7 +97,8 @@
 			},
 
 			emit :function( n, params ){
-				events.trigger(node, args.shift(), { args:Array.from( arguments ) });
+				var args = Array.from( arguments );
+				events.trigger(node, args.shift(), { args:args });
 			}
 		};
 
