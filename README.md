@@ -1,4 +1,4 @@
-<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="40%" border="0" /><img src="http://jails-org.github.io/Jails/assets/jails.svg" width="140" />
+<p align="center"><img src="http://jails-org.github.io/Jails/assets/jails.svg" width="140" /></p>
 <br />
 <br />
 
