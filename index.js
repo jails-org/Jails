@@ -44,7 +44,7 @@
 			subscribe 	:publisher.subscribe,
 			publish   	:publisher.publish,
 
-			$public 	:function( n, f ){
+			expose 		:function( n, f ){
 				node.j[name].methods = n;
 			},
 
