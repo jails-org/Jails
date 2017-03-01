@@ -242,8 +242,9 @@ In the case with 2 or more components in the same markup:
 #### .on( Event, Function )
 > Bind DOM events on the component itself.
 
-#### .on( Event, CssSelector, Function ) : off()
-> Event delegation, bind DOM events on component child nodes. Returns the `.off()` method to unbind the event.
+#### .on( Event, Object ) : off()
+> Event delegation, bind DOM events on component child nodes.
+E.g `.on('submit', {'form':callback }) `
 
 #### .off( Event, Function )
 > Removes an event handler, just like `jQuery` api.
@@ -260,8 +261,8 @@ In the case with 2 or more components in the same markup:
 #### .emit( action, [ data ] )
 > Emit a custom event to be bubbled in the DOM tree.
 
-#### .set( String methodName, Function )
-> Set a public method to be called by a parent Component.
+#### .expose( Object )
+> Set a map of functions to be public.
 
 #### .get( String, [ CssSelector ] )
 > Creates an reference to components, and returns a function, it accepts the name of public method and arguments to be sent as event. The previous example code illustrates that.
