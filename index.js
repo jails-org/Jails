@@ -4,8 +4,9 @@
 		attribute 	  = 'data-component',
 		selector  	  = '['+attribute+']';
 
-	function jails( name, mixin ){
+	function jails( name, mixin, options ){
 		jails.components[ name ] = mixin;
+		jails.components[ name ].options = options || {};
 	}
 
 	jails.events 	 = events();
@@ -32,7 +33,7 @@
 		}, true);
 	};
 
-	jails.component = function( name, node ){
+	jails.component = function( name, node, options ){
 
 		var data = {};
 		var base;
@@ -43,12 +44,13 @@
 			elm 		:node,
 			subscribe 	:publisher.subscribe,
 			publish   	:publisher.publish,
+			injection 	:options.injection,
+
+			__initialize:function(){},
 
 			expose 		:function( n, f ){
 				node.j[name].methods = n;
 			},
-
-			__initialize:function(){},
 
 			on :function( ev, callback ){
 				events.on( node, ev, callback );
@@ -127,12 +129,13 @@
 
 	function mount( node ){
 		return function( name ){
-			var base;
+			var base, fn;
 			node.j = node.j || {};
 			if( name in jails.components && !node.j[name] ){
+				fn = jails.components[name];
 				node.j[name] = { methods :{} };
-				base = jails.component( name, node );
-				jails.components[name]( base, node, base.props );
+				base = jails.component( name, node, fn.options );
+				fn( base, node, base.props );
 				base.__initialize( base );
 			}
 		};
