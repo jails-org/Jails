@@ -119,11 +119,16 @@ jails('A', (component, div, props)=>{
 
 ```js
 jails('B', ( component, div, props )=>{
-
-	component.set('update', option =>{
+	
+	component.init(()=>{
+	    component.expose({ update })
+	})
+	
+	const update = ( option )=>{
 		console.log( option ) // { someOption:'bla bla bla' }
 		component.publish('messageToALL', someOption) // Sends data to any component subscribed to 'messageToALL'.
 	}
+
 })
 ```
 
