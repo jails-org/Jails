@@ -62,7 +62,13 @@
 
 			init :function( callback ){
 				base.__initialize = callback && callback.call?
-					callback :base.__initialize;
+				function( component ){
+					var pipes = callback( component );
+					var op = {};
+					if( pipes && pipes.forEach )
+						pipes.forEach(function(m){ op = m( component, op ) || op; });
+				}
+				:base.__initialize;
 			},
 
 			props :function( key ){
