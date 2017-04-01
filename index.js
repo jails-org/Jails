@@ -192,8 +192,10 @@
 		}
 
 		function removeListener( node, ev ){
-			node.removeEventListener(ev, node.__events[ev].listener, false);
-			delete node.__events[ev];
+			if( node.__events[ev] && node.__events[ev].listener ){
+				node.removeEventListener(ev, node.__events[ev].listener, false);
+				delete node.__events[ev];
+			}
 		}
 
 		function delegate( node, selector, callback ){
