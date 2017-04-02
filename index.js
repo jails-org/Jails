@@ -61,13 +61,16 @@
 			},
 
 			init :function( callback ){
-				if( callback && callback.call)
-					base.__initialize = callback;
-				else if( callback && callback.join )
+				if( callback && callback.call )
 					base.__initialize = function( component ){
-						var op = {};
-						callback.forEach(function(m){ op = m( component, op ) || op; });
-					};
+						var ret = callback( component );
+						if( ret && ret.forEach ){
+							var op = {};
+							ret.forEach(function(m){
+								op = (m && m.call? m( component, op ) : null) || op;
+							});
+						}
+					}
 			},
 
 			props :function( key ){
