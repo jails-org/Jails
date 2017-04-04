@@ -7,6 +7,7 @@
 	function jails( name, mixin, options ){
 		jails.components[ name ] = mixin;
 		jails.components[ name ].options = options || {};
+		return jails;
 	}
 
 	jails.events 	 = events();
@@ -17,6 +18,7 @@
 	jails.start = function( ctx ){
 		ctx = ctx || document.documentElement;
 		each(ctx.querySelectorAll(selector), scan, true);
+		return jails;
 	};
 
 	jails.destroy = function( ctx, query ){
@@ -31,6 +33,12 @@
 			}
 			jails.events.trigger(node, ':destroy');
 		}, true);
+		return jails;
+	};
+
+	jails.use = function( fn ){
+		fn( jails );
+		return jails;
 	};
 
 	jails.component = function( name, node, options ){
