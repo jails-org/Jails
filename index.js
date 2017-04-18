@@ -213,8 +213,10 @@
 			return function(e){
 				var element = this, parent = e.target, detail = e.detail || {};
 				while( parent && parent !== node ){
-					if( parent.matches(selector) )
+					if( parent.matches(selector) ){
+						e.delegatedTarget = parent
 						callback.apply(element, [e].concat(detail.args));
+					}
 					parent = parent.parentNode;
 				}
 			};
