@@ -29,7 +29,7 @@
 		each(ctx.querySelectorAll( query ), function( node ){
 			if(node.__events){
 				node.__events = null;
-				node.j = null;
+				node.attributes.j = null;
 			}
 			jails.events.trigger(node, ':destroy');
 		}, true);
@@ -57,7 +57,7 @@
 			__initialize:function(){},
 
 			expose 		:function( n, f ){
-				node.j[name].methods = n;
+				node.attributes.j[name].methods = n;
 			},
 
 			on :function( ev, callback ){
@@ -102,13 +102,13 @@
 					query = query? selector + query : selector;
 
 					each( node.querySelectorAll( query ), function( el ){
-						if( el.j && el.j[n] && method in el.j[n].methods )
-							el.j[n].methods[method].apply(null, args);
+						if( el.attributes.j && el.attributes.j[n] && method in el.attributes.j[n].methods )
+							el.attributes.j[n].methods[method].apply(null, args);
 					});
 
 					if( node.matches(query) ){
-						if( node.j && node.j[n] && method in node.j[n].methods )
-							node.j[n].methods[method].apply(null, args);
+						if( node.attributes.j && node.attributes.j[n] && method in node.attributes.j[n].methods )
+							node.attributes.j[n].methods[method].apply(null, args);
 					}
 
 				}
@@ -146,10 +146,10 @@
 	function mount( node ){
 		return function( name ){
 			var base, fn;
-			node.j = node.j || {};
-			if( name in jails.components && !node.j[name] ){
+			node.attributes.j = node.attributes.j || {};
+			if( name in jails.components && !node.attributes.j[name] ){
 				fn = jails.components[name];
-				node.j[name] = { methods :{} };
+				node.attributes.j[name] = { methods :{} };
 				base = jails.component( name, node, fn.options );
 				fn( base, node, base.props );
 				base.__initialize( base );
@@ -214,7 +214,7 @@
 				var element = this, parent = e.target, detail = e.detail || {};
 				while( parent && parent !== node ){
 					if( parent.matches(selector) ){
-						e.delegatedTarget = parent
+						e.delegateTarget = parent
 						callback.apply(element, [e].concat(detail.args));
 					}
 					parent = parent.parentNode;
