@@ -29,7 +29,7 @@
 		each(ctx.querySelectorAll( query ), function( node ){
 			if(node.__events){
 				node.__events = null;
-				node.attributes.j = null;
+				node.j = null;
 			}
 			jails.events.trigger(node, ':destroy');
 		}, true);
@@ -57,7 +57,7 @@
 			__initialize:function(){},
 
 			expose 		:function( n, f ){
-				node.attributes.j[name].methods = n;
+				node.j[name].methods = n;
 			},
 
 			on :function( ev, callback ){
@@ -102,13 +102,13 @@
 					query = query? selector + query : selector;
 
 					each( node.querySelectorAll( query ), function( el ){
-						if( el.attributes.j && el.attributes.j[n] && method in el.attributes.j[n].methods )
-							el.attributes.j[n].methods[method].apply(null, args);
+						if( el.j && el.j[n] && method in el.j[n].methods )
+							el.j[n].methods[method].apply(null, args);
 					});
 
 					if( node.matches(query) ){
-						if( node.attributes.j && node.attributes.j[n] && method in node.attributes.j[n].methods )
-							node.attributes.j[n].methods[method].apply(null, args);
+						if( node.j && node.j[n] && method in node.j[n].methods )
+							node.j[n].methods[method].apply(null, args);
 					}
 
 				}
@@ -146,10 +146,10 @@
 	function mount( node ){
 		return function( name ){
 			var base, fn;
-			node.attributes.j = node.attributes.j || {};
-			if( name in jails.components && !node.attributes.j[name] ){
+			node.j = node.j || {};
+			if( name in jails.components && !node.j[name] ){
 				fn = jails.components[name];
-				node.attributes.j[name] = { methods :{} };
+				node.j[name] = { methods :{} };
 				base = jails.component( name, node, fn.options );
 				fn( base, node, base.props );
 				base.__initialize( base );
