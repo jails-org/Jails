@@ -270,7 +270,7 @@ E.g `.on('submit', {'form':callback }) `
 > Set a map of functions to be public.
 
 #### .get( String, [ CssSelector ] )
-> Creates an reference to components, and returns a function, it accepts the name of public method and arguments to be sent as event. The previous example code illustrates that.
+> Creates a reference to components, and returns a function, it accepts the name of public method and arguments to be sent as event. The previous example code illustrates that.
 
 #### .publish( Event, [args] )
 > Fires a global event to the ecosystem, very recommended to communicate Controllers and Apps with each other.
