@@ -119,11 +119,11 @@ jails('A', (component, div, props)=>{
 
 ```js
 jails('B', ( component, div, props )=>{
-	
+
 	component.init(()=>{
 	    component.expose({ update })
 	})
-	
+
 	const update = ( option )=>{
 		console.log( option ) // { someOption:'bla bla bla' }
 		component.publish('messageToALL', someOption) // Sends data to any component subscribed to 'messageToALL'.
@@ -213,7 +213,7 @@ using the `annotations()` function helper.
 	jails('my-component', (component, link, props)=>{
 
 		component.init(()=>{
-			console.log( annotations('target') ) // '.other-element'
+			console.log( component.annotations('target') ) // '.other-element'
 			console.log( props('id') ) // "my-link"
 			console.log( props('data').component ) // "my-component"
 		})
@@ -247,7 +247,7 @@ In the case with 2 or more components in the same markup:
 #### .on( Event, Function )
 > Bind DOM events on the component itself.
 
-#### .on( Event, Object ) : off()
+#### .on( Event, Object )
 > Event delegation, bind DOM events on component child nodes.
 E.g `.on('submit', {'form':callback }) `
 
