@@ -225,17 +225,6 @@
 		};
 	}
 
-	function delegate( node, cssSelector, callback ){
-		return function(e){
-			var parent = e.target;
-			while ( parent && parent !== node ) {
-				if (parent.matches(cssSelector))
-					callback.call(e.target, e);
-				parent = parent.parentNode;
-			}
-		};
-	}
-
 	function execute( name, instance, node ){
 		return function(e){
 			if( node != e.target ) return;
@@ -268,42 +257,68 @@
 			return e;
 		}
 
+		function handler(node, ev){
+			return function(e){
+				var scope = this;
+				var detail = e.detail || {};
+				node.__events[ev].forEach(function(o){ o.handler.apply(scope, [e].concat(detail.args)); });
+			};
+		}
+
+		function delegate( node, selector, callback ){
+			return function(e){
+				var element = this, parent = e.target, detail = e.detail || {};
+				while( parent && parent !== node ){
+					if( parent.matches(selector) ){
+						e.delegateTarget = parent
+						callback.apply(element, [e].concat(detail.args));
+					}
+					parent = parent.parentNode;
+				}
+			};
+		}
+
+		function removeListener( node, ev ){
+			if( node.__events[ev] && node.__events[ev].listener ){
+				node.removeEventListener(ev, node.__events[ev].listener, false);
+				delete node.__events[ev];
+			}
+		}
+
 		return {
 
-			on :function( el, ev, selectorOrCallback, callback ){
+			on :function( node, ev, selectorOrCallback, callback ){
 
-				var custom, isset, fn;
+				node.__events 	  = node.__events || {};
+				node.__events[ev] = (node.__events[ev] || []);
 
-				el._events 	= el._events || {};
-				custom 		= ev.split(/\:/);
-				ev 			= custom[1]? ':' + custom[1] : custom[0];
-				isset  		= (ev in el._events);
-				fn     		= callback? delegate( el, selectorOrCallback, handler ) :handler;
-
-				el._events[ev] = el._events[ev] || [];
-				el._events[ev].push( callback || selectorOrCallback );
-
-				if( !isset ){
-					el.addEventListener(ev, fn, (ev == 'focus' || ev == 'blur') );
-					el._events[ev].eventHandler = fn;
+				if(!node.__events[ev].length){
+					var fn = handler(node, ev);
+					node.addEventListener(ev, fn, (ev == 'focus' || ev == 'blur'));
+					node.__events[ev].eventHandler = fn;
 				}
 
-				function handler(e){
-					var detail = e.detail || {};
-					el._events[ev].map(function( cb ){
-						if( !detail.instance || !custom[0] || detail.instance.name == custom[0] )
-							cb.apply( el, [e].concat( detail.args ) );
-					});
+				if( selectorOrCallback.call ){
+					node.__events[ev].push({ handler :selectorOrCallback, callback :selectorOrCallback });
+				}else{
+					node.__events[ev].push({ handler :delegate(node, selectorOrCallback, callback), callback :callback });
 				}
 
 				return function(){
-					jails.events.off( el, ev, callback || selectorOrCallback );
+					jails.events.off( node, ev, callback || selectorOrCallback );
 				};
 			},
 
-			off :function(el, ev, fn){
-				el.removeEventListener(ev, fn, false);
-				el._events[ev] = (el._events[ev] || []).filter(function(cb){ return cb != fn; });
+			off :function(node, ev, fn){
+				if( fn && node.__events[ev] && node.__events[ev].length ){
+					var old = node.__events[ev];
+					node.__events[ev] = node.__events[ev].filter(function(o){ return o.callback != fn; });
+					node.__events[ev].listener = old.listener;
+					if( !node.__events[ev].length )
+						removeListener( node, ev );
+				}else{
+					removeListener( node, ev );
+				}
 			},
 
 			trigger :function(el, name, args){
