@@ -2,9 +2,11 @@
 <br />
 <br />
 
-> Jails is a javascript micro-library for building simple applications and large scale applications without a huge stack dependencies.
+> Jails is a javascript micro-library for building simple and large scale applications without a huge stack dependencies. It follows the old-school phylosophy regarding separation of concerns, non-obstructive, and reactive.
 
-> It follows the old-school phylosophy about separation of concerns, non-obstructive, focus on DOM event system and predictable.
+<br />
+
+[![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)
 
 <br />
 
