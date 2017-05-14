@@ -184,7 +184,7 @@ Components can live in the same markup:
 ```
 
 And if both has the methods with the same name, you can distinct which component should respond to the call:
-** Example, Modal and View components has the .update() method but you want that only View component to execute it **
+**Example, Modal and View components has the .update() method but you want that only View component to execute it**
 
 ```js
 jails('Z', ( {init, get} )=>{
@@ -212,7 +212,7 @@ using the `annotations()` function helper.
 ```
 
 ```js
-    jails('my-component', ({init, annotations})=>{
+    jails('my-component', ({init, annotations, props})=>{
 
         init(()=>{
             console.log( annotations('target') ) // '.other-element'
