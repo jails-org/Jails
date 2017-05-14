@@ -16,8 +16,8 @@
 
 ```html
 <form class="form" data-component="form">
-	<input type="text" name="message" />
-	<button>Send</button>
+    <input type="text" name="message" />
+    <button>Send</button>
 </form>
 
 ```
@@ -26,13 +26,13 @@
 ```js
 jails('form', ( {init, on} ) =>{
 
-	init(()=>{
-		on('change', {'input':onChange })
-	})
+    init(()=>{
+        on('change', {'input':onChange })
+    })
 
-	let onChange = (e)=>{
-		console.log('Hey, some input has changed')
-	}
+    let onChange = (e)=>{
+        console.log('Hey, some input has changed')
+    }
 })
 ```
 ---
@@ -55,9 +55,9 @@ Component A listen to Component B
 
 ```html
 <div data-component="A">
-	<div data-component="B">
-		<button>Ok</button>
-	</div>
+    <div data-component="B">
+        <button>Ok</button>
+    </div>
 </div>
 ```
 
@@ -65,11 +65,11 @@ Component A listen to Component B
 ```js
 jails('A', ({init, on})=>{
 
-	init(()=>{
-		// To listen to a custom event, you need to follow the standard
-		// componentName:stringEvent
-		on(':click', {'[data-component*=B]':e => console.log(e) })
-	})
+    init(()=>{
+        // To listen to a custom event, you need to follow the standard
+        // componentName:stringEvent
+        on(':click', {'[data-component*=B]':e => console.log(e) })
+    })
 })
 ```
 
@@ -77,13 +77,13 @@ jails('A', ({init, on})=>{
 ```js
 jails('B', ({init, on}) =>{
 
-	init(()=>{
-		on('click', {'.button' :emit})
-	})
+    init(()=>{
+        on('click', {'.button' :emit})
+    })
 
-	let emit = (e)=>{
-		component.emit('click', e)
-	}
+    let emit = (e)=>{
+        component.emit('click', e)
+    }
 })
 ```
 
@@ -98,9 +98,9 @@ Component A executes Component B public method.
 
 ```html
 <div data-component="A">
-	<div data-component="B">
-		<button>Ok</button>
-	</div>
+    <div data-component="B">
+        <button>Ok</button>
+    </div>
 </div>
 ```
 
@@ -108,12 +108,12 @@ Component A executes Component B public method.
 ```js
 jails('A', ({init, get})=>{
 
-	//Getting B reference
-	let B = get('B')
+    //Getting B reference
+    let B = get('B')
 
-	init(()=>{
-		B('update', { someOption:'bla bla bla' })
-	})
+    init(()=>{
+        B('update', { someOption:'bla bla bla' })
+    })
 })
 ```
 
@@ -122,14 +122,14 @@ jails('A', ({init, get})=>{
 ```js
 jails('B', ( {init, expose, publish} )=>{
 
-	init(()=>{
-	    expose({ update })
-	})
+    init(()=>{
+        expose({ update })
+    })
 
-	const update = ( option )=>{
-		console.log( option ) // { someOption:'bla bla bla' }
-		publish('messageToALL', someOption) // Sends data to any component subscribed to 'messageToALL'.
-	}
+    const update = ( option )=>{
+        console.log( option ) // { someOption:'bla bla bla' }
+        publish('messageToALL', someOption) // Sends data to any component subscribed to 'messageToALL'.
+    }
 
 })
 ```
@@ -139,10 +139,10 @@ The `.get()` functions do not returns an instance, but a reference instead which
 
 ```html
 <div data-component="A">
-	<p data-component="B"></p>
-	<p data-component="B"></p>
-	<p data-component="B"></p>
-	<button>Ok</button>
+    <p data-component="B"></p>
+    <p data-component="B"></p>
+    <p data-component="B"></p>
+    <button>Ok</button>
 </div>
 ```
 
@@ -150,10 +150,10 @@ The `.get()` functions do not returns an instance, but a reference instead which
 
 ```html
 <div data-component="A">
-	<p data-component="B"></p>
-	<p class="only-this-one" data-component="B"></p>
-	<p data-component="B"></p>
-	<button>Ok</button>
+    <p data-component="B"></p>
+    <p class="only-this-one" data-component="B"></p>
+    <p data-component="B"></p>
+    <button>Ok</button>
 </div>
 ```
 
@@ -161,12 +161,12 @@ The `.get()` functions do not returns an instance, but a reference instead which
 ```js
 jails('A', ({init, get})=>{
 
-	//Getting B reference
-	let B = get('B', '.only-this-one')
+    //Getting B reference
+    let B = get('B', '.only-this-one')
 
-	init(()=>{
-		B('update', { someOption:'bla bla bla' }) // Only the second component will call .update() method.
-	})
+    init(()=>{
+        B('update', { someOption:'bla bla bla' }) // Only the second component will call .update() method.
+    })
 })
 ```
 ---
@@ -177,9 +177,9 @@ Components can live in the same markup:
 
 ```html
 <div data-component="Z">
-	<div class="dialog" data-component="modal view">
-		<p>Hello {username}</p>
-	</div>
+    <div class="dialog" data-component="modal view">
+        <p>Hello {username}</p>
+    </div>
 </div>
 ```
 
@@ -189,11 +189,11 @@ And if both has the methods with the same name, you can distinct which component
 ```js
 jails('Z', ( {init, get} )=>{
 
-	let dialog = get('modal')
+    let dialog = get('modal')
 
-	init(()=>{
-		dialog('update', { username:'Clark Kent' })
-	})
+    init(()=>{
+        dialog('update', { username:'Clark Kent' })
+    })
 })
 ```
 
@@ -205,35 +205,35 @@ You can get all html `attributes`, `data-attributes` calling `props()`, and also
 using the `annotations()` function helper.
 
 ```html
-	<!--@my-component({ target:'.other-element' })-->
-	<a href="#" id="my-link" data-component="my-component">
-		My Link component
-	</a>
+    <!--@my-component({ target:'.other-element' })-->
+    <a href="#" id="my-link" data-component="my-component">
+        My Link component
+    </a>
 ```
 
 ```js
-	jails('my-component', ({init, annotations})=>{
+    jails('my-component', ({init, annotations})=>{
 
-		init(()=>{
-			console.log( annotations('target') ) // '.other-element'
-			console.log( props('id') ) // "my-link"
-			console.log( props('data').component ) // "my-component"
-		})
-	})
+        init(()=>{
+            console.log( annotations('target') ) // '.other-element'
+            console.log( props('id') ) // "my-link"
+            console.log( props('data').component ) // "my-component"
+        })
+    })
 ```
 
 Annotations is just a special comment, the name of component should be referenced in the comment using `@` prefix.
 In the case with 2 or more components in the same markup:
 
 ```html
-	<!--
-		@A({  })
-		@B({  })
-		@C({  })
-	-->
-	<a href="#" data-component="A B C">
-		My Link component
-	</a>
+    <!--
+        @A({  })
+        @B({  })
+        @C({  })
+    -->
+    <a href="#" data-component="A B C">
+        My Link component
+    </a>
 ```
 
 **Annotations are optional, if you don't like to mix html comments with your js code, simply don't use it. =)**
