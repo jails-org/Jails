@@ -51,8 +51,8 @@
 		//It removes any custom property manually set on HTMLElement instance
 		//It's intermittent. The hack below fix the problem
 		var hack = function(){};
-		jails.events.on(node, ':j', hack);
-		jails.events.off(node, ':j', hack);
+		events.on(node, ':j', hack);
+		events.off(node, ':j', hack);
 
 		return base = {
 
@@ -73,6 +73,12 @@
 
 			off :function( ev, callback ){
 				events.off( node, ev, callback );
+			},
+
+			trigger :function( ev, target, args ){
+				if( target.constructor == String )
+					events.trigger( node.querySelector(target), ev, {args:args} );
+				else events.trigger( node, ev, {args:target} );
 			},
 
 			init :function( callback ){
@@ -194,13 +200,6 @@
 
 	function events(){
 
-		function Ev(type, params) {
-			var e = document.createEvent(type);
-			params = params || {};
-			e.initEvent(type, params.bubbles || false, params.cancelable || false, params.detail || null);
-			return e;
-		}
-
 		function handler(node, ev){
 			return function(e){
 				var scope = this;
@@ -265,11 +264,7 @@
 			},
 
 			trigger :function( node, name, args ){
-				node.dispatchEvent(
-					/\:/.test(name)
-					?new CustomEvent( name, { bubbles :true, detail :args } )
-					:new Ev( name, { bubbles :true, detail :args } )
-				);
+				node.dispatchEvent(new CustomEvent( name, { bubbles :true, detail :args } ));
 			}
 		};
 	}

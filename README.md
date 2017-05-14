@@ -254,8 +254,14 @@ E.g `.on('submit', {'form':callback }) `
 #### .off( Event, Function )
 > Removes an event handler, just like `jQuery` api.
 
-#### .trigger( element, event, [args] )
-> Trigger events on some element. Element is required…
+#### .trigger( event, [String target, Object args] )
+> Trigger dom events on component element or a component child.
+
+Example:
+
+`.trigger('click', 'button', {ischildnode:true})`
+`.trigger('click', {isparent:true})`
+
 
 #### .props( [String key] )
 > Get a single property or a set of `htmlElement` properties.
@@ -292,7 +298,8 @@ It will find all `data-component` elements and start them calling `.init()` func
 > Jails events object has `.on()`, `.off()`, `.trigger()` methods for events, also used on Components interface.
 You can bypass these events making an *adapter*, using jQuery if you will.
 
-#### Jails.publish( string, :any) & Jails.subscribe( string, Function )
+#### Jails.publish( string, :any) &
+#### Jails.subscribe( string, Function )
 > The same `.publish()` and `.subscribe()` events used on components interface, you can use it on third-party modules using the pub/sub pattern.
 
 #### Jails.component( String name, HTMLElement node, Function fn )
