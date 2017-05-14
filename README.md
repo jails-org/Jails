@@ -22,10 +22,10 @@
 
 ### Javascript
 ```js
-jails('form', ( component, form, props ) =>{
+jails('form', ( {init, on} ) =>{
 
-	component.init(()=>{
-		component.on('change', {'input':onChange })
+	init(()=>{
+		on('change', {'input':onChange })
 	})
 
 	let onChange = (e)=>{
@@ -61,22 +61,22 @@ Component A listen to Component B
 
 *Component A*
 ```js
-jails('A', (component, div, props)=>{
+jails('A', ({init, on})=>{
 
-	component.init(()=>{
+	init(()=>{
 		// To listen to a custom event, you need to follow the standard
 		// componentName:stringEvent
-		component.on(':click', {'[data-component*=B]':e => console.log(e) })
+		on(':click', {'[data-component*=B]':e => console.log(e) })
 	})
 })
 ```
 
 *Component B*
 ```js
-jails('B', (component, div, props) =>{
+jails('B', ({init, on}) =>{
 
-	component.init(()=>{
-		component.on('click', {'.button' :emit})
+	init(()=>{
+		on('click', {'.button' :emit})
 	})
 
 	let emit = (e)=>{
@@ -104,12 +104,12 @@ Component A executes Component B public method.
 
 *Component A*
 ```js
-jails('A', (component, div, props)=>{
+jails('A', ({init, get})=>{
 
 	//Getting B reference
-	let B = component.get('B')
+	let B = get('B')
 
-	component.init(()=>{
+	init(()=>{
 		B('update', { someOption:'bla bla bla' })
 	})
 })
@@ -118,15 +118,15 @@ jails('A', (component, div, props)=>{
 *Component B*
 
 ```js
-jails('B', ( component, div, props )=>{
+jails('B', ( {init, expose, publish} )=>{
 
-	component.init(()=>{
-	    component.expose({ update })
+	init(()=>{
+	    expose({ update })
 	})
 
 	const update = ( option )=>{
 		console.log( option ) // { someOption:'bla bla bla' }
-		component.publish('messageToALL', someOption) // Sends data to any component subscribed to 'messageToALL'.
+		publish('messageToALL', someOption) // Sends data to any component subscribed to 'messageToALL'.
 	}
 
 })
@@ -157,12 +157,12 @@ The `.get()` functions do not returns an instance, but a reference instead which
 
 *Component A*
 ```js
-jails('A', (component, div, props)=>{
+jails('A', ({init, get})=>{
 
 	//Getting B reference
-	let B = component.get('B', '.only-this-one')
+	let B = get('B', '.only-this-one')
 
-	component.init(()=>{
+	init(()=>{
 		B('update', { someOption:'bla bla bla' }) // Only the second component will call .update() method.
 	})
 })
@@ -185,11 +185,11 @@ And if both has the methods with the same name, you can distinct which component
 ** Example, Modal and View components has the .update() method but you want that only View component to execute it **
 
 ```js
-jails('Z', ( component, html, props )=>{
+jails('Z', ( {init, get} )=>{
 
-	let dialog = component.get('modal')
+	let dialog = get('modal')
 
-	component.init(()=>{
+	init(()=>{
 		dialog('update', { username:'Clark Kent' })
 	})
 })
@@ -210,10 +210,10 @@ using the `annotations()` function helper.
 ```
 
 ```js
-	jails('my-component', (component, link, props)=>{
+	jails('my-component', ({init, annotations})=>{
 
-		component.init(()=>{
-			console.log( component.annotations('target') ) // '.other-element'
+		init(()=>{
+			console.log( annotations('target') ) // '.other-element'
 			console.log( props('id') ) // "my-link"
 			console.log( props('data').component ) // "my-component"
 		})
