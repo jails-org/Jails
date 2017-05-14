@@ -1,6 +1,3 @@
-[![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)
-<br />
-
 <p align="center"><img src="http://jails-org.github.io/Jails/assets/jails.svg" width="140" /></p>
 <br />
 <br />
@@ -8,6 +5,10 @@
 > Jails is a javascript micro-library for building simple and large scale applications without a huge stack dependencies.
 
 > It follows the old-school phylosophy regarding separation of concerns, non-obstructive, reactive and predictable.
+
+<br />
+
+[![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)
 
 <br />
 
