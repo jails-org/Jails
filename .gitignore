@@ -7,3 +7,4 @@ files to ignore
 node_modules/
 main.js
 index.htm
+example.js
