@@ -37,6 +37,27 @@ jails('form', ( {init, on} ) =>{
 ```
 ---
 
+## Init using a set of functions
+```js
+    jails('form', ({init}) =>{
+        
+        init(()=>[
+            register,
+            log
+        ])
+        
+        const register = ({on})=> // It get all component interfaces
+            on('change', {'input':onChange})
+            
+        const log = ()=>
+            console.log('Component is ready')
+            
+        const onChange = e =>
+            console.log('Hey, now I am using another way to init =)')
+
+    })
+```
+
 ## Component relashionships
 
 ### Passive way
