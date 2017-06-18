@@ -100,6 +100,9 @@
 
 		on :function(el, ev, callback){
 
+			el.__events = el.__events || {};
+			el.__events[ev] = true;
+
 			if( callback.call )
 				$(el).on(ev, handler(callback));
 			else

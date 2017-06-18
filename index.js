@@ -28,10 +28,12 @@
 
 		each(ctx.querySelectorAll( query ), function( node ){
 			if(node.__events){
+				jails.events.trigger(node, ':destroy');
+				for(var ev in node.__events)
+					jails.events.off(node, ev);
 				node.__events = null;
 				node.j = null;
 			}
-			jails.events.trigger(node, ':destroy');
 		}, true);
 		return jails;
 	};
