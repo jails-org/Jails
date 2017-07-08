@@ -96,14 +96,14 @@ jails('A', ({init, on})=>{
 
 *Component B*
 ```js
-jails('B', ({init, on}) =>{
+jails('B', ({init, on, emit}) =>{
 
     init(()=>{
-        on('click', {'.button' :emit})
+        on('click', {'.button' :emitClick})
     })
 
-    let emit = (e)=>{
-        component.emit('click', e)
+    let emitClick = (e)=>{
+        emit('click', e)
     }
 })
 ```
