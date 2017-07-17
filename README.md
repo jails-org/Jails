@@ -87,9 +87,7 @@ Component A listen to Component B
 jails('A', ({init, on})=>{
 
     init(()=>{
-        // To listen to a custom event, you need to follow the standard
-        // componentName:stringEvent
-        on(':click', {'[data-component*=B]':e => console.log(e) })
+        on('mycustomclick', {'[data-component*=B]':e => console.log(e) })
     })
 })
 ```
@@ -103,7 +101,7 @@ jails('B', ({init, on, emit}) =>{
     })
 
     let emitClick = (e)=>{
-        emit('click', e)
+        emit('mycustomclick', e)
     }
 })
 ```
