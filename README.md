@@ -30,7 +30,7 @@ jails('form', ( {init, on} ) =>{
         on('change', {'input':onChange })
     })
 
-    let onChange = (e)=>{
+    const onChange = (e)=>{
         console.log('Hey, some input has changed')
     }
 })
