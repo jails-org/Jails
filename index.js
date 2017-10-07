@@ -39,7 +39,12 @@
 	};
 
 	jails.use = function( fn ){
-		fn( jails );
+		fn( jails )
+		return jails;
+	}
+
+	jails.extends = function( fn ){
+		jails.component = compose( fn, jails.component )
 		return jails;
 	};
 
@@ -62,6 +67,7 @@
 			subscribe 	:publisher.subscribe,
 			publish   	:publisher.publish,
 			injection 	:options.injection,
+			jails 		:jails,
 
 			__initialize:function(){},
 
@@ -199,6 +205,12 @@
 		for( var i = 0, len = list.length; i < len; i ++ )
 			callback( list[i], i, list );
 	}
+
+	function compose(f1, f2){
+		return function(){
+			return f1(f2.apply(null, arguments))
+		}
+	};
 
 	function events(){
 
