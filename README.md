@@ -310,7 +310,7 @@ Example:
 > Starts jails scanner in the container or in `document.documentElement` if no container is passed.
 It will find all `data-component` elements and start them calling `.init()` function. `jails` knows if an element is already started, so it won't create a new instance if the element is already started.
 
-#### Jails.destroy( Node, [CssSelector] )
+#### Jails.destroy( Node )
 > Destroy all the events attached to that Node, and fires the `:destroy` custom event.
 
 #### Jails.events
