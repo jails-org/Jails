@@ -21,18 +21,6 @@
 		return jails;
 	};
 
-	jails.destroyAll = function( ctx, query ){
-
-		ctx = ctx || document.documentElement;
-		query = query || selector;
-
-		each(ctx.querySelectorAll( query ), function( node ){
-			jails.destroy( node );
-		}, true);
-
-		return jails;
-	};
-
 	jails.destroy = function( node ){
 		if( node.__events ){
 			jails.events.trigger(node, ':destroy');
@@ -229,7 +217,7 @@
 
 		function removeListener( node, ev ){
 			if( node.__events[ev] && node.__events[ev].listener ){
-				node.removeEventListener(ev, node.__events[ev].listener, false);
+				node.removeEventListener(ev, node.__events[ev].listener, (ev == 'focus' || ev == 'blur'));
 				delete node.__events[ev];
 			}
 		}
