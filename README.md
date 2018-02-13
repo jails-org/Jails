@@ -12,7 +12,7 @@ The Next Generation Javascript Library <br />
 
 ## Code Show
 
-`index.htm`
+**index.htm**
 
 ```html
 ...
@@ -23,7 +23,7 @@ The Next Generation Javascript Library <br />
 ...
 ```
 
-`components/range/index.js`
+**components/range/index.js**
 
 ```js
 export default ( {init:main, elm} ) => {
@@ -41,6 +41,7 @@ export default ( {init:main, elm} ) => {
         number.innerText = event.target.value
 })
 ```
+<br />
 
 ## Browsers support <sub><sup><sub><sub>made by <a href="https://godban.github.io">godban</a></sub></sub></sup></sub>
 
