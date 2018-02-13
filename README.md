@@ -1,11 +1,12 @@
-<img align="left" src="https://jails-org.github.io/assets/jails.svg" width="140" height="160" />
+<p align="center">
+  <img  src="https://jails-org.github.io/assets/jails.svg" width="140" height="160" />
+</p>
 
-# [Jails](https://jails-org.github.io)
+# Jails 
 > The Next Generation Javascript Library
 
 [![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<br />
 <br />
 
 ## About
