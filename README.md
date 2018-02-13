@@ -10,6 +10,38 @@ The Next Generation Javascript Library <br />
 
 <br />
 
+## Code Show
+
+`index.htm`
+
+```html
+...
+<div class="range" data-component="range">
+    <label>Weight: <strong class="number">75</strong> kg</label><br />
+    <input type="range" name="height" min="10" max="200" value="75" />
+</div> 
+...
+```
+
+`components/range/index.js`
+
+```js
+export default ( {init:main, elm} ) => {
+
+    const number = elm.querySelector('.number')
+
+    main(()=>[
+        register
+    ])
+
+    const register = ( {on} ) =>
+        on('input', {'input[type=range]':update})
+
+    const update = event =>
+        number.innerText = event.target.value
+})
+```
+
 ## Browsers support <sub><sup><sub><sub>made by <a href="https://godban.github.io">godban</a></sub></sub></sup></sub>
 
 | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/edge.png" alt="IE / Edge" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/firefox.png" alt="Firefox" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/chrome.png" alt="Chrome" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/safari.png" alt="Safari" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/opera.png" alt="Opera" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
