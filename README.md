@@ -23,7 +23,7 @@
 | IE8, IE9, IE10, IE11, Edge| last 2 versions| last 2 versions| last 2 versions| last 2 versions
 
 
-IE8 and Legacy Browsers using `jails.legacy.js`.
+*IE8 and Legacy Browsers using `jails.legacy.js`.*
 
 <br />
 
