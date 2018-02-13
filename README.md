@@ -6,13 +6,8 @@
 
 > The Next Generation Javascript Library
 
-
-<br />
-
-## About
-
-- [Documentation](https://jails-org.github.io)
-- [Blog](https://medium.com/jails-org)
+- [**Documentation**](https://jails-org.github.io)
+- [**Blog**](https://medium.com/jails-org)
 
 <br />
 
