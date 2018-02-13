@@ -5,7 +5,8 @@
 # Jails · [![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The Next Generation Javascript Library <br />
-[**Documentation**](https://jails-org.github.io) | [**Blog**](https://medium.com/jails-org)
+- [**Documentation**](https://jails-org.github.io) 
+- [**Blog**](https://medium.com/jails-org)
 
 <br />
 
