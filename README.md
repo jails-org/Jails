@@ -8,9 +8,10 @@
 <br />
 <br />
 
-:blue_book: Documentation : [jails-org.github.io](https://jails-org.github.io)
+## About
 
-:newspaper: Blog : [medium.com/jails-org](https://medium.com/jails-org)
+- [Documentation](https://jails-org.github.io)
+- [Blog](https://medium.com/jails-org)
 
 <br />
 
