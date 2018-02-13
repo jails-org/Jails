@@ -1,4 +1,4 @@
-<img align="right" src="https://jails-org.github.io/assets/jails.svg" width="140" height="140" />
+<img align="left" src="https://jails-org.github.io/assets/jails.svg" width="140" height="140" />
 
 # [Jails](https://jails-org.github.io)
 > The Next Generation Javascript Library
