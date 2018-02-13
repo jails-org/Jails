@@ -29,4 +29,3 @@ IE8 and Legacy Browsers using `jails.legacy.js`.
 ## License
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2017-present, Eduardo Ottaviani
