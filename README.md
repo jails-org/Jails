@@ -18,7 +18,7 @@ A Modern Javascript Component Library <br />
 ...
 <div class="range" data-component="range">
     <label>Weight: <strong class="number">75</strong> kg</label><br />
-    <input type="range" name="height" min="10" max="200" value="75" />
+    <input type="range" name="weight" min="10" max="200" value="75" />
 </div> 
 ...
 ```
