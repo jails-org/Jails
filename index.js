@@ -2,7 +2,8 @@
 
 	var publisher 	  = pubsub(),
 		attribute 	  = 'data-component',
-		selector  	  = '['+attribute+']';
+		selector  	  = '['+attribute+']',
+		hasPromise    = !!window.Promise;
 
 	function jails( name, mixin, options ){
 		jails.components[ name ] = mixin;
@@ -43,9 +44,23 @@
 
 	jails.component = function( name, node, options ){
 
-		var data = {};
 		var base;
-		var events = jails.events;
+		var resolver;
+		var data    = {};
+		var events  = jails.events;
+		var promise = hasPromise? new Promise((resolve) => resolver = resolve ) :null;
+		
+		var main = function( callback ){
+			return function( base ){
+				var ret = callback( base );
+				if( ret && ret.forEach ){
+					var op = {};
+					ret.forEach(function(m){
+						op = (m && m.call? m( base, op ) : null) || op;
+					});
+				}
+			}
+		}
 
 		//There is a strange bug in chrome,
 		//It removes any custom property manually set on HTMLElement instance
@@ -62,9 +77,19 @@
 			injection 	:options.injection,
 			jails 		:jails,
 
-			__initialize:function(){},
+			__initialize: hasPromise? function(base){resolver(base);} : function(){},
 
-			expose 		:function( n, f ){
+			init : hasPromise
+				? function( callback ){
+					if( callback && callback.call )
+						promise.then(main(callback));
+				}
+				: function( callback ){
+					if( callback && callback.call )
+						base.__initialize = main(callback);
+			},
+
+			expose :function( n, f ){
 				node.j[name].methods = n;
 			},
 
@@ -80,19 +105,6 @@
 				if( target.constructor == String )
 					events.trigger( node.querySelector(target), ev, {args:args} );
 				else events.trigger( node, ev, {args:target} );
-			},
-
-			init :function( callback ){
-				if( callback && callback.call )
-					base.__initialize = function( component ){
-						var ret = callback( component );
-						if( ret && ret.forEach ){
-							var op = {};
-							ret.forEach(function(m){
-								op = (m && m.call? m( component, op ) : null) || op;
-							});
-						}
-					}
 			},
 
 			props :function( key ){
