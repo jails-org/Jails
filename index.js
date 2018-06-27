@@ -48,7 +48,7 @@
 		var resolver;
 		var data    = {};
 		var events  = jails.events;
-		var promise = hasPromise? new Promise((resolve) => resolver = resolve ) :null;
+		var promise = hasPromise ? new Promise(function (resolve) { resolver = resolve; } ) :null;
 		
 		var main = function( callback ){
 			return function( base ){
