@@ -208,7 +208,7 @@
 	function each( list, callback, reverse ){
 		list = reverse? Array.from( list ).reverse() : list;
 		for( var i = 0, len = list.length; i < len; i ++ )
-			callback( list[i], i, list );
+			if (list[i]) callback(list[i], i, list);
 	}
 
 	function compose(f1, f2){
