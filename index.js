@@ -288,23 +288,23 @@
 		};
 	}
 
-	function pubsub( topics, async ){
+	function pubsub( topics, _async ){
 
 		topics = {};
-		async  = {};
+		_async  = {};
 
 		return {
 			publish :function( name, params ){
 				if( !(name in topics) )
-					async[name] = params;
+					_async[name] = params;
 				else
 					each( topics[name], function( topic ){ topic( params ); });
 			},
 			subscribe :function( name, method ){
 				topics[name] = topics[name] || [];
 				topics[name].push( method );
-				if( name in async )
-					each( topics[name], function( topic ){ topic( async[name] ); });
+				if( name in _async )
+					each( topics[name], function( topic ){ topic( _async[name] ); });
 				return function(){
 					topics[name] = topics[name].filter(function( topic ){
 						return topic == method;
