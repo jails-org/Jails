@@ -121,7 +121,7 @@
 
 				return function(){
 
-					var args   = Array.from( arguments ),
+					var args = Array.prototype.slice.call( arguments ),
 						method = args.shift(),
 						selector = '[data-component*='+n+']';
 
@@ -141,7 +141,7 @@
 			},
 
 			emit :function( n, params ){
-				var args = Array.from( arguments );
+				var args = Array.prototype.slice.call( arguments );
 				events.trigger(node, args.shift(), { args:args });
 			}
 		};
@@ -206,7 +206,7 @@
 	}
 
 	function each( list, callback, reverse ){
-		list = reverse? Array.from( list ).reverse() : list;
+		list = reverse? Array.prototype.slice.call( list ).reverse() : list;
 		for( var i = 0, len = list.length; i < len; i ++ )
 			if (list[i]) callback(list[i], i, list);
 	}
