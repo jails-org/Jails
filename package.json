@@ -1,6 +1,6 @@
 {
   "name": "jails-js",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "Jails Functional and Event-Driven Micro-Framework",
   "main": "dist/jails.js",
   "scripts": {
