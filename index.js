@@ -219,6 +219,16 @@
 
 	function events(){
 
+		var customEvent = (function(){
+			return ('CustomEvent' in window && typeof window.CustomEvent === 'function')
+				? function (name, data) { return new CustomEvent(name, { 'detail': data }); }
+				: function (name, data) {
+					var newEvent = document.createEvent('CustomEvent');
+					newEvent.initCustomEvent(name, true, true, data);
+					return newEvent;
+				}
+		})();
+
 		function handler(node, ev){
 			return function(e){
 				var scope = this;
@@ -283,7 +293,7 @@
 			},
 
 			trigger :function( node, name, args ){
-				node.dispatchEvent(new CustomEvent( name, { bubbles :true, detail :args } ));
+				node.dispatchEvent(customEvent(name, { bubbles: true, detail: args }) );
 			}
 		};
 	}
