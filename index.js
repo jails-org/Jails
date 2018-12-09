@@ -22,6 +22,11 @@
 		return jails;
 	};
 
+	jails.observe = function(){
+		jails.observer = observe()
+		jails.start()
+	}
+
 	jails.destroy = function( node ){
 		if( node.__events ){
 			jails.events.trigger(node, ':destroy');
@@ -112,11 +117,6 @@
 				return key? data.props[key] : data.props;
 			},
 
-			annotations :function( key ){
-				data.annotations = data.annotations || annotations( node )[ name ] || {};
-				return key? data.annotations[key] : data.annotations;
-			},
-
 			get :function( n, query ){
 
 				return function(){
@@ -136,7 +136,6 @@
 						if( node.j && node.j[n] && method in node.j[n].methods )
 							node.j[n].methods[method].apply(null, args);
 					}
-
 				}
 			},
 
@@ -148,20 +147,29 @@
 
 	};
 
-	function annotations( node ){
+	function observe() {
+		var observer = new MutationObserver(function (mutations) { mutations.forEach(onMutation); });
+		observer.observe(document.body, { childList: true, subtree: true });
+		return observer;
+	}
 
-		var ann = {}, comment;
-
-		comment = node.previousSibling;
-		comment = comment && comment.nodeType == 8? comment :comment? comment.previousSibling : null;
-
-		if( comment && comment.nodeType == 8 ){
-			comment.data.replace(/@([a-zA-z0-9-\/]*)(?:\((.*)\))?/g, function( text, component, param ){
-				ann[component] = new Function('return '+ param)();
-			});
+	function onMutation(mutation) {
+		if (mutation.type == 'childList') {
+			if (mutation.addedNodes.length) {
+				mutatedComponents(mutation.addedNodes, scan);
+			} else if (mutation.removedNodes.length) {
+				mutatedComponents(mutation.removedNodes, jails.destroy);
+			}
 		}
+	}
 
-		return ann;
+	function mutatedComponents(nodeList, callback) {
+		var nodes = Array.prototype.slice.call(nodeList).reduce(function (acc, node) {
+			return node.querySelectorAll ? [node].concat(Array.prototype.slice.call(node.querySelectorAll(selector))) : [node];
+		}, []);
+		each(nodes, function (node) {
+			(node.getAttribute && node.getAttribute(attribute)) ? callback(node) : null;
+		}, true);
 	}
 
 	function scan( node ){
@@ -221,7 +229,7 @@
 
 		var customEvent = (function(){
 			return ('CustomEvent' in window && typeof window.CustomEvent === 'function')
-				? function (name, data) { return new CustomEvent(name, { 'detail': data }); }
+				? function (name, data) { return new CustomEvent(name, data); }
 				: function (name, data) {
 					var newEvent = document.createEvent('CustomEvent');
 					newEvent.initCustomEvent(name, true, true, data);
@@ -233,7 +241,9 @@
 			return function(e){
 				var scope = this;
 				var detail = e.detail || {};
-				node.__events[ev].forEach(function(o){ o.handler.apply(scope, [e].concat(detail.args)); });
+				node.__events[ev].forEach(function(o){ 
+					o.handler.apply(scope, [e].concat(detail.args)); 
+				});
 			};
 		}
 
