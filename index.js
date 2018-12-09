@@ -10,7 +10,8 @@
 		jails.components[ name ].options = options || {};
 		return jails;
 	}
-
+	
+	jails.observer   = null;
 	jails.events 	 = events();
 	jails.components = {};
 	jails.publish 	 = publisher.publish;
@@ -25,7 +26,7 @@
 	jails.observe = function(){
 		jails.observer = observe()
 		jails.start()
-	}
+	};
 
 	jails.destroy = function( node ){
 		if( node.__events ){
@@ -40,7 +41,7 @@
 	jails.use = function( fn ){
 		fn( jails )
 		return jails;
-	}
+	};
 
 	jails.extends = function( fn ){
 		jails.component = compose( fn, jails.component )
