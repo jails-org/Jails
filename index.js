@@ -221,7 +221,7 @@
 
 		var customEvent = (function(){
 			return ('CustomEvent' in window && typeof window.CustomEvent === 'function')
-				? function (name, data) { return new CustomEvent(name, { 'detail': data }); }
+				? function (name, data) { return new CustomEvent(name, data); }
 				: function (name, data) {
 					var newEvent = document.createEvent('CustomEvent');
 					newEvent.initCustomEvent(name, true, true, data);
