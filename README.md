@@ -51,7 +51,7 @@ export default ( {init:main, elm} ) => {
 | IE11, Edge| last 2 versions| last 2 versions| last 2 versions| last 2 versions
 
 
-*IE11 needs some polyfills in order to work (Promise)*
+*IE11 might need some polyfills in order to work (Promise)*
 
 
 <br />
