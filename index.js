@@ -68,13 +68,6 @@
 			}
 		}
 
-		//There is a strange bug in chrome,
-		//It removes any custom property manually set on HTMLElement instance
-		//It's intermittent. The hack below fix the problem
-		var hack = function(){};
-		events.on(node, ':j', hack);
-		events.off(node, ':j', hack);
-
 		return base = {
 
 			elm 		:node,
