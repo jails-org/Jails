@@ -250,7 +250,10 @@
 
 		function removeListener( node, ev ){
 			if( node.__events[ev] && node.__events[ev].listener ){
-				node.removeEventListener(ev, node.__events[ev].listener, (ev == 'focus' || ev == 'blur'));
+				node.removeEventListener(
+					ev, 
+					node.__events[ev].listener, 
+					(ev == 'focus' || ev == 'blur' || ev == 'mouseenter' || ev == 'mouseleave'));
 				delete node.__events[ev];
 			}
 		}
@@ -277,7 +280,10 @@
 
 				if(!node.__events[ev].length){
 					var fn = handler(node, ev);
-					node.addEventListener(ev, fn, (ev == 'focus' || ev == 'blur'));
+					node.addEventListener(
+						ev, 
+						fn, 
+						(ev == 'focus' || ev == 'blur' || ev == 'mouseenter' || ev == 'mouseleave'));
 					node.__events[ev].listener = fn;
 				}
 
