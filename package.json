@@ -1,9 +1,10 @@
 {
   "name": "jails-js",
-  "version": "3.4.0",
-  "description": "Jails Functional and Event-Driven Micro-Framework",
+  "version": "4.0.0",
+  "description": "A Modern Javascript Library",
   "main": "dist/jails.js",
   "scripts": {
+    "start": "webpack index.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,5 +22,15 @@
   "bugs": {
     "url": "https://github.com/jails-org/Jails/issues"
   },
-  "homepage": "https://github.com/jails-org/Jails"
+  "homepage": "https://github.com/jails-org/Jails",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "babel-loader": "^8.0.5",
+    "jails.packages": "jails-org/packages.git",
+    "snabbdom": "^0.7.3",
+    "sodajs": "^0.4.10",
+    "webpack": "^4.29.0",
+    "webpack-cli": "^3.2.1"
+  }
 }
