@@ -28,8 +28,6 @@
     "@babel/preset-env": "^7.2.3",
     "babel-loader": "^8.0.5",
     "jails.packages": "jails-org/packages.git",
-    "snabbdom": "^0.7.3",
-    "sodajs": "^0.4.10",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1"
   }
