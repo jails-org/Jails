@@ -22,7 +22,7 @@
 		return jails;
 	};
 
-	jails.observe = function(){
+	jails.bootstrap = function(){
 		jails.observer = observe()
 		jails.start()
 	};

@@ -1,4 +1,6 @@
 module.exports = {
+	
+	mode :'production',
 
 	entry: {
 		main: './index.js'
