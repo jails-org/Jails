@@ -1,6 +1,6 @@
 {
   "name": "jails-js",
-  "version": "4.0.0",
+  "version": "3.4.0",
   "description": "A Modern Javascript Library",
   "main": "dist/jails.js",
   "scripts": {
