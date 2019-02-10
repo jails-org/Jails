@@ -4,7 +4,7 @@ export function vnode(
     children,
     text,
     elm){
-    let key = data === undefined ? undefined : data.key
+    let key = (elm && elm.id) || data === undefined ? undefined : data.key
     return {
         sel: sel, data: data, children: children,
         text: text, elm: elm, key: key
