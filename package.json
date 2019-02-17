@@ -4,7 +4,8 @@
   "description": "A Modern Javascript Library",
   "main": "dist/jails.js",
   "scripts": {
-    "start": "webpack index.js --watch",
+    "start": "webpack --watch",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

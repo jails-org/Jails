@@ -19,12 +19,8 @@
 	jails.start = function( ctx ){
 		ctx = ctx || document.documentElement;
 		each(ctx.querySelectorAll(selector), scan, true);
+		jails.observer = jails.observer || observe();
 		return jails;
-	};
-
-	jails.bootstrap = function(){
-		jails.observer = observe()
-		jails.start()
 	};
 
 	jails.destroy = function( node ){
@@ -80,6 +76,10 @@
 			main: function (callback) {
 				if (callback && callback.call)
 					promise.then(main(callback));
+			},
+
+			init: function(callback){
+				base.main(callback)
 			},
 
 			expose :function( n, f ){

@@ -1,13 +1,17 @@
-module.exports = {
+const path = require('path')
+
+module.exports = {	
 	
 	mode :'production',
 
 	entry: {
-		main: './index.js'
+		'jails'		:'./index.js',
+		'jails.lite':'./lite.js'
 	},
 
 	output: {
-		filename: 'jails.js',
+		path	: path.resolve(__dirname, './dist'),
+		filename: '[name].js',
 		libraryTarget: 'umd',
 		library: 'jails',
 		umdNamedDefine: true

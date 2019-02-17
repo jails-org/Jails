@@ -1,6 +1,4 @@
-import { pandora } from 'jails.packages/pandora'
-
-export default () => (jails) => {
+export default ( pandora ) => ( jails ) => {
     
     jails.register = (name, module, dependencies) => {
         
