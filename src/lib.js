@@ -64,7 +64,7 @@
 		}
 
 		return base = {
-
+			name		:name,
 			elm 		:node,
 			subscribe 	:publisher.subscribe,
 			publish   	:publisher.publish,
