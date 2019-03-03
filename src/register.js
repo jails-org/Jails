@@ -6,8 +6,11 @@ export default ( pandora ) => ( jails ) => {
 
             const callback = component.reactor
             const { model, actions } = module
-
+            
+            component.name = name 
+            component.module = module
             component.Msg = pandora({ model, actions, callback })
+
             module.default ? module.default(component) : module(component)
 
         }, dependencies)
