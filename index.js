@@ -1,6 +1,6 @@
 import jails          from './src/lib'
 import register       from './src/register'
-import reactor        from 'jails.packages/reactor'
+import reactor        from './src/reactor'
 import {pandora, log} from 'jails.packages/pandora'
 
 pandora.middlewares = {log}
