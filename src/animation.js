@@ -24,7 +24,6 @@ export const onAdd = (node) => {
         
         if (animation) {
             
-            const isAnimation = !!getComputedStyle(node).getPropertyValue('animation')
             const enter = node.getAttribute('data-enter-class') || `${animation}-enter`
             const enterActive = node.getAttribute('data-enter-active-class') || `${animation}-enter-active` 
             const enterTo = node.getAttribute('data-enter-to-class') || `${animation}-enter-to`
@@ -32,24 +31,18 @@ export const onAdd = (node) => {
             const addClassNames = addClass(node)
 
             const remove = () => {
-                if (isAnimation)
-                    removeClassNames(enter)
-                removeClassNames(`${enterActive} ${enterTo}`)
+                removeClassNames(`${enter} ${enterActive} ${enterTo}`)
                 node.removeEventListener(transitionEnd, remove)
                 node.removeEventListener(animationEnd, remove)
             }
             
             node.addEventListener(transitionEnd, remove)
             node.addEventListener(animationEnd, remove)
-            addClassNames(enterTo)
 
-            if(isAnimation)
+            nextFrame(() => {
                 addClassNames(enterTo)
-            else
-                nextFrame(() => {
-                    addClassNames(enter)
-                    removeClassNames(enterTo)
-                })
+                removeClassNames(enter)
+            })
         }
     }
 }
