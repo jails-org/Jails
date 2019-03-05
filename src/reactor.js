@@ -1,5 +1,6 @@
 import morphdom from 'morphdom'
 import soda from 'sodajs'
+import * as animation from './animation'
 
 export {
     morphdom,
@@ -34,7 +35,7 @@ export default (option) => {
             Base.reactor = (state) => {
 
                 if (!state) return dup(SST)
-                
+   
                 const newstate = dup(state)
                 Object.assign(SST, newstate)
                 delete SST.parent
@@ -85,6 +86,7 @@ export default (option) => {
                 if (node.getAttribute && node.getAttribute('data-component') && !node.j) {
                     status.hascomponent = true
                 }
+                return animation.onAdd(node)
             },
 
             onNodeDiscarded(node) {
@@ -94,47 +96,16 @@ export default (option) => {
             },
 
             onBeforeNodeAdded(node) {
-                if (node.getAttribute) {
-                    const animation = node.getAttribute('data-animation-before-enter')
-                    if (animation) {
-                        const afterEnter = node.getAttribute('data-animation-enter')
-                        node.classList.add(animation)
-                        rAF(() => {
-                            node.classList.add(afterEnter)
-                            rAF(() => {
-                                node.classList.remove(animation)
-                                node.classList.remove(afterEnter)
-                            })
-                        })
-                    }
-                }
+                return animation.onBeforeAdd(node)
             },
 
             onBeforeNodeDiscarded(node) {
-                if (node.getAttribute) {
-                    const animation = node.getAttribute('data-animation-leave')
-                    if (animation) {
-                        node.classList.add(animation)
-                        const remove = () => {
-                            node.removeEventListener(transitionEnd, remove)
-                            node.removeEventListener(animationEnd, remove)
-                            node.parentNode ? node.parentNode.removeChild(node) : null
-                        }
-                        node.addEventListener(transitionEnd, remove)
-                        node.addEventListener(animationEnd, remove)
-                        node.classList.add(animation)
-                        return false
-                    }
-                }
+                return animation.onRemove(node)
             }
         })
 
         return Base
     }
-}
-
-function rAF(fn) {
-    (requestAnimationFrame || setTimeout)(fn)
 }
 
 function dup(object) {
@@ -163,23 +134,3 @@ function setTemplate(context = document.body) {
             templates[ID] = elm.outerHTML
     })
 }
-
-const getPrefix = (object) => {
-    for (let key in object)
-        if (key in document.body.style)
-            return object[key]
-}
-
-const animationEnd = getPrefix({
-    animation: 'animationend',
-    OAnimation: 'oAnimationEnd',
-    MozAnimation: 'animationend',
-    WebkitAnimation: 'webkitAnimationEnd'
-})
-
-const transitionEnd = getPrefix({
-    transition: 'transitionend',
-    OTransition: 'oTransitionEnd',
-    MozTransition: 'transitionend',
-    WebkitTransition: 'webkitTransitionEnd'
-})
