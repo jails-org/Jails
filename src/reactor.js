@@ -37,6 +37,8 @@ export default (option) => {
 
                 Object.assign(SST, state)
                 delete SST.parent
+                
+                if( pageload ) state.parent = SST
                 let status = { hascomponent: false, pageload }
 
                 morphdom(Base.elm, soda(html, dup(state)), lifecycle(status))
