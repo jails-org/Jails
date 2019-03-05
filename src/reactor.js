@@ -34,14 +34,15 @@ export default (option) => {
             Base.reactor = (state) => {
 
                 if (!state) return dup(SST)
-
-                Object.assign(SST, state)
-                delete SST.parent
                 
-                if( pageload ) state.parent = SST
+                const newstate = dup(state)
+                Object.assign(SST, newstate)
+                delete SST.parent
+                newstate.parent = SST 
+                
                 let status = { hascomponent: false, pageload }
 
-                morphdom(Base.elm, soda(html, dup(state)), lifecycle(status))
+                morphdom(Base.elm, soda(html, newstate), lifecycle(status))
 
                 if (status.hascomponent) {
                     if (!Base.jails.observer)
