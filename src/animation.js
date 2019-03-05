@@ -10,7 +10,6 @@ export const onBeforeAdd = ( node ) => {
             const enter = node.getAttribute('data-enter-class') || `${animation}-enter`
             const enterActive = node.getAttribute('data-enter-active-class') || `${animation}-enter-active` 
             const addClassNames = addClass(node)
-            node.setAttribute('data-key', `${animation}-${id++}` )
             addClassNames(`${enter} ${enterActive}`)
         }
     }
