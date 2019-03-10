@@ -5,11 +5,16 @@ export default ( pandora ) => ( jails ) => {
         jails(name, (component) => {
 
             const callback = component.reactor
-            const { model, actions } = module
+            const { model, actions, view = (state) => state } = module
             const autostart = Object.keys(model || {}).length > 0
             
             component.module = module
-            component.Msg = pandora({ model, actions, callback, autostart })
+            component.Msg = pandora({ 
+                model, 
+                actions, 
+                autostart,
+                callback : (state) => callback( view(state) )
+            })
 
             module.default ? module.default(component) : module(component)
 
