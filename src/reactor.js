@@ -13,6 +13,7 @@ const REACTORID = 'data-reactor-id'
 const templates = {}
 const instances = {}
 const SST = {}
+const model = {}
 
 soda.prefix('v-')
 
@@ -36,7 +37,7 @@ export default (option) => {
 
                 if (!state) return dup(SST)
    
-                const newstate = dup(state)
+                const newstate = dup(Object.assign({}, model[tid], state))
                 Object.assign(SST, newstate)
                 delete SST.parent
                 newstate.parent = SST 
@@ -58,6 +59,7 @@ export default (option) => {
 
                 status.hascomponent = false
                 pageload = false
+                model[tid] = newstate
             }
         }
 
