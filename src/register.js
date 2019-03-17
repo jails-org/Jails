@@ -4,7 +4,6 @@ export default ( pandora ) => ( jails ) => {
         
         jails(name, (component) => {
 
-            const callback = component.reactor
             const { model, actions, view = (state) => state } = module
             const autostart = Object.keys(model || {}).length > 0
             
@@ -13,7 +12,10 @@ export default ( pandora ) => ( jails ) => {
                 model, 
                 actions, 
                 autostart,
-                callback : (state) => callback( view(state) )
+                callback: (state) => {
+                    state.parent = component.reactor.SST
+                    component.reactor(view(state))
+                }
             })
 
             module.default ? module.default(component) : module(component)

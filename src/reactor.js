@@ -38,6 +38,7 @@ export default (option) => {
                 if (!state) return dup(SST)
                 
                 nextTick(() => {
+                    
                     const newstate = Object.assign({}, model[tid], state)
                     Object.assign(SST, newstate)
                     delete SST.parent
@@ -63,6 +64,8 @@ export default (option) => {
                     model[tid] = newstate
                 })
             }
+
+            Base.reactor.SST = SST
         }
 
         const lifecycle = (status) => ({
