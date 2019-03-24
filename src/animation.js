@@ -1,4 +1,3 @@
-let id = 0
 
 export const onBeforeAdd = ( node ) => {
     
@@ -7,8 +6,8 @@ export const onBeforeAdd = ( node ) => {
         const animation = node.getAttribute('data-animation')
         
         if (animation) {
-            const enter = node.getAttribute('data-enter-class') || `${animation}-enter`
-            const enterActive = node.getAttribute('data-enter-active-class') || `${animation}-enter-active` 
+            const enter = `${animation}-enter`
+            const enterActive = `${animation}-enter-active` 
             const addClassNames = addClass(node)
             addClassNames(`${enter} ${enterActive}`)
         }
@@ -23,9 +22,9 @@ export const onAdd = (node) => {
         
         if (animation) {
             
-            const enter = node.getAttribute('data-enter-class') || `${animation}-enter`
-            const enterActive = node.getAttribute('data-enter-active-class') || `${animation}-enter-active` 
-            const enterTo = node.getAttribute('data-enter-to-class') || `${animation}-enter-to`
+            const enter = `${animation}-enter`
+            const enterActive = `${animation}-enter-active` 
+            const enterTo = `${animation}-enter-to`
             const removeClassNames = removeClass(node)
             const addClassNames = addClass(node)
 
@@ -54,9 +53,9 @@ export const onRemove = ( node ) => {
         
         if (animation) {
             
-            const leave = node.getAttribute('data-leave-class') || `${animation}-leave`
-            const leaveActive = node.getAttribute('data-leave-active-class') || `${animation}-leave-active`
-            const leaveTo = node.getAttribute('data-leave-to-class') || `${animation}-leave-to`
+            const leave = `${animation}-leave`
+            const leaveActive = `${animation}-leave-active`
+            const leaveTo = `${animation}-leave-to`
             const removeClassNames = removeClass(node)
             const addClassNames = addClass(node)
 
