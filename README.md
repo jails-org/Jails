@@ -1,5 +1,5 @@
 <p align="center">
-  <img  src="https://jails-org.github.io/assets/jails.svg" width="140" height="160" />
+  <img  src="https://jails-org.github.io/images/logo.svg" width="150" />
 </p>
 
 # Jails · [![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -7,7 +7,7 @@
 ### A Modern Javascript Component Library <br />
 - [**Documentation**](https://jails-org.github.io) 
 - [**Blog**](https://medium.com/jails-org)
-- [**Demos**](https://codesandbox.io/u/Javiani/sandboxes)
+- [**Demos**](https://jails-org.github.io/#/examples)
 
 <br />
 
@@ -27,7 +27,7 @@
 **components/range/index.js**
 
 ```js
-export default ( {init:main, elm} ) => {
+export default ({ main, elm }) => {
 
     const number = elm.querySelector('.number')
 
@@ -35,11 +35,13 @@ export default ( {init:main, elm} ) => {
         register
     ])
 
-    const register = ( {on} ) =>
-        on('input', {'input[type=range]':update})
+    const register = ({ on }) => {
+        on('input', { 'input[type=range]': update })
+    }
 
-    const update = event =>
+    const update = event => {
         number.innerText = event.target.value
+    }
 })
 ```
 <br />
