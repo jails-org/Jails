@@ -80,7 +80,7 @@ export default (option) => {
                 if (node.getAttribute) {
                     if ( 'static' in node.dataset && node != Base.elm)
                         return false
-                    if (node.getAttribute('data-component') && node != Base.elm && !status.pageload) {
+                    if (node.getAttribute('data-component') && node != Base.elm ){ //&& !status.pageload) {
                         const ID = +node.getAttribute(REACTORID)
                         instances[ID].Msg.set(state => state.parent = SST)
                         return false
