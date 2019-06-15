@@ -137,7 +137,3 @@ function setTemplate(context = document.body) {
             templates[ID] = elm.outerHTML
     })
 }
-
-const nextTick = (typeof window !== 'undefined' && window.document && window.document.createElement)
-    ? (requestAnimationFrame || setTimeout)
-    : (fn) => fn()
