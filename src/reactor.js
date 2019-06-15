@@ -37,32 +37,29 @@ export default (option) => {
 
                 if (!state) return dup(SST)
                 
-                nextTick(() => {
-                    
-                    const newstate = Object.assign({}, model[tid], state)
-                    Object.assign(SST, newstate)
-                    delete SST.parent
-                    newstate.parent = SST
+                const newstate = Object.assign({}, model[tid], state)
+                Object.assign(SST, newstate)
+                delete SST.parent
+                newstate.parent = SST
 
-                    let status = { hascomponent: false, pageload }
+                let status = { hascomponent: false, pageload }
 
-                    morphdom(Base.elm, soda(html, dup(newstate)), lifecycle(status))
+                morphdom(Base.elm, soda(html, dup(newstate)), lifecycle(status))
 
-                    if (status.hascomponent) {
-                        if (!Base.jails.observer)
-                            Base.jails.start(Base.elm)
-                        if (!Base.elm.getAttribute(REACTORID)) {
-                            Base.elm.setAttribute(REACTORID, id++)
-                            templates[id] = Base.elm.outerHTML
-                                .replace(/<template*.>/g, '')
-                                .replace(/<\/template>/g, '')
-                        }
+                if (status.hascomponent) {
+                    if (!Base.jails.observer)
+                        Base.jails.start(Base.elm)
+                    if (!Base.elm.getAttribute(REACTORID)) {
+                        Base.elm.setAttribute(REACTORID, id++)
+                        templates[id] = Base.elm.outerHTML
+                            .replace(/<template*.>/g, '')
+                            .replace(/<\/template>/g, '')
                     }
+                }
 
-                    status.hascomponent = false
-                    pageload = false
-                    model[tid] = newstate
-                })
+                status.hascomponent = false
+                pageload = false
+                model[tid] = newstate
             }
 
             Base.reactor.SST = SST
