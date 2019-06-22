@@ -49,6 +49,7 @@
 		var resolver;
 		var data    = {};
 		var events  = jails.events;
+		var subscribers = [];
 		var promise = new Promise(function (resolve) { resolver = resolve; });
 		
 		var main = function( callback ){
@@ -63,10 +64,15 @@
 			}
 		}
 
+		events.on(node, ':destroy', function () {
+			subscribers.forEach(function (topic) {
+				publisher.unsubscribe(topic);
+			});
+		});
+
 		return base = {
 			name		:name,
 			elm 		:node,
-			subscribe 	:publisher.subscribe,
 			publish   	:publisher.publish,
 			injection 	:options.injection,
 			jails 		:jails,
@@ -130,6 +136,11 @@
 			emit :function( n, params ){
 				var args = Array.prototype.slice.call( arguments );
 				events.trigger(node, args.shift(), { args:args });
+			},
+
+			subscribe: function( name, method ){
+				subscribers.push({ name, method })
+				publisher.subscribe(name, method)
 			}
 		};
 
@@ -319,11 +330,16 @@
 				topics[name].push( method );
 				if( name in _async )
 					each( topics[name], function( topic ){ topic( _async[name] ); });
-				return function(){
-					topics[name] = topics[name].filter(function( topic ){
-						return topic == method;
-					});
-				};
+			},
+			unsubscribe :function(topic){
+				topics[topic.name] = (topics[topic.name]||[]).filter(function (t) {
+					return t != topic.method;
+				});
+				_async[topic.name] = (_async[topic.name] || []).filter(function (t) {
+					return t != topic.method;
+				});
+				if( !topics[topic.name].length ) delete topics[topic.name]
+				if( !_async[topic.name].length ) delete _async[topic.name]
 			}
 		};
 	}
