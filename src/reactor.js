@@ -69,8 +69,8 @@ export default (option) => {
 
             getNodeKey(node) {
                 const key = node.getAttribute && node.getAttribute('data-key')
-                const id = node.getAttribute && node.getAttribute(REACTORID)
-                return key || id
+                // const id = node.getAttribute && node.getAttribute(REACTORID)
+                return key || node.id
             },
 
             onBeforeElChildrenUpdated(node, tonode) {
