@@ -22,11 +22,13 @@ export default (option) => {
     setTemplate()
 
     return Base => {
-
+        
         if (Base.elm == document.body) {
             Base.reactor = () => console.warn('Reactor can`t be used on document.body')
         } else {
-
+            
+            refreshTemplate( Base.elm )
+            
             let pageload = true
             const tid = +Base.elm.getAttribute(REACTORID)
             const html = templates[tid]
@@ -79,7 +81,9 @@ export default (option) => {
                         return false
                     if (node.getAttribute('data-component') && node != Base.elm ){ //&& !status.pageload) {
                         const ID = +node.getAttribute(REACTORID)
-                        instances[ID].Msg.set(state => state.parent = SST)
+                        const instance = instances[ID]
+                        if( instance )
+                            instance.Msg.set(state => state.parent = SST)
                         return false
                     }
                 }
@@ -136,4 +140,17 @@ function setTemplate(context = document.body) {
         if (!templates[ID])
             templates[ID] = elm.outerHTML
     })
+}
+
+function refreshTemplate( elm ){
+
+    if (elm.getAttribute(REACTORID) ) return 
+
+    id = id + 1
+    const newid = id
+    elm.setAttribute(REACTORID, newid)
+
+    templates[ newid ] = elm.outerHTML
+        .replace(/<template*.>/g, '')
+        .replace(/<\/template>/g, '')
 }
