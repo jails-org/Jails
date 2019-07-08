@@ -70,13 +70,13 @@ export default (option) => {
         const lifecycle = (status) => ({
 
             getNodeKey(node) {
-                const key = node.getAttribute && node.getAttribute('data-key')
+                const key = node.nodeType != 3 && node.getAttribute('data-key')
                 // const id = node.getAttribute && node.getAttribute(REACTORID)
                 return key || node.id
             },
 
             onBeforeElChildrenUpdated(node, tonode) {
-                if (node.getAttribute) {
+                if (node.nodeType != 3) {
                     if ( 'static' in node.dataset && node != Base.elm)
                         return false
                     if (node.getAttribute('data-component') && node != Base.elm ){ //&& !status.pageload) {
@@ -90,29 +90,44 @@ export default (option) => {
             },
 
             onNodeAdded(node) {
-                if (node.getAttribute && node.getAttribute('data-component') && !node.j) {
+                if (node.nodeType != 3 && node.getAttribute('data-component') && !node.j) {
                     status.hascomponent = true
                 }
-                return animation.onAdd(node)
+                animateNodes(node, animation.onAdd)
             },
 
             onNodeDiscarded(node) {
-                if (node.getAttribute && node.getAttribute('data-component') && node.j) {
+                if (node.nodeType != 3 && node.getAttribute('data-component') && node.j) {
                     Base.jails.destroy(node)
                 }
             },
 
             onBeforeNodeAdded(node) {
-                return animation.onBeforeAdd(node)
+                animateNodes(node, animation.onBeforeAdd) 
             },
 
             onBeforeNodeDiscarded(node) {
-                return animation.onRemove(node)
+                return !animateNodes(node, animation.onRemove)
             }
         })
 
         return Base
     }
+}
+
+const animateNodes = (node, callback) => {
+
+    const childnodes = node.nodeType != 3
+        ? Array.prototype.slice.call(node.querySelectorAll('[data-animation]'))
+        : []
+
+    const list = node.dataset && node.dataset.animation
+        ? [node].concat( childnodes )
+        : childnodes
+
+    list.forEach( n => callback(n, n.dataset.animation) )
+
+    return list.length > 0
 }
 
 function dup(object) {

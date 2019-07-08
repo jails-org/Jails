@@ -1,83 +1,59 @@
 
-export const onBeforeAdd = ( node ) => {
+export const onBeforeAdd = ( node, animation ) => {
     
-    if (node.getAttribute) {
-        
-        const animation = node.getAttribute('data-animation')
-        
-        if (animation) {
-            const enter = `${animation}-enter`
-            const enterActive = `${animation}-enter-active` 
-            const addClassNames = addClass(node)
-            addClassNames(`${enter} ${enterActive}`)
-        }
-    }
+    const enter = `${animation}-enter`
+    const enterActive = `${animation}-enter-active`
+    const addClassNames = addClass(node)
+
+    addClassNames(`${enter} ${enterActive}`)
 }
 
-export const onAdd = (node) => {
+export const onAdd = ( node, animation ) => {
     
-    if (node.getAttribute) {
-        
-        const animation = node.getAttribute('data-animation')
-        
-        if (animation) {
-            
-            const enter = `${animation}-enter`
-            const enterActive = `${animation}-enter-active` 
-            const enterTo = `${animation}-enter-to`
-            const removeClassNames = removeClass(node)
-            const addClassNames = addClass(node)
+    const enter = `${animation}-enter`
+    const enterActive = `${animation}-enter-active`
+    const enterTo = `${animation}-enter-to`
+    const removeClassNames = removeClass(node)
+    const addClassNames = addClass(node)
 
-            const remove = () => {
-                removeClassNames(`${enter} ${enterActive} ${enterTo}`)
-                node.removeEventListener(transitionEnd, remove)
-                node.removeEventListener(animationEnd, remove)
-            }
-            
-            node.addEventListener(transitionEnd, remove)
-            node.addEventListener(animationEnd, remove)
-
-            nextFrame(() => {
-                addClassNames(enterTo)
-                removeClassNames(enter)
-            })
-        }
+    const remove = () => {
+        removeClassNames(`${enter} ${enterActive} ${enterTo}`)
+        node.removeEventListener(transitionEnd, remove)
+        node.removeEventListener(animationEnd, remove)
     }
+
+    node.addEventListener(transitionEnd, remove)
+    node.addEventListener(animationEnd, remove)
+
+    nextFrame(() => {
+        addClassNames(enterTo)
+        removeClassNames(enter)
+    })
 }
 
-export const onRemove = ( node ) => {
+export const onRemove = ( node, animation ) => {
     
-    if (node.getAttribute) {
-    
-        const animation = node.getAttribute('data-animation')
-        
-        if (animation) {
-            
-            const leave = `${animation}-leave`
-            const leaveActive = `${animation}-leave-active`
-            const leaveTo = `${animation}-leave-to`
-            const removeClassNames = removeClass(node)
-            const addClassNames = addClass(node)
+    const leave = `${animation}-leave`
+    const leaveActive = `${animation}-leave-active`
+    const leaveTo = `${animation}-leave-to`
+    const removeClassNames = removeClass(node)
+    const addClassNames = addClass(node)
 
-            const remove = (e) => {
-                removeClassNames(`${leaveActive} ${leaveTo}`)
-                node.removeEventListener(transitionEnd, remove)
-                node.removeEventListener(animationEnd, remove)
-                node.parentNode ? node.parentNode.removeChild(node) : null
-            }
-
-            node.addEventListener(transitionEnd, remove)
-            node.addEventListener(animationEnd, remove)
-            addClassNames(`${leave} ${leaveActive}`)
-
-            nextFrame(() => {
-                removeClassNames(leave)
-                addClassNames(leaveTo)
-            })
-
-            return false
-        }
+    const remove = (e) => {
+        removeClassNames(`${leaveActive} ${leaveTo}`)
+        node.removeEventListener(transitionEnd, remove)
+        node.removeEventListener(animationEnd, remove)
+        node.parentNode ? node.parentNode.removeChild(node) : null
     }
+
+    node.addEventListener(transitionEnd, remove)
+    node.addEventListener(animationEnd, remove)
+    addClassNames(`${leave} ${leaveActive}`)
+
+    nextFrame(() => {
+        removeClassNames(leave)
+        addClassNames(leaveTo)
+    })
 }
 
 function rAF(fn) {
@@ -89,7 +65,7 @@ function nextFrame(fn){
 }
 
 const addClass = (element) => (string) => 
-    string.split(/\s/).map( item => element.classList.add(item) )
+    string.split(/\s/).map(item => element.classList.add(item))
 
 const removeClass = (element) => (string) => 
     string.split(/\s/).map( item => element.classList.remove(item) )
