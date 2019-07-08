@@ -45,9 +45,11 @@ export default (option) => {
                 newstate.parent = SST
 
                 let status = { hascomponent: false, pageload }
-
+                
+                    
+                
                 morphdom(Base.elm, soda(html, dup(newstate)), lifecycle(status))
-
+                
                 if (status.hascomponent) {
                     if (!Base.jails.observer)
                         Base.jails.start(Base.elm)
@@ -62,6 +64,7 @@ export default (option) => {
                 status.hascomponent = false
                 pageload = false
                 model[tid] = newstate
+                
             }
 
             Base.reactor.SST = SST

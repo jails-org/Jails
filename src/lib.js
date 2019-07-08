@@ -181,11 +181,13 @@
 			var base, fn;
 			node.j = node.j || {};
 			if( name in jails.components && !node.j[name] ){
-				fn = jails.components[name];
-				node.j[name] = { methods :{} };
-				base = jails.component( name, node, fn.options );
-				fn( base, node, base.props );
-				base.__initialize( base );
+				nextFrame(() => {
+					fn = jails.components[name];
+					node.j[name] = { methods: {} };
+					base = jails.component(name, node, fn.options);
+					fn(base, node, base.props);
+					base.__initialize(base);
+				});				
 			}
 		};
 	}
@@ -223,6 +225,14 @@
 			return f1(f2.apply(null, arguments))
 		}
 	};
+
+	function rAF(fn) {
+		(requestAnimationFrame || setTimeout)(fn, 1000 / 60);
+	}
+
+	function nextFrame(fn) {
+		rAF(() => rAF(fn));
+	}
 
 	function events(){
 
