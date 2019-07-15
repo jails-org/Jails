@@ -17,7 +17,7 @@ const model = {}
 
 soda.prefix('v-')
 
-export default (option) => {
+export default ( option ) => {
 
     setTemplate()
 
@@ -32,12 +32,13 @@ export default (option) => {
             let pageload = true
             const tid = +Base.elm.getAttribute(REACTORID)
             const html = templates[tid]
-
-            instances[tid] = Base
+            Base.elm.instance = Base
+            // instances[tid] = Base
 
             Base.reactor = (state) => {
 
-                if (!state) return dup(SST)
+                if (!state) 
+                    return dup(SST)
                 
                 const newstate = Object.assign({}, model[tid], state)
                 Object.assign(SST, newstate)
@@ -45,8 +46,6 @@ export default (option) => {
                 newstate.parent = SST
 
                 let status = { hascomponent: false, pageload }
-                
-                    
                 
                 morphdom(Base.elm, soda(html, dup(newstate)), lifecycle(status))
                 
@@ -64,7 +63,6 @@ export default (option) => {
                 status.hascomponent = false
                 pageload = false
                 model[tid] = newstate
-                
             }
 
             Base.reactor.SST = SST
@@ -74,7 +72,6 @@ export default (option) => {
 
             getNodeKey(node) {
                 const key = node.nodeType != 3 && node.getAttribute('data-key')
-                // const id = node.getAttribute && node.getAttribute(REACTORID)
                 return key || node.id
             },
 
@@ -82,11 +79,18 @@ export default (option) => {
                 if (node.nodeType != 3) {
                     if ( 'static' in node.dataset && node != Base.elm)
                         return false
-                    if (node.getAttribute('data-component') && node != Base.elm ){ //&& !status.pageload) {
-                        const ID = +node.getAttribute(REACTORID)
-                        const instance = instances[ID]
-                        if( instance )
-                            instance.Msg.set(state => state.parent = SST)
+                    if (node.getAttribute('data-component') && node != Base.elm ){
+                        const instance = node.instance
+                        if( instance ){
+                            const initialState = instance.elm.getAttribute('data-initialstate')
+                            instance.Msg.set(state => {
+                                state.parent = SST
+                                if( initialState ){
+                                    Object.assign(state, JSON.parse(initialState))
+                                }
+                            })
+                        }
+                            
                         return false
                     }
                 }
@@ -162,13 +166,105 @@ function setTemplate(context = document.body) {
 
 function refreshTemplate( elm ){
 
-    if (elm.getAttribute(REACTORID) ) return 
+    if (elm.getAttribute(REACTORID) ) 
+        return 
 
     id = id + 1
     const newid = id
-    elm.setAttribute(REACTORID, newid)
+    elm.setAttribute( REACTORID, newid )
 
     templates[ newid ] = elm.outerHTML
         .replace(/<template*.>/g, '')
         .replace(/<\/template>/g, '')
 }
+
+function findComponents( el ){
+    const isComponent = el.getAttribute('data-component')
+    const component = isComponent? [el] : []
+    const childComponents = Array.prototype.slice.call(el.querySelectorAll('[data-component]'))
+    return component.concat(childComponents)
+}
+
+soda.directive('repeat', {
+    
+    priority: 10,
+    
+    link({ scope, el, expression, getValue, compileNode }) {
+        
+        let itemName
+        let valueName
+        let trackName
+
+        const trackReg = /\s+by\s+([^\s]+)$/
+        const inReg = /([^\s]+)\s+in\s+([^\s]+)|\(([^,]+)\s*,\s*([^)]+)\)\s+in\s+([^\s]+)/
+        
+        const opt = expression.replace(trackReg, (item, $1) => {
+            if ($1)
+                trackName = ($1 || '').trim()
+            return ''
+        })
+
+        const r = inReg.exec(opt)
+
+        if (r) {
+            if (r[1] && r[2]) {
+                itemName = (r[1] || '').trim()
+                valueName = (r[2] || '').trim()
+
+                if (!(itemName && valueName)) {
+                    return
+                }
+            } else if (r[3] && r[4] && r[5]) {
+                trackName = (r[3] || '').trim()
+                itemName = (r[4] || '').trim()
+                valueName = (r[5] || '').trim()
+            }
+        } else {
+            return
+        }
+
+        trackName = trackName || '$index'
+
+        const repeatObj = getValue(scope, valueName) || []
+
+        const repeatFunc = (i) => {
+            
+            const itemNode = el.cloneNode(true)
+            const itemScope = Object.create(scope)
+            
+            itemScope[trackName] = i
+            itemScope[itemName] = repeatObj[i]
+
+            const components = findComponents(itemNode)
+            
+            components.forEach( node => {
+                node.setAttribute('data-initialstate', JSON.stringify(itemScope))
+            })
+
+            itemNode.removeAttribute(`${this._prefix}repeat`)
+            el.parentNode.insertBefore(itemNode, el)
+
+            compileNode(itemNode, itemScope)
+        }
+
+        if ('length' in repeatObj) {
+            for (var i = 0; i < repeatObj.length; i++) {
+                repeatFunc(i)
+            }
+        } else {
+            for (var i in repeatObj) {
+                if (repeatObj.hasOwnProperty(i)) {
+                    repeatFunc(i)
+                }
+            }
+        }
+
+        el.parentNode.removeChild(el)
+
+        if (el.childNodes && el.childNodes.length)
+            el.innerHTML = ''
+    }
+})
+
+
+
