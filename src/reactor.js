@@ -11,7 +11,6 @@ let id = 0
 
 const REACTORID = 'data-reactor-id'
 const templates = {}
-const instances = {}
 const SST = {}
 const model = {}
 
@@ -33,7 +32,6 @@ export default ( option ) => {
             const tid = +Base.elm.getAttribute(REACTORID)
             const html = templates[tid]
             Base.elm.instance = Base
-            // instances[tid] = Base
 
             Base.reactor = (state) => {
 
