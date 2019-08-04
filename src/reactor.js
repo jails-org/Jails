@@ -4,7 +4,7 @@ import sodajs from 'sodajs'
 import Element from './element'
 
 import { getTemplate, nextFrame, setIds } from './utils'
-import { uuid } from './utils'
+import { uuid, dup } from './utils'
 import { fire } from './events'
 
 import * as animation from './animation'
@@ -32,7 +32,8 @@ export default ( modules ) => {
 			const node = document.querySelector(`[data-reactor-id="${id}"]`)
 			if( node ){
 				const template = templates[id]
-				nextFrame(_ => morphdom(node, sodajs(template, data), lifecycle(node, data, SST)))
+				const newstate = dup(data)
+				nextFrame(_ => morphdom(node, sodajs(template, newstate), lifecycle(node, data, SST)))
 			}
 		},
 

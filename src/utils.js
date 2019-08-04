@@ -3,7 +3,7 @@ export const rAF = (fn) => {
 }
 
 export const nextFrame = (fn) => {
-    rAF(() => rAF(fn))   
+    rAF(() => rAF(fn))
 }
 
 export const addClass = (element) => (string) => {
@@ -63,4 +63,8 @@ export const createTemplate = (acc, element) => {
     element.setAttribute('data-reactor-id', id)
     acc[id] = element.outerHTML
     return acc
+}
+
+export const dup = ( object ) => {
+	return JSON.parse(JSON.stringify(object))
 }
