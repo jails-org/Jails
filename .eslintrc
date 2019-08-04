@@ -11,13 +11,10 @@
         "browser": true,
         "node" : true,
         "jquery": true,
-        "mocha" :true
     },
     "extends": "eslint:recommended",
      "parserOptions": {
         "sourceType": "module"
     },
-    "globals":{
-        "axios" :true
-    }
+    "globals":{}
 }

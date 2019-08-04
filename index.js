@@ -1,13 +1,30 @@
-import jails          from './src/lib'
-import register       from './src/register'
-import reactor        from './src/reactor'
-import {pandora, log} from 'jails.packages/pandora'
+import Reactor from './src/reactor'
+import * as Pubsub  from './src/pubsub'
 
-pandora.middlewares = {log}
+const Main = () => {
 
-export default jails
-    .use( register(pandora) )
-    .extends( reactor() )
+    const modules = {}
+    const reactor = Reactor( modules )
 
- 
-export const store = pandora
+    return {
+
+        Pubsub,
+
+        register( name, module, injection ){
+            modules[ name ] = { module, injection }
+        },
+
+        start(){
+            reactor.scan()
+            reactor.observe()
+		},
+
+		devStart(){
+			console.time('Jails')
+			this.start()
+			console.timeEnd('Jails')
+		}
+    }
+}
+
+export default Main()
