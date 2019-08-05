@@ -117,7 +117,7 @@ const lifecycle = ( elm, data, SST ) => ({
 	onBeforeElChildrenUpdated( node, tonode ){
 
 		if( node.nodeType !== 3 ){
-			if ( node.dataset.static )
+			if ( 'static' in node.dataset )
 				return false
 			if ( node !== elm && node.dataset.component ) {
 				node.__update__( Object.assign(SST, data) )
