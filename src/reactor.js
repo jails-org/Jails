@@ -28,9 +28,9 @@ export default ( modules ) => {
 			observe()
 		},
 
-		update( id, data = {} ){
-			const node = document.querySelector(`[data-reactor-id="${id}"]`)
+		update( node, data = {} ){
 			if( node ){
+				const id = node.dataset.reactorId
 				const template = templates[id]
 				const newstate = dup(data)
 				nextFrame(_ => morphdom(node, sodajs(template, newstate), lifecycle(node, data, SST)))
@@ -45,6 +45,7 @@ export default ( modules ) => {
 		},
 
 		scan( root = document.documentElement ){
+
 			const elements = Array
 				.from(root.querySelectorAll('[data-component]'))
 				.reverse()
@@ -105,11 +106,11 @@ export default ( modules ) => {
 	return base
 }
 
-
 const lifecycle = ( elm, data, SST ) => ({
 
 	getNodeKey( node ) {
-		if( node.nodeType !== 3 ){
+
+		if( node.nodeType !== 3){
 			return node.dataset.key || node.id || node.dataset.reactorId
 		}
 	},
@@ -119,7 +120,7 @@ const lifecycle = ( elm, data, SST ) => ({
 		if( node.nodeType !== 3 ){
 			if ( 'static' in node.dataset )
 				return false
-			if ( node !== elm && node.dataset.component ) {
+			if ( node !== elm && node.dataset.component && node.__update__ ) {
 				node.__update__( Object.assign(SST, data) )
 				return false
 			}

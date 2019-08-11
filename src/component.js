@@ -6,7 +6,7 @@ import * as Pubsub from './pubsub'
 export default ( reactor, {module, injection} ) => ( name, node ) => {
 
 	const id = node.dataset.reactorId
-	const store = State( id, name, module, reactor )
+	const store = State( id, node, name, module, reactor )
 	const subscriptions = []
 
 	let resolver
@@ -32,7 +32,7 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 		},
 
 		render( data ){
-			reactor.update( id, data )
+			reactor.update( node, data )
 		},
 
 		expose(methods) {
@@ -102,7 +102,7 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 	return base
 }
 
-const State = ( id, name, module, reactor ) => {
+const State = ( id, node, name, module, reactor ) => {
 
 	const view = module.view ? module.view : state => state
 
@@ -114,12 +114,12 @@ const State = ( id, name, module, reactor ) => {
 		autostart: false,
 
 		callback( state ) {
-			reactor.update( id, view(state) )
+			reactor.update( node, view(state) )
 		}
 	})
 
 	if( module.model && Object.keys(module.model).length )
-		reactor.update(id, view( module.model))
+		reactor.update(node, view( module.model))
 
 	return store
 }
