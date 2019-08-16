@@ -34,8 +34,8 @@ export const transitionEnd = getPrefix({
     WebkitTransition: 'webkitTransitionEnd'
 })
 
-export const getTemplate = (node) => {
-    return node.innerHTML
+export const getTemplate = (html) => {
+    return html
         .replace(/<template*.>/g, '')
         .replace(/<\/template>/g, '')
 }

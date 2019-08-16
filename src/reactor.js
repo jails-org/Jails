@@ -3,8 +3,7 @@ import sodajs from 'sodajs'
 
 import Element from './element'
 
-import { getTemplate, nextFrame, setIds } from './utils'
-import { uuid, dup } from './utils'
+import { nextFrame, setIds, uuid, dup, getTemplate } from './utils'
 import { fire } from './events'
 
 import * as animation from './animation'
@@ -14,7 +13,7 @@ export default ( modules ) => {
 	sodajs.prefix('v-')
 
 	const root = document.documentElement
-	const Template = setIds( getTemplate( root ) )
+	const Template = setIds( getTemplate( root.innerHTML ) )
 	const { dom, templates } = Template
 	const SST = {}
 
@@ -33,7 +32,7 @@ export default ( modules ) => {
 				const id = node.dataset.reactorId
 				const template = templates[id]
 				const newstate = dup(data)
-				nextFrame(_ => morphdom(node, sodajs(template, newstate), lifecycle(node, data, SST)))
+				nextFrame( _ => morphdom(node, sodajs(template, newstate), lifecycle(node, data, SST)) )
 			}
 		},
 
@@ -61,15 +60,17 @@ export default ( modules ) => {
 
 		scanSingle(element){
 
-			if( !element.dataset.reactorId){
+			if( !element.dataset.reactorId ){
 				const id = uuid()
 				element.setAttribute('data-reactor-id', id)
-				templates[id] = element.outerHTML
+				templates[id] = getTemplate(element.outerHTML)
 			}
 
-			const components = element.dataset.component.split(/\s/)
-			const El = Element(element, base)
-			components.forEach( name => El.create({ name, module: modules[name] }) )
+			if( !element.__instances__ ){
+				const components = element.dataset.component.split(/\s/)
+				const El = Element(element, base)
+				components.forEach(name => El.create({ name, module: modules[name] }))
+			}
 		}
 	}
 
