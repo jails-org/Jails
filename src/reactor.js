@@ -28,11 +28,18 @@ export default ( modules ) => {
 		},
 
 		update( node, data = {} ){
+
+			const cache = JSON.stringify(data)
+
+			if( node.__cache__ && node.__cache__ == cache )
+				return
+
 			if( node ){
 				const id = node.dataset.reactorId
 				const template = templates[id]
 				const newstate = dup(data)
 				nextFrame( _ => morphdom(node, sodajs(template, newstate), lifecycle(node, data, SST)) )
+				node.__cache__ = cache
 			}
 		},
 
