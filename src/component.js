@@ -5,8 +5,7 @@ import * as Pubsub from './pubsub'
 
 export default ( reactor, {module, injection} ) => ( name, node ) => {
 
-	const id = node.dataset.reactorId
-	const store = State( id, node, name, module, reactor )
+	const store = State( node, name, module, reactor )
 	const subscriptions = []
 
 	let resolver
@@ -102,13 +101,14 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 	return base
 }
 
-const State = ( id, node, name, module, reactor ) => {
+const State = ( node, name, module, reactor ) => {
 
 	const view = module.view ? module.view : state => state
+	const initialState = reactor.models[node.dataset.modelId]
+	const model = Object.assign({}, initialState, module.model)
 
 	const store = pandora({
-
-		model: module.model || {},
+		model,
 		actions: module.actions || {},
 		middlewares: [log(`Component ${name}`)],
 		autostart: false,
@@ -118,8 +118,9 @@ const State = ( id, node, name, module, reactor ) => {
 		}
 	})
 
-	if( module.model && Object.keys(module.model).length )
-		reactor.update(node, view( module.model))
+	if( module.model && Object.keys(module.model).length ){
+		reactor.update(node, view(model))
+	}
 
 	return store
 }

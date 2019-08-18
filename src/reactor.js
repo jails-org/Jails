@@ -7,6 +7,7 @@ import { nextFrame, setIds, dup, getTemplate } from './utils'
 import { fire } from './events'
 
 import * as animation from './animation'
+import repeatDirective from './repeat'
 
 export default ( modules ) => {
 
@@ -16,12 +17,16 @@ export default ( modules ) => {
 	const Template = setIds( getTemplate( root.innerHTML ) )
 	const { dom, templates } = Template
 	const SST = {}
+	const models = {}
+
+	repeatDirective({ sodajs, models })
 
 	morphdom( root, sodajs(dom, {}) )
 
 	const base = {
 
 		templates,
+		models,
 
 		observe() {
 			observe()
@@ -47,6 +52,8 @@ export default ( modules ) => {
 			for( let ev in el.__events)
 				el.removeEventListener(ev, el.__events[ev].listener)
 			delete el.__events
+			if( el.dataset.modelId )
+				delete models[el.dataset.modelId]
 			fire(el, ':destroy')
 		},
 
