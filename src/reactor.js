@@ -31,7 +31,7 @@ export default ( modules ) => {
 
 			const cache = JSON.stringify(data)
 
-			if( node.__cache__ && node.__cache__ == cache )
+			if( node.__cache__ && node.__cache__ === cache )
 				return
 
 			if( node ){
