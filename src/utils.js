@@ -47,12 +47,12 @@ export const uuid = () => {
     })
 }
 
-export const setIds = (html) => {
+export const setIds = (html, type = 'html') => {
 
-    const virtual = document.createElement('html')
+    const virtual = document.createElement(type)
     virtual.innerHTML = html
 
-    const components = virtual.querySelectorAll('[data-component]')
+    const components = virtual.querySelectorAll('[data-component]:not([data-reactor-id])')
     const templates = Array.from(components).reverse().reduce(createTemplate, {})
 
     return { templates, dom: virtual.innerHTML }

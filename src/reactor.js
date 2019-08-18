@@ -52,6 +52,7 @@ export default ( modules ) => {
 			elements.forEach(element => {
 				if ( element.__instances__ )
 					return
+
 				const components = element.dataset.component.split(/\s/)
 				const El = Element( element, base )
 				components.forEach(name => El.create({ name, module: modules[name] }))
@@ -59,18 +60,9 @@ export default ( modules ) => {
 		},
 
 		scanSingle(element){
-
-			if( !element.dataset.reactorId ){
-				const id = uuid()
-				element.setAttribute('data-reactor-id', id)
-				templates[id] = getTemplate(element.outerHTML)
-			}
-
-			if( !element.__instances__ ){
-				const components = element.dataset.component.split(/\s/)
-				const El = Element(element, base)
-				components.forEach(name => El.create({ name, module: modules[name] }))
-			}
+			const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
+			Object.assign(templates, newTemplate.templates)
+			morphdom(element, sodajs(newTemplate.dom, {}))
 		}
 	}
 
@@ -84,6 +76,7 @@ export default ( modules ) => {
 		if (mutation.type == 'childList') {
 			if (mutation.addedNodes.length) {
 				mutatedComponents(mutation.addedNodes, base.scanSingle)
+				base.scan()
 			} else if (mutation.removedNodes.length) {
 				mutatedComponents(mutation.removedNodes, base.destroy)
 			}
@@ -92,11 +85,11 @@ export default ( modules ) => {
 
 	const mutatedComponents = (nodeList, callback) => {
 
-		const nodes = Array.from(nodeList).reverse().reduce((acc, node) => {
+		const nodes = Array.from(nodeList).reduce((acc, node) => {
 			return node.querySelectorAll
 				? [node].concat(Array.from(node.querySelectorAll('[data-component]')))
 				: [node]
-		}, [])
+		}, []).reverse()
 
 		nodes.forEach(node => {
 			if (node.nodeType !== 3 && node.dataset.component)
