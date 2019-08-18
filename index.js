@@ -8,7 +8,7 @@ const Main = () => {
 
     return {
 
-        Pubsub,
+		Pubsub,
 
         register( name, module, injection ){
             modules[ name ] = { module, injection }
@@ -20,6 +20,7 @@ const Main = () => {
 		},
 
 		devStart(){
+			reactor.mode = 'development'
 			console.time('Jails')
 			this.start()
 			console.timeEnd('Jails')

@@ -104,13 +104,19 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 const State = ( node, name, module, reactor ) => {
 
 	const view = module.view ? module.view : state => state
-	const initialState = reactor.models[node.dataset.modelId]
+	const initialState = reactor.models[ node.dataset.modelId ]
 	const model = Object.assign({}, initialState, module.model)
+
+	const middlewares = reactor.mode == 'development'
+		? [log(`Component ${name.charAt(0).toUpperCase()}${name.substring(1)}`)]
+		: []
+
+	const actions = module.actions || {}
 
 	const store = pandora({
 		model,
-		actions: module.actions || {},
-		middlewares: [log(`Component ${name}`)],
+		actions,
+		middlewares,
 		autostart: false,
 
 		callback( state ) {

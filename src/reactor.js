@@ -43,7 +43,7 @@ export default ( modules ) => {
 				const id = node.dataset.reactorId
 				const template = templates[id]
 				const newstate = dup(data)
-				nextFrame( _ => morphdom(node, sodajs(template, newstate), lifecycle(node, data, SST)) )
+				morphdom(node, sodajs(template, newstate), lifecycle(node, data, SST))
 				node.__cache__ = cache
 			}
 		},
@@ -69,14 +69,18 @@ export default ( modules ) => {
 
 				const components = element.dataset.component.split(/\s/)
 				const El = Element( element, base )
-				components.forEach(name => El.create({ name, module: modules[name] }))
+				components.forEach(name => {
+					nextFrame(_ => El.create({ name, module: modules[name] }))
+				})
 			})
 		},
 
 		scanSingle(element){
-			const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
-			Object.assign(templates, newTemplate.templates)
-			morphdom(element, sodajs(newTemplate.dom, {}))
+			nextFrame( _ => {
+				const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
+				Object.assign(templates, newTemplate.templates)
+				morphdom(element, sodajs(newTemplate.dom, {}))
+			})
 		}
 	}
 
