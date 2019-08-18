@@ -3,7 +3,7 @@ import sodajs from 'sodajs'
 
 import Element from './element'
 
-import { nextFrame, setIds, uuid, dup, getTemplate } from './utils'
+import { nextFrame, setIds, dup, getTemplate } from './utils'
 import { fire } from './events'
 
 import * as animation from './animation'
