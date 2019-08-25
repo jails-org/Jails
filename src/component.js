@@ -18,12 +18,12 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 		injection,
 		elm :node,
 		state: store,
+		publish: Pubsub.publish,
+		unsubscribe: Pubsub.unsubscribe,
 
 		__initialize( base ) {
 			resolver(base)
-			base.destroy(() => {
-				subscriptions.forEach(topic => Pubsub.unsubscribe(topic))
-			})
+			base.destroy( _ =>subscriptions.forEach(topic => Pubsub.unsubscribe(topic)) )
 		},
 
 		main( fn ) {
@@ -88,13 +88,9 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 			}
 		},
 
-		Pubsub :{
-			publish: Pubsub.publish,
-			unsubscribe :Pubsub.unsubscribe,
-			subscribe(name, method){
-				subscriptions.push({ name, method })
-				Pubsub.subscribe(name, method)
-			}
+		subscribe(name, method) {
+			subscriptions.push({ name, method })
+			Pubsub.subscribe(name, method)
 		}
 	}
 
@@ -105,7 +101,7 @@ const State = ( node, name, module, reactor ) => {
 
 	const view = module.view ? module.view : state => state
 	const initialState = reactor.models[ node.dataset.modelId ]
-	const model = Object.assign({}, initialState, module.model)
+	const model = Object.assign({}, module.model, initialState)
 
 	const middlewares = reactor.mode == 'development'
 		? [log(`Component ${name.charAt(0).toUpperCase()}${name.substring(1)}`)]
