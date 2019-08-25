@@ -7,6 +7,7 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 
 	const store = State( node, name, module, reactor )
 	const subscriptions = []
+	const destroyers = []
 
 	let resolver
 	let promise = new Promise( resolve => resolver = resolve )
@@ -23,7 +24,10 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 
 		__initialize( base ) {
 			resolver(base)
-			base.destroy( _ =>subscriptions.forEach(topic => Pubsub.unsubscribe(topic)) )
+			base.destroy( _ =>{
+				subscriptions.forEach(topic => Pubsub.unsubscribe(topic))
+				destroyers.forEach( fn => node.removeEventListener(':destroy', fn) )
+			})
 		},
 
 		main( fn ) {
@@ -43,6 +47,7 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 		},
 
 		destroy( callback ){
+			destroyers.push(callback)
 			node.addEventListener(':destroy', callback)
 		},
 
