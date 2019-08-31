@@ -122,14 +122,14 @@ const lifecycle = ( elm, data, SST ) => ({
 
 	getNodeKey( node ) {
 
-		if( node.nodeType !== 3){
+		if( node.nodeType === 1 ){
 			return node.dataset.key || node.id || node.dataset.reactorId
 		}
 	},
 
 	onBeforeElChildrenUpdated( node, tonode ){
 
-		if( node.nodeType !== 3 ){
+		if( node.nodeType === 1 ){
 			if ( 'static' in node.dataset )
 				return false
 			if ( node !== elm && node.dataset.component && node.__update__ ) {
