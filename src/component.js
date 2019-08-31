@@ -18,7 +18,7 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 		name,
 		injection,
 		elm :node,
-		state: store,
+		msg: store,
 		publish: Pubsub.publish,
 		unsubscribe: Pubsub.unsubscribe,
 
