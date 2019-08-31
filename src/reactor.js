@@ -70,7 +70,8 @@ export default ( modules ) => {
 				const components = element.dataset.component.split(/\s/)
 				const El = Element( element, base )
 				components.forEach(name => {
-					nextFrame(_ => El.create({ name, module: modules[name] }))
+					if( modules[name] )
+						nextFrame(_ => El.create({ name, module: modules[name] }))
 				})
 			})
 		},
