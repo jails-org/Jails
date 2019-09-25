@@ -43,7 +43,8 @@ export default ( modules ) => {
 				const id = node.dataset.reactorId
 				const template = templates[id]
 				const newstate = dup(data)
-				morphdom(node, sodajs(template, newstate), lifecycle(node, data, SST))
+				models[id] = Object.assign({}, models[id], newstate)
+				morphdom(node, sodajs(template, models[id]), lifecycle(node, data, SST))
 				node.__cache__ = cache
 			}
 		},
@@ -66,7 +67,6 @@ export default ( modules ) => {
 			elements.forEach(element => {
 				if ( element.__instances__ )
 					return
-
 				const components = element.dataset.component.split(/\s/)
 				const El = Element( element, base )
 				components.forEach(name => {
