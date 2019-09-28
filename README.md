@@ -27,11 +27,11 @@
 **components/range/index.js**
 
 ```js
-export default ({ main, elm }) => {
+export default function range ({ main, elm }) {
 
     const number = elm.querySelector('.number')
 
-    main(()=>[
+    main( _ =>[
         register
     ])
 
