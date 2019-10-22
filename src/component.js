@@ -59,8 +59,10 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 			off( node, name, callback )
 		},
 
-		trigger( el, name, data ) {
-			fire(el, name, data)
+		trigger( ev, target, args ) {
+			if (target.constructor == String)
+				fire(node.querySelector(target), ev, { args: args })
+			else fire(node, ev, { args: target })
 		},
 
 		emit(n, params) {

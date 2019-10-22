@@ -12,9 +12,5 @@
 				"useBuiltIns": true
 			}
 		]
-	],
-	"plugins": [
-		"transform-object-rest-spread",
-		"syntax-dynamic-import"
 	]
 }
