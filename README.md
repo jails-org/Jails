@@ -5,7 +5,7 @@
 # [![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ### A Modern Javascript Component Library <br />
-- [**Documentation**](https://jails-org.github.io) 
+- [**Documentation**](https://jails-org.github.io/v4) 
 - [**Blog**](https://medium.com/jails-org)
 - [**Demos**](https://jails-org.github.io/#/examples)
 
@@ -27,11 +27,11 @@
 **components/range/index.js**
 
 ```js
-export default ({ main, elm }) => {
+export default function range ({ main, elm }) {
 
     const number = elm.querySelector('.number')
 
-    main(()=>[
+    main( _ =>[
         register
     ])
 
