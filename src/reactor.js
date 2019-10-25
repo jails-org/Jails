@@ -111,7 +111,7 @@ export default ( modules ) => {
 		}, []).reverse()
 
 		nodes.forEach(node => {
-			if (node.nodeType !== 3 && node.dataset.component)
+			if (node.nodeType === 1 && node.dataset.component)
 				callback(node)
 		})
 	}

@@ -66,7 +66,7 @@ export const onRemove = (node, animation) => {
 
 export const animateNodes = (node, callback) => {
 
-	const childnodes = node.nodeType != 3
+	const childnodes = node.nodeType == 1
 		? Array.prototype.slice.call(node.querySelectorAll('[data-animation]'))
 		: []
 
