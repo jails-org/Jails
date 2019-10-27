@@ -65,10 +65,17 @@ export default ( modules ) => {
 				.reverse()
 
 			elements.forEach(element => {
-				if ( element.__instances__ )
+
+				// Shoudn't create template and start instance if there's no mixin registered
+				const list = element.dataset.component.split(/\s/)
+				const hasMixin = list.some(name => name in modules)
+
+				if ( element.__instances__ || !hasMixin )
 					return
+
 				const components = element.dataset.component.split(/\s/)
 				const El = Element( element, base )
+
 				components.forEach(name => {
 					if( modules[name] )
 						nextFrame(_ => El.create({ name, module: modules[name] }))
@@ -78,9 +85,15 @@ export default ( modules ) => {
 
 		scanSingle(element){
 			nextFrame( _ => {
-				const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
-				Object.assign(templates, newTemplate.templates)
-				morphdom(element, sodajs(newTemplate.dom, {}))
+				// Shoudn't create template and start instance if there's no mixin registered
+				const list = element.dataset.component.split(/\s/)
+				const hasMixin = list.some(name => name in modules)
+
+				if( hasMixin ){
+					const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
+					Object.assign(templates, newTemplate.templates)
+					morphdom(element, sodajs(newTemplate.dom, {}))
+				}
 			})
 		}
 	}
