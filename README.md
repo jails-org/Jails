@@ -1,5 +1,5 @@
 <p align="center">
-  <img  src="https://jails-org.github.io/v4/images/logo.svg" width="180" />
+  <img  src="https://jails-org.github.io/images/logo.svg" width="180" />
 </p>
 
 # [![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
