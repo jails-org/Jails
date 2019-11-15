@@ -36,7 +36,7 @@ export default function range ({ main, elm }) {
     ])
 
     const register = ({ on }) => {
-        on('input', { 'input[type=range]': update })
+        on('input', 'input[type=range]', update )
     }
 
     const update = event => {
