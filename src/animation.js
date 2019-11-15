@@ -1,6 +1,13 @@
+import {
+	addClass,
+	removeClass,
+	animationEnd,
+	transitionEnd,
+	nextFrame
+} from './utils'
 
-export const onBeforeAdd = ( node, animation ) => {
-    
+export const onBeforeAdd = (node, animation) => {
+
     const enter = `${animation}-enter`
     const enterActive = `${animation}-enter-active`
     const addClassNames = addClass(node)
@@ -8,8 +15,8 @@ export const onBeforeAdd = ( node, animation ) => {
     addClassNames(`${enter} ${enterActive}`)
 }
 
-export const onAdd = ( node, animation ) => {
-    
+export const onAdd = (node, animation) => {
+
     const enter = `${animation}-enter`
     const enterActive = `${animation}-enter-active`
     const enterTo = `${animation}-enter-to`
@@ -31,8 +38,8 @@ export const onAdd = ( node, animation ) => {
     })
 }
 
-export const onRemove = ( node, animation ) => {
-    
+export const onRemove = (node, animation) => {
+
     const leave = `${animation}-leave`
     const leaveActive = `${animation}-leave-active`
     const leaveTo = `${animation}-leave-to`
@@ -48,7 +55,8 @@ export const onRemove = ( node, animation ) => {
 
     node.addEventListener(transitionEnd, remove)
     node.addEventListener(animationEnd, remove)
-    addClassNames(`${leave} ${leaveActive}`)
+
+	addClassNames(`${leave} ${leaveActive}`)
 
     nextFrame(() => {
         removeClassNames(leave)
@@ -56,36 +64,17 @@ export const onRemove = ( node, animation ) => {
     })
 }
 
-function rAF(fn) {
-    (requestAnimationFrame || setTimeout)(fn, 1000/60)
+export const animateNodes = (node, callback) => {
+
+	const childnodes = node.nodeType == 1
+		? Array.prototype.slice.call(node.querySelectorAll('[data-animation]'))
+		: []
+
+	const list = node.dataset && node.dataset.animation
+		? [node].concat(childnodes)
+		: childnodes
+
+	list.forEach(n => callback(n, n.dataset.animation))
+
+	return list.length > 0
 }
-
-function nextFrame(fn){
-    rAF(() => rAF(fn))
-}
-
-const addClass = (element) => (string) => 
-    string.split(/\s/).map(item => element.classList.add(item))
-
-const removeClass = (element) => (string) => 
-    string.split(/\s/).map( item => element.classList.remove(item) )
-
-const getPrefix = (object) => {
-    for (let key in object)
-        if (key in document.body.style)
-            return object[key]
-}
-
-const animationEnd = getPrefix({
-    animation: 'animationend',
-    OAnimation: 'oAnimationEnd',
-    MozAnimation: 'animationend',
-    WebkitAnimation: 'webkitAnimationEnd'
-})
-
-const transitionEnd = getPrefix({
-    transition: 'transitionend',
-    OTransition: 'oTransitionEnd',
-    MozTransition: 'transitionend',
-    WebkitTransition: 'webkitTransitionEnd'
-})

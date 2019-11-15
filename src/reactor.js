@@ -1,268 +1,167 @@
 import morphdom from 'morphdom'
-import soda from 'sodajs'
+import sodajs from 'sodajs'
+
+import Element from './element'
+
+import { nextFrame, setIds, dup, getTemplate } from './utils'
+import { fire } from './events'
+
 import * as animation from './animation'
+import repeatDirective from './repeat'
 
-export {
-    morphdom,
-    soda
+export default ( modules ) => {
+
+	sodajs.prefix('v-')
+
+	const root = document.documentElement
+	const Template = setIds( getTemplate( root.innerHTML ) )
+	const { dom, templates } = Template
+	const SST = {}
+	const models = {}
+
+	repeatDirective({ sodajs, models })
+
+	morphdom( root, sodajs(dom, {}) )
+
+	const base = {
+
+		templates,
+		models,
+
+		observe() {
+			observe()
+		},
+
+		update( node, data = {} ){
+
+			const cache = JSON.stringify(data)
+
+			if( node.__cache__ && node.__cache__ === cache )
+				return
+
+			if( node ){
+				const id = node.dataset.reactorId
+				const template = templates[id]
+				const newstate = dup(data)
+				models[id] = Object.assign({}, models[id], newstate)
+				morphdom(node, sodajs(template, models[id]), lifecycle(node, data, SST))
+				node.__cache__ = cache
+			}
+		},
+
+		destroy(el){
+			for( let ev in el.__events)
+				el.removeEventListener(ev, el.__events[ev].listener)
+			delete el.__events
+			if( el.dataset.modelId )
+				delete models[el.dataset.modelId]
+			fire(el, ':destroy')
+		},
+
+		scan( root = document.documentElement ){
+
+			const elements = Array
+				.from(root.querySelectorAll('[data-component]'))
+				.reverse()
+
+			elements.forEach(element => {
+
+				// Shoudn't create template and start instance if there's no mixin registered
+				const list = element.dataset.component.split(/\s/)
+				const hasMixin = list.some(name => name in modules)
+
+				if ( element.__instances__ || !hasMixin )
+					return
+
+				const components = element.dataset.component.split(/\s/)
+				const El = Element( element, base )
+
+				components.forEach(name => {
+					if( modules[name] )
+						nextFrame(_ => El.create({ name, module: modules[name] }))
+				})
+			})
+		},
+
+		scanSingle(element){
+			nextFrame( _ => {
+				// Shoudn't create template and start instance if there's no mixin registered
+				const list = element.dataset.component.split(/\s/)
+				const hasMixin = list.some(name => name in modules)
+
+				if( hasMixin ){
+					const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
+					Object.assign(templates, newTemplate.templates)
+					morphdom(element, sodajs(newTemplate.dom, {}))
+				}
+			})
+		}
+	}
+
+	const observe = () => {
+		const observer = new MutationObserver( mutations => mutations.forEach(onMutation) )
+		observer.observe( document.body, { childList: true, subtree: true })
+		return observer;
+	}
+
+	const onMutation = (mutation) => {
+		if (mutation.type == 'childList') {
+			if (mutation.addedNodes.length) {
+				mutatedComponents(mutation.addedNodes, base.scanSingle)
+				base.scan()
+			} else if (mutation.removedNodes.length) {
+				mutatedComponents(mutation.removedNodes, base.destroy)
+			}
+		}
+	}
+
+	const mutatedComponents = (nodeList, callback) => {
+
+		const nodes = Array.from(nodeList).reduce((acc, node) => {
+			return node.querySelectorAll
+				? [node].concat(Array.from(node.querySelectorAll('[data-component]')))
+				: [node]
+		}, []).reverse()
+
+		nodes.forEach(node => {
+			if (node.nodeType === 1 && node.dataset.component)
+				callback(node)
+		})
+	}
+
+	return base
 }
 
-let id = 0
+const lifecycle = ( elm, data, SST ) => ({
 
-const REACTORID = 'data-reactor-id'
-const templates = {}
-const SST = {}
-const model = {}
+	getNodeKey( node ) {
 
-soda.prefix('v-')
+		if( node.nodeType === 1 ){
+			return node.dataset.key || node.id || node.dataset.reactorId
+		}
+	},
 
-export default ( option ) => {
+	onBeforeElChildrenUpdated( node, tonode ){
 
-    setTemplate()
+		if( node.nodeType === 1 ){
+			if ( 'static' in node.dataset )
+				return false
+			if ( node !== elm && node.dataset.component && node.__update__ ) {
+				node.__update__( Object.assign(SST, data) )
+				return false
+			}
+		}
+	},
 
-    return Base => {
-        
-        if (Base.elm == document.body) {
-            Base.reactor = () => console.warn('Reactor can`t be used on document.body')
-        } else {
-            
-            refreshTemplate( Base.elm )
-            
-            let pageload = true
-            const tid = +Base.elm.getAttribute(REACTORID)
-            const html = templates[tid]
-            Base.elm.instance = Base
+	onNodeAdded(node) {
+		animation.animateNodes(node, animation.onAdd)
+	},
 
-            Base.reactor = (state) => {
+	onBeforeNodeAdded(node) {
+		animation.animateNodes(node, animation.onBeforeAdd)
+	},
 
-                if (!state) 
-                    return dup(SST)
-                
-                const newstate = Object.assign({}, model[tid], state)
-                Object.assign(SST, newstate)
-                delete SST.parent
-                newstate.parent = SST
-
-                let status = { hascomponent: false, pageload }
-                
-                morphdom(Base.elm, soda(html, dup(newstate)), lifecycle(status))
-                
-                if (status.hascomponent) {
-                    if (!Base.jails.observer)
-                        Base.jails.start(Base.elm)
-                    if (!Base.elm.getAttribute(REACTORID)) {
-                        Base.elm.setAttribute(REACTORID, id++)
-                        templates[id] = Base.elm.outerHTML
-                            .replace(/<template*.>/g, '')
-                            .replace(/<\/template>/g, '')
-                    }
-                }
-
-                status.hascomponent = false
-                pageload = false
-                model[tid] = newstate
-            }
-
-            Base.reactor.SST = SST
-        }
-
-        const lifecycle = (status) => ({
-
-            getNodeKey(node) {
-                const key = node.nodeType != 3 && node.getAttribute('data-key')
-                return key || node.id
-            },
-
-            onBeforeElChildrenUpdated(node, tonode) {
-                if (node.nodeType != 3) {
-                    if ( 'static' in node.dataset && node != Base.elm)
-                        return false
-                    if (node.getAttribute('data-component') && node != Base.elm ){
-                        const instance = node.instance
-                        if( instance ){
-                            const initialState = instance.elm.getAttribute('data-initialstate')
-                            instance.Msg.set(state => {
-                                state.parent = SST
-                                if( initialState ){
-                                    Object.assign(state, JSON.parse(initialState))
-                                }
-                            })
-                        }
-                            
-                        return false
-                    }
-                }
-            },
-
-            onNodeAdded(node) {
-                if (node.nodeType != 3 && node.getAttribute('data-component') && !node.j) {
-                    status.hascomponent = true
-                }
-                animateNodes(node, animation.onAdd)
-            },
-
-            onNodeDiscarded(node) {
-                if (node.nodeType != 3 && node.getAttribute('data-component') && node.j) {
-                    Base.jails.destroy(node)
-                }
-            },
-
-            onBeforeNodeAdded(node) {
-                animateNodes(node, animation.onBeforeAdd) 
-            },
-
-            onBeforeNodeDiscarded(node) {
-                return !animateNodes(node, animation.onRemove)
-            }
-        })
-
-        return Base
-    }
-}
-
-const animateNodes = (node, callback) => {
-
-    const childnodes = node.nodeType != 3
-        ? Array.prototype.slice.call(node.querySelectorAll('[data-animation]'))
-        : []
-
-    const list = node.dataset && node.dataset.animation
-        ? [node].concat( childnodes )
-        : childnodes
-
-    list.forEach( n => callback(n, n.dataset.animation) )
-
-    return list.length > 0
-}
-
-function dup(object) {
-    return JSON.parse(JSON.stringify(object))
-}
-
-function setTemplate(context = document.body) {
-
-    const virtual = document.createElement('div')
-    const elements = Array.prototype.slice.call(context.querySelectorAll('[data-component]'))
-
-    elements.forEach((elm, index) => elm.setAttribute(REACTORID, id++))
-
-    virtual.innerHTML = context.innerHTML
-        .replace(/<template*.>/g, '')
-        .replace(/<\/template>/g, '')
-
-    const virtualComponents = Array.prototype.slice.call(virtual.querySelectorAll('[data-component]'))
-    const newItems = virtualComponents.filter(item => !item.getAttribute(REACTORID))
-
-    newItems.forEach(elm => elm.setAttribute(REACTORID, id++))
-
-    virtualComponents.forEach(elm => {
-        const ID = +elm.getAttribute(REACTORID)
-        if (!templates[ID])
-            templates[ID] = elm.outerHTML
-    })
-}
-
-function refreshTemplate( elm ){
-
-    if (elm.getAttribute(REACTORID) ) 
-        return 
-
-    id = id + 1
-    const newid = id
-    elm.setAttribute( REACTORID, newid )
-
-    templates[ newid ] = elm.outerHTML
-        .replace(/<template*.>/g, '')
-        .replace(/<\/template>/g, '')
-}
-
-function findComponents( el ){
-    const isComponent = el.getAttribute('data-component')
-    const component = isComponent? [el] : []
-    const childComponents = Array.prototype.slice.call(el.querySelectorAll('[data-component]'))
-    return component.concat(childComponents)
-}
-
-soda.directive('repeat', {
-    
-    priority: 10,
-    
-    link({ scope, el, expression, getValue, compileNode }) {
-        
-        let itemName
-        let valueName
-        let trackName
-
-        const trackReg = /\s+by\s+([^\s]+)$/
-        const inReg = /([^\s]+)\s+in\s+([^\s]+)|\(([^,]+)\s*,\s*([^)]+)\)\s+in\s+([^\s]+)/
-        
-        const opt = expression.replace(trackReg, (item, $1) => {
-            if ($1)
-                trackName = ($1 || '').trim()
-            return ''
-        })
-
-        const r = inReg.exec(opt)
-
-        if (r) {
-            if (r[1] && r[2]) {
-                itemName = (r[1] || '').trim()
-                valueName = (r[2] || '').trim()
-
-                if (!(itemName && valueName)) {
-                    return
-                }
-            } else if (r[3] && r[4] && r[5]) {
-                trackName = (r[3] || '').trim()
-                itemName = (r[4] || '').trim()
-                valueName = (r[5] || '').trim()
-            }
-        } else {
-            return
-        }
-
-        trackName = trackName || '$index'
-
-        const repeatObj = getValue(scope, valueName) || []
-
-        const repeatFunc = (i) => {
-            
-            const itemNode = el.cloneNode(true)
-            const itemScope = Object.create(scope)
-            
-            itemScope[trackName] = i
-            itemScope[itemName] = repeatObj[i]
-
-            const components = findComponents(itemNode)
-            
-            components.forEach( node => {
-                node.setAttribute('data-initialstate', JSON.stringify(itemScope))
-            })
-
-            itemNode.removeAttribute(`${this._prefix}repeat`)
-            el.parentNode.insertBefore(itemNode, el)
-
-            compileNode(itemNode, itemScope)
-        }
-
-        if ('length' in repeatObj) {
-            for (var i = 0; i < repeatObj.length; i++) {
-                repeatFunc(i)
-            }
-        } else {
-            for (var i in repeatObj) {
-                if (repeatObj.hasOwnProperty(i)) {
-                    repeatFunc(i)
-                }
-            }
-        }
-
-        el.parentNode.removeChild(el)
-
-        if (el.childNodes && el.childNodes.length)
-            el.innerHTML = ''
-    }
+	onBeforeNodeDiscarded(node) {
+		return !animation.animateNodes(node, animation.onRemove)
+	}
 })
-
-
-

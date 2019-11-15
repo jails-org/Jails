@@ -1,11 +1,11 @@
 {
   "name": "jails-js",
-  "version": "3.4.1",
+  "version": "4.0.0",
   "description": "A Modern Javascript Library",
   "main": "dist/jails.js",
   "scripts": {
-    "start": "webpack --watch",
-    "build": "webpack",
+    "start": "webpack --watch --mode=development",
+    "build": "webpack --mode=production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -34,5 +34,8 @@
     "sodajs": "^0.4.10",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1"
+  },
+  "dependencies": {
+    "delegated-events": "^1.1.0"
   }
 }

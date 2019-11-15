@@ -1,3 +1,16 @@
 {
-  "presets": ["env"]
+	"comments": true,
+	"presets": [
+		[
+			"env",
+			{
+				"targets": {
+					"browsers": [
+						"ie 11"
+					]
+				},
+				"useBuiltIns": true
+			}
+		]
+	]
 }
