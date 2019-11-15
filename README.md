@@ -7,7 +7,7 @@
 ### A Modern Javascript Component Library <br />
 - [**Documentation**](https://jails-org.github.io) 
 - [**Blog**](https://medium.com/jails-org)
-- [**Demos**](https://jails-org.github.io/#/examples)
+- [**Demo**](https://codesandbox.io/s/2v3815oorj)
 
 <br />
 
