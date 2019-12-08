@@ -84,6 +84,7 @@ export default ( modules ) => {
 		},
 
 		scanSingle(element){
+
 			nextFrame( _ => {
 				// Shoudn't create template and start instance if there's no mixin registered
 				const list = element.dataset.component.split(/\s/)
@@ -93,6 +94,14 @@ export default ( modules ) => {
 					const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
 					Object.assign(templates, newTemplate.templates)
 					morphdom(element, sodajs(newTemplate.dom, {}))
+
+					const components = element.dataset.component.split(/\s/)
+					const El = Element(element, base)
+
+					components.forEach(name => {
+						if (modules[name])
+							nextFrame(_ => El.create({ name, module: modules[name] }))
+					})
 				}
 			})
 		}
