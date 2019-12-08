@@ -2,12 +2,12 @@
   <img  src="https://jails-org.github.io/images/logo.svg" width="180" />
 </p>
 
-# [![npm version](https://badge.fury.io/js/jails-js.svg)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# [![npm version](https://badge.fury.io/js/jails-js.svg?v4)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ### A Modern Javascript Component Library <br />
 - [**Documentation**](https://jails-org.github.io) 
 - [**Blog**](https://medium.com/jails-org)
-- [**Demos**](https://jails-org.github.io/#/examples)
+- [**Demo**](https://codesandbox.io/s/2v3815oorj)
 
 <br />
 
@@ -36,7 +36,7 @@ export default function range ({ main, elm }) {
     ])
 
     const register = ({ on }) => {
-        on('input', { 'input[type=range]': update })
+        on('input', 'input[type=range]', update )
     }
 
     const update = event => {
