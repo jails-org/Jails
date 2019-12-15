@@ -50,6 +50,7 @@ export default ( modules ) => {
 		},
 
 		destroy(el){
+
 			for( let ev in el.__events)
 				el.removeEventListener(ev, el.__events[ev].listener)
 			delete el.__events
@@ -90,19 +91,20 @@ export default ( modules ) => {
 				const list = element.dataset.component.split(/\s/)
 				const hasMixin = list.some(name => name in modules)
 
-				if( hasMixin ){
-					const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
-					Object.assign(templates, newTemplate.templates)
-					morphdom(element, sodajs(newTemplate.dom, {}))
+				if (element.__instances__ || !hasMixin)
+					return
 
-					const components = element.dataset.component.split(/\s/)
-					const El = Element(element, base)
+				const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
+				Object.assign(templates, newTemplate.templates)
+				morphdom(element, sodajs(newTemplate.dom, {}))
 
-					components.forEach(name => {
-						if (modules[name])
-							nextFrame(_ => El.create({ name, module: modules[name] }))
-					})
-				}
+				const components = element.dataset.component.split(/\s/)
+				const El = Element(element, base)
+
+				components.forEach(name => {
+					if (modules[name])
+						nextFrame(_ => El.create({ name, module: modules[name] }))
+				})
 			})
 		}
 	}
