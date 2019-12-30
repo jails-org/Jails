@@ -79,32 +79,30 @@ export default ( modules ) => {
 
 				components.forEach(name => {
 					if( modules[name] )
-						nextFrame(_ => El.create({ name, module: modules[name] }))
+						nextFrame( _ => El.create({ name, module: modules[name] }) )
 				})
 			})
 		},
 
 		scanSingle(element){
 
-			nextFrame( _ => {
-				// Shoudn't create template and start instance if there's no mixin registered
-				const list = element.dataset.component.split(/\s/)
-				const hasMixin = list.some(name => name in modules)
+			// Shoudn't create template and start instance if there's no mixin registered
+			const list = element.dataset.component.split(/\s/)
+			const hasMixin = list.some(name => name in modules)
 
-				if (element.__instances__ || !hasMixin)
-					return
+			if (element.__instances__ || !hasMixin)
+				return
 
-				const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
-				Object.assign(templates, newTemplate.templates)
-				morphdom(element, sodajs(newTemplate.dom, {}))
+			const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
+			Object.assign(templates, newTemplate.templates)
+			morphdom(element, sodajs(newTemplate.dom, {}))
 
-				const components = element.dataset.component.split(/\s/)
-				const El = Element(element, base)
+			const components = element.dataset.component.split(/\s/)
+			const El = Element(element, base)
 
-				components.forEach(name => {
-					if (modules[name])
-						nextFrame(_ => El.create({ name, module: modules[name] }))
-				})
+			components.forEach(name => {
+				if (modules[name])
+					El.create({ name, module: modules[name] })
 			})
 		}
 	}
@@ -119,7 +117,7 @@ export default ( modules ) => {
 		if (mutation.type == 'childList') {
 			if (mutation.addedNodes.length) {
 				mutatedComponents(mutation.addedNodes, base.scanSingle)
-				base.scan()
+				// base.scan()
 			} else if (mutation.removedNodes.length) {
 				mutatedComponents(mutation.removedNodes, base.destroy)
 			}
