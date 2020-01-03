@@ -13,7 +13,7 @@ export default ( modules ) => {
 
 	sodajs.prefix('v-')
 
-	const root = document.documentElement
+	const root = document.body
 	const Template = setIds( getTemplate( root.innerHTML ) )
 	const { dom, templates } = Template
 	const SST = {}
@@ -21,7 +21,7 @@ export default ( modules ) => {
 
 	repeatDirective({ sodajs, models })
 
-	morphdom( root, sodajs(dom, {}) )
+	root.innerHTML = sodajs(dom, {})
 
 	const base = {
 
@@ -53,10 +53,14 @@ export default ( modules ) => {
 
 			for( let ev in el.__events)
 				el.removeEventListener(ev, el.__events[ev].listener)
-			delete el.__events
+
 			if( el.dataset.modelId )
 				delete models[el.dataset.modelId]
+
 			fire(el, ':destroy')
+
+			delete el.__events
+			delete el.__instances__
 		},
 
 		scan( root = document.documentElement ){
@@ -95,6 +99,7 @@ export default ( modules ) => {
 
 			const newTemplate = setIds(getTemplate(element.outerHTML), 'div')
 			Object.assign(templates, newTemplate.templates)
+
 			morphdom(element, sodajs(newTemplate.dom, {}))
 
 			const components = element.dataset.component.split(/\s/)
@@ -119,12 +124,12 @@ export default ( modules ) => {
 				mutatedComponents(mutation.addedNodes, base.scanSingle)
 				// base.scan()
 			} else if (mutation.removedNodes.length) {
-				mutatedComponents(mutation.removedNodes, base.destroy)
+				mutatedComponents(mutation.removedNodes, base.destroy, true)
 			}
 		}
 	}
 
-	const mutatedComponents = (nodeList, callback) => {
+	const mutatedComponents = (nodeList, callback, isRemoving = false) => {
 
 		const nodes = Array.from(nodeList).reduce((acc, node) => {
 			return node.querySelectorAll
@@ -133,6 +138,10 @@ export default ( modules ) => {
 		}, []).reverse()
 
 		nodes.forEach(node => {
+			// Bug when morphdom updates an element and fires a mutation event as if that elements was removed.
+			// Trying to prevent that situation when element was fired as removed but it remains on document.
+			if (isRemoving && document.body.contains(node))
+				return
 			if (node.nodeType === 1 && node.dataset.component)
 				callback(node)
 		})
@@ -158,13 +167,14 @@ const lifecycle = ( elm, data, SST ) => ({
 			if ( node !== elm && node.dataset.component && node.__update__ ) {
 				const newdata = Object.assign(SST, data)
 				node.__update__(newdata)
-				Array.from(node.querySelectorAll('[data-component]')).map( el => {
+				Array.from(node.querySelectorAll('[data-component]')).forEach( el => {
 					if( el.dataset.component && el.__update__)
 						el.__update__(newdata)
 				})
 				return false
 			}
 		}
+		return true
 	},
 
 	onNodeAdded(node) {
