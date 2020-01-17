@@ -164,6 +164,12 @@ const lifecycle = ( elm, data, SST ) => ({
 			if ('static' in node.dataset)
 				return false
 			if (node !== elm && node.dataset.component && node.__update__) {
+				const newdata = Object.assign(SST, data)
+				node.__update__(newdata)
+				Array.from(node.querySelectorAll('[data-component]')).forEach(el => {
+					if (el.dataset.component && el.__update__)
+						el.__update__(newdata)
+				})
 				return false
 			}
 		}
