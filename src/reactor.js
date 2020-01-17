@@ -159,6 +159,16 @@ const lifecycle = ( elm, data, SST ) => ({
 		}
 	},
 
+	onBeforeElUpdated(node){
+		if (node.nodeType === 1) {
+			if ('static' in node.dataset)
+				return false
+			if (node !== elm && node.dataset.component && node.__update__) {
+				return false
+			}
+		}
+	},
+
 	onBeforeElChildrenUpdated( node, tonode ){
 
 		if( node.nodeType === 1 ){
