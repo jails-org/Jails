@@ -47,10 +47,10 @@ export default function range ({ main, elm }) {
 <br />
 
 ## ScreenCast Demo
-<p align="center">
-	<img width="300" src="http://i3.ytimg.com/vi/0tziV17wT5g/maxresdefault.jpg" />
+<p>
+<a target="_blank" href="https://www.youtube.com/watch?v=0tziV17wT5g"><img width="300" src="http://i3.ytimg.com/vi/0tziV17wT5g/maxresdefault.jpg" /></a>
 </p>
-	<p align="center"><a target="_blank" href="https://www.youtube.com/watch?v=0tziV17wT5g">[ Play ]</a></p>
+
 <br />
 
 ## Browsers support <sub><sup><sub><sub>made by <a href="https://godban.github.io">godban</a></sub></sub></sup></sub>
