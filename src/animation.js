@@ -44,17 +44,31 @@ export const onRemove = (node, animation) => {
     const leaveActive = `${animation}-leave-active`
     const leaveTo = `${animation}-leave-to`
     const removeClassNames = removeClass(node)
-    const addClassNames = addClass(node)
+	const addClassNames = addClass(node)
+	const style = window.getComputedStyle(node)
+
+	let transitionsLength = style.transitionProperty.split(',').length
 
     const remove = (e) => {
-        removeClassNames(`${leaveActive} ${leaveTo}`)
-        node.removeEventListener(transitionEnd, remove)
-        node.removeEventListener(animationEnd, remove)
-        node.parentNode ? node.parentNode.removeChild(node) : null
+		if( e.type == 'transitionend' ){
+			if (e.target == node) {
+				transitionsLength -= 1
+				if (transitionsLength == 0) {
+					removeClassNames(`${leaveActive} ${leaveTo}`)
+					node.removeEventListener(transitionEnd, remove)
+					node.parentNode ? node.parentNode.removeChild(node) : null
+				}
+			}
+		}
+		else {
+			removeClassNames(`${leaveActive} ${leaveTo}`)
+			node.removeEventListener(animationEnd, remove)
+			node.parentNode ? node.parentNode.removeChild(node) : null
+		}
     }
 
     node.addEventListener(transitionEnd, remove)
-    node.addEventListener(animationEnd, remove)
+	node.addEventListener(animationEnd, remove)
 
 	addClassNames(`${leave} ${leaveActive}`)
 
