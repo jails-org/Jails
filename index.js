@@ -4,7 +4,6 @@ import * as Pubsub  from './src/pubsub'
 const Main = () => {
 
     const modules = {}
-    const reactor = Reactor( modules )
 
     return {
 
@@ -15,14 +14,17 @@ const Main = () => {
         },
 
         start(){
+			const reactor = Reactor(modules)
             reactor.scan()
             reactor.observe()
 		},
 
 		devStart(){
-			reactor.mode = 'development'
 			console.time('Jails')
-			this.start()
+			const reactor = Reactor( modules )
+			reactor.mode = 'development'
+			reactor.scan()
+			reactor.observe()
 			console.timeEnd('Jails')
 		}
     }
