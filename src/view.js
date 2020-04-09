@@ -111,7 +111,6 @@ const lifecycle = (elm, data, SST) => ({
 const update = (elm, data, SST, node) => {
 
 	if (node.nodeType === 1) {
-
 		// If element has static property, don't update
 		if ( STATIC in node.dataset )
 			return false
