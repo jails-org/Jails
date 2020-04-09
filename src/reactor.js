@@ -69,12 +69,12 @@ export default ( option ) => {
         const lifecycle = (status) => ({
 
             getNodeKey(node) {
-                const key = node.nodeType != 3 && node.getAttribute('data-key')
+                const key = node.nodeType === 1 && node.getAttribute('data-key')
                 return key || node.id
             },
 
             onBeforeElChildrenUpdated(node, tonode) {
-                if (node.nodeType != 3) {
+                if (node.nodeType === 1) {
                     if ( 'static' in node.dataset && node != Base.elm)
                         return false
                     if (node.getAttribute('data-component') && node != Base.elm ){
@@ -95,14 +95,14 @@ export default ( option ) => {
             },
 
             onNodeAdded(node) {
-                if (node.nodeType != 3 && node.getAttribute('data-component') && !node.j) {
+                if (node.nodeType === 1 && node.getAttribute('data-component') && !node.j) {
                     status.hascomponent = true
                 }
                 animateNodes(node, animation.onAdd)
             },
 
             onNodeDiscarded(node) {
-                if (node.nodeType != 3 && node.getAttribute('data-component') && node.j) {
+                if (node.nodeType === 1 && node.getAttribute('data-component') && node.j) {
                     Base.jails.destroy(node)
                 }
             },
@@ -122,7 +122,7 @@ export default ( option ) => {
 
 const animateNodes = (node, callback) => {
 
-    const childnodes = node.nodeType != 3
+    const childnodes = node.nodeType === 1
         ? Array.prototype.slice.call(node.querySelectorAll('[data-animation]'))
         : []
 
