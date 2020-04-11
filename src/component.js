@@ -60,7 +60,7 @@ export default function Component ({ name, element, view, component }) {
 		},
 
 		trigger(ev, target, args) {
-			if (target.constructor == String)
+			if (target.constructor === String)
 				trigger(element.querySelector(target), ev, { args: args })
 			else trigger(element, ev, { args: target })
 		},
@@ -110,9 +110,10 @@ const Store = ({ element, name, module, view:View }) => {
 	const view = module.view ? module.view : state => state
 	const initialState = View.models[element.dataset.modelId]
 	const model = Object.assign({}, module.model, initialState)
+	const title = name.charAt(0).toUpperCase() + name.substring(1)
 
-	const middlewares = View.mode == 'development'
-		? [log(`Component ${name.charAt(0).toUpperCase()}${name.substring(1)}`)]
+	const middlewares = View.mode === 'development'
+		? [log(`Component ${title}`)]
 		: []
 
 	const actions = module.actions || {}

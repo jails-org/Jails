@@ -2,13 +2,13 @@ import morphdom from 'morphdom'
 import sodajs from 'sodajs'
 
 import * as animation from './animation'
-import { dup, createTemplates } from './utils'
+import { dup, createTemplates, setIds } from './utils'
 import repeatDirective from './repeat'
 
 const STATIC = 'static'
 const COMPONENT = '[data-component]'
 
-export default function View () {
+export default function View( callback ) {
 
 	const root = document.body
 	const { templates, html } = createTemplates(root.innerHTML, 'html')
@@ -26,33 +26,23 @@ export default function View () {
 		SST,
 
 		update(element, data){
-
-			const cache = JSON.stringify(data)
-
-			if (element.__cache__ && element.__cache__ === cache)
-				return
-
 			if (element) {
 				const id = element.dataset.reactorId
 				const template = templates[id]
 				const newstate = dup(data)
 				models[id] = Object.assign({}, models[id], newstate)
 				morphdom( element, sodajs(template, models[id]), lifecycle(element, data, SST))
-				element.__cache__ = cache
 			}
 		},
 
-		observe( callback ) {
+		observe() {
 			const observer = observe( callback )
 			root.innerHTML = sodajs(html, {})
 			return observer
 		},
 
-		setTemplate(id, element){
-			if(!templates[id]) {
-				const { templates:newTemplates } = createTemplates(element.outerHTML)
-				Object.assign( templates, newTemplates)
-			}
+		setNewElement(element){
+			setIds(templates, element)
 		}
 	}
 }
@@ -64,7 +54,7 @@ const observe = ( callback ) => {
 }
 
 const onMutation = (callback) => (mutation) => {
-	if (mutation.type == 'childList') {
+	if (mutation.type === 'childList') {
 		if (mutation.addedNodes.length) {
 			callback.onAdd(scan())
 		} else if (mutation.removedNodes.length) {
@@ -117,12 +107,15 @@ const update = (elm, data, SST, node) => {
 
 		// If element is child and a component, don't update
 		if (node !== elm && node.dataset.component && node.__update__) {
+
 			const newdata = Object.assign(SST, data)
 			node.__update__(newdata)
+
 			Array.from(node.querySelectorAll(COMPONENT)).forEach(el => {
 				if (el.dataset.component && el.__update__)
 					el.__update__(newdata)
 			})
+
 			return false
 		}
 	}

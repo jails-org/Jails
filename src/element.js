@@ -1,5 +1,5 @@
-import Component from './component'
-import { trigger } from './utils/events'
+import Component 	from './component'
+import { trigger } 	from './utils/events'
 import { nextFrame } from './utils'
 
 export const create = ({ element, view, modules }) => {
@@ -7,17 +7,18 @@ export const create = ({ element, view, modules }) => {
 	element.__instances__ = {}
 
 	const names = element.dataset.component.split(/\s/)
-	const id = element.dataset.reactorId
 
-	view.setTemplate( id, element )
+	if(!element.dataset.reactorId){
+		view.setNewElement(element)
+	}
 
 	names.forEach( name => {
 
-		if( name in modules ){
+		if( name in modules && (!element.__instances__[name]) ){
 
-			nextFrame( _ => {
+			const component = modules[name]
 
-				const component = modules[name]
+			nextFrame(_ => {
 				const base = Component({ name, element, view, component })
 
 				element.__instances__[name] = { base, methods: {} }
