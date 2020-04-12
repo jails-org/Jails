@@ -45,7 +45,7 @@ export const uuid = () => {
 export const setIds = (acc, element) => {
 	const id = uuid()
 	element.setAttribute('data-reactor-id', id)
-	acc[id] = element.outerHTML
+	acc[id] = element.outerHTML.replace(/<template*.>/g, '').replace(/<\/template>/g, '')
 	return acc
 }
 
