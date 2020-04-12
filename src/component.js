@@ -1,76 +1,76 @@
 import { pandora, log } from 'jails.packages/pandora'
-import { on, off, fire } from './events'
+import { on, off, trigger } from './utils/events'
+import * as Pubsub from './utils/pubsub'
 
-import * as Pubsub from './pubsub'
+export default function Component ({ name, element, view, component }) {
 
-export default ( reactor, {module, injection} ) => ( name, node ) => {
-
-	const store = State( node, name, module, reactor )
+	const module = component.module
+	const store = Store({ name, element, module, view })
 	const subscriptions = []
 	const destroyers = []
 
 	let resolver
-	let promise = new Promise( resolve => resolver = resolve )
+	let promise = new Promise(resolve => resolver = resolve)
 	let updater = () => null
 
 	const base = {
 
 		name,
-		injection,
-		elm :node,
+		injection: component.dependencies,
+		elm: element,
 		msg: store,
 		publish: Pubsub.publish,
 		unsubscribe: Pubsub.unsubscribe,
 
-		__initialize( base ) {
+		__initialize(base) {
 			resolver(base)
-			base.destroy( _ =>{
+			base.destroy( _ => {
 				subscriptions.forEach(topic => Pubsub.unsubscribe(topic))
-				destroyers.forEach( fn => node.removeEventListener(':destroy', fn) )
+				destroyers.forEach(fn => element.removeEventListener(':destroy', fn))
 			})
 		},
 
-		main( fn ) {
+		main(fn) {
 			promise.then(() => fn().forEach(lambda => lambda(base)))
 		},
 
-		render( data ){
-			reactor.update( node, data )
+		render(data) {
+			view.update(element, data)
 		},
 
 		expose(methods) {
-			node.__instances__[name].methods = methods
+			element.__instances__[name].methods = methods
 		},
 
-		update( data ){
-			data.apply? updater = data : updater( data )
+		update(data) {
+			data.apply ? updater = data : updater(data)
 		},
 
-		destroy( callback ){
+		destroy(callback) {
 			destroyers.push(callback)
-			node.addEventListener(':destroy', callback)
+			element.addEventListener(':destroy', callback)
 		},
 
-		on( name, selectorOrCallback, callback ) {
-			on(node, name, selectorOrCallback, callback)
+		on(name, selectorOrCallback, callback) {
+			on(element, name, selectorOrCallback, callback)
 		},
 
-		off( name, callback ) {
-			off( node, name, callback )
+		off(name, callback) {
+			off(element, name, callback)
 		},
 
-		trigger( ev, target, args ) {
-			if (target.constructor == String)
-				fire(node.querySelector(target), ev, { args: args })
-			else fire(node, ev, { args: target })
+		trigger(ev, target, args) {
+			if (target.constructor === String)
+				trigger(element.querySelector(target), ev, { args: args })
+			else trigger(element, ev, { args: target })
 		},
 
 		emit(n, params) {
 			const args = Array.prototype.slice.call(arguments)
-			fire(node, args.shift(), { args: args })
+			trigger(element, args.shift(), { args: args })
 		},
 
-		get( name, query ) {
+		get(name, query) {
 
 			return function () {
 
@@ -80,15 +80,15 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 
 				query = query ? selector + query : selector
 
-				Array.from(node.querySelectorAll(query))
-					.forEach( el => {
+				Array.from(element.querySelectorAll(query))
+					.forEach(el => {
 						const instance = el.__instances__[name]
-						if( instance && (method in instance.methods) )
+						if (instance && (method in instance.methods))
 							instance.methods[method].apply(null, args)
 					})
 
-				if ( node.matches(query) ){
-					const instance = node.__instances__[name]
+				if (element.matches(query)) {
+					const instance = element.__instances__[name]
 					if (instance && method in instance.methods)
 						instance.methods[method].apply(null, args)
 				}
@@ -102,16 +102,18 @@ export default ( reactor, {module, injection} ) => ( name, node ) => {
 	}
 
 	return base
+
 }
 
-const State = ( node, name, module, reactor ) => {
+const Store = ({ element, name, module, view:View }) => {
 
 	const view = module.view ? module.view : state => state
-	const initialState = reactor.models[ node.dataset.modelId ]
+	const initialState = View.models[element.dataset.modelId]
 	const model = Object.assign({}, module.model, initialState)
+	const title = name.charAt(0).toUpperCase() + name.substring(1)
 
-	const middlewares = reactor.mode == 'development'
-		? [log(`Component ${name.charAt(0).toUpperCase()}${name.substring(1)}`)]
+	const middlewares = View.mode === 'development'
+		? [log(`Component ${title}`)]
 		: []
 
 	const actions = module.actions || {}
@@ -121,14 +123,13 @@ const State = ( node, name, module, reactor ) => {
 		actions,
 		middlewares,
 		autostart: false,
-
-		callback( state ) {
-			reactor.update( node, view(state) )
+		callback(state) {
+			View.update(element, view(state))
 		}
 	})
 
-	if( module.model && Object.keys(module.model).length ){
-		reactor.update(node, view(model))
+	if (module.model && Object.keys(module.model).length) {
+		View.update(element, view(model))
 	}
 
 	return store

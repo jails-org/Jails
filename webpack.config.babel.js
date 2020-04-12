@@ -1,9 +1,9 @@
 const path = require('path')
 
-module.exports = {	
+module.exports = {
 
 	entry: {
-		'jails': './index.js'
+		'jails': './src/index.js'
 	},
 
 	output: {

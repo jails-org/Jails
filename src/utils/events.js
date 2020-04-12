@@ -12,7 +12,7 @@ const handler = (node, ev) => {
 	return function (e) {
 		const scope = this
 		const detail = e.detail || {}
-		node.__events[ev].forEach( o => {
+		node.__events[ev].forEach(o => {
 			o.handler.apply(scope, [e].concat(detail.args))
 		})
 	}
@@ -80,6 +80,6 @@ export const off = (node, ev, fn) => {
 	}
 }
 
-export const fire = (node, name, args) => {
+export const trigger = (node, name, args) => {
 	node.dispatchEvent(customEvent(name, { bubbles: true, detail: args }))
 }

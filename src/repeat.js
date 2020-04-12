@@ -1,4 +1,4 @@
-export default ({ sodajs:soda, models }) => {
+export default ({ sodajs: soda, models }) => {
 
 	let ID = 0
 

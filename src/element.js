@@ -1,27 +1,53 @@
-import Component from './component'
+import Component 	from './component'
+import { trigger } 	from './utils/events'
+import { nextFrame } from './utils'
 
-export default ( node, reactor ) => {
+export const create = ({ element, view, modules }) => {
 
-	node.__instances__ = {}
+	element.__instances__ = {}
 
-    return {
+	const names = element.dataset.component.split(/\s/)
 
-        create({ name, module }){
+	if(!element.dataset.reactorId){
+		view.setNewElement(element)
+	}
 
-            node.__instances__[name] = { methods: {} }
-            const base = Component(reactor, module)(name, node)
+	names.forEach( name => {
 
-            node.__instances__[name].base = base
+		if( name in modules && (!element.__instances__[name]) ){
 
-            node.__update__ = (state) => {
-                for( let name in node.__instances__ )
-                    node.__instances__[name].base.update( state )
-            }
+			const component = modules[name]
 
-            module.module.default( base )
-            base.__initialize( base )
+			nextFrame(_ => {
+				const base = Component({ name, element, view, component })
 
-            delete base.__initialize
-        }
-    }
+				element.__instances__[name] = { base, methods: {} }
+
+				element.__update__ = (state) => {
+					for ( let name in element.__instances__ )
+						element.__instances__[name].base.update(state)
+				}
+
+				component.module.default(base)
+				base.__initialize(base)
+				delete base.__initialize
+			})
+		}
+	})
+
+}
+
+export const ismounted = (element) => {
+	return Boolean( element.__instances__ )
+}
+
+export const destroy = ({ element }) => {
+
+	trigger(element, ':destroy')
+
+	for (let ev in element.__events)
+		element.removeEventListener(ev, element.__events[ev].listener)
+
+	delete element.__events
+	delete element.__instances__
 }
