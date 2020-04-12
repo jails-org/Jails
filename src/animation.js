@@ -53,7 +53,7 @@ export const onRemove = (node, animation) => {
 		if (e.type == 'transitionend') {
 			if (e.target == node) {
 				transitionsLength -= 1
-				if (transitionsLength == 0) {
+				if (transitionsLength <= 1) {
 					removeClassNames(`${leaveActive} ${leaveTo}`)
 					node.removeEventListener(transitionEnd, remove)
 					node.parentNode ? node.parentNode.removeChild(node) : null
