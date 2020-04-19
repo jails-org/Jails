@@ -36,11 +36,12 @@ const delegate = (node, selector, callback) => {
 
 		let parent = e.target
 
-		while (parent && parent !== node) {
+		while (parent) {
 			if (parent.matches(selector)) {
 				e.delegateTarget = parent
 				callback.apply(element, [e].concat(detail.args))
 			}
+			if( parent === node ) break
 			parent = parent.parentNode
 		}
 	}

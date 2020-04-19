@@ -51,11 +51,17 @@ export const setIds = (acc, element) => {
 
 export const createTemplates = ( html, type = 'div' ) => {
 
+	const SELECTOR = '[data-component]:not([data-reactor-id])'
 	const virtual = document.createElement(type)
-	virtual.innerHTML = html.replace(/<template*.>/g, '').replace(/<\/template>/g, '')
+	virtual.innerHTML = html//.replace(/<template*.>/g, '').replace(/<\/template>/g, '')
 
-	const elements = virtual.querySelectorAll('[data-component]:not([data-reactor-id])')
-	const templates = Array.from(elements).reverse().reduce(setIds, {})
+	const elements = Array.from(virtual.querySelectorAll(SELECTOR))
+	const templatesElements = Array.from(virtual.querySelectorAll('template'))
+
+	const allElements = templatesElements
+		.reduce((list, T) => list.concat(Array.from(T.content.querySelectorAll(SELECTOR))), elements)
+
+	const templates = allElements.reverse().reduce(setIds, {})
 
 	return {
 		templates,

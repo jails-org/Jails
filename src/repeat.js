@@ -1,6 +1,6 @@
-export default ({ sodajs: soda, models }) => {
+import { uuid } from './utils'
 
-	let ID = 0
+export default ({ sodajs: soda, models }) => {
 
 	soda.directive('repeat', {
 
@@ -55,7 +55,7 @@ export default ({ sodajs: soda, models }) => {
 				const components = findComponents(itemNode)
 
 				components.forEach(node => {
-					ID = ID + 1
+					const ID = uuid()
 					node.setAttribute('data-model-id', ID)
 					models[ID] = itemScope
 				})
