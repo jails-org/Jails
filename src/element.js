@@ -5,6 +5,7 @@ import { nextFrame } from './utils'
 export const create = ({ element, view, modules }) => {
 
 	element.__instances__ = {}
+	element.__model__ = {}
 
 	const names = element.dataset.component.split(/\s/)
 
@@ -50,4 +51,5 @@ export const destroy = ({ element }) => {
 
 	delete element.__events
 	delete element.__instances__
+	delete element.__model__
 }

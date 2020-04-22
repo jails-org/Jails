@@ -25,13 +25,14 @@ export default function View( callback ) {
 		models,
 		SST,
 
-		update(element, data){
+		update( element, data ){
 			if (element) {
 				const id = element.dataset.reactorId
 				const template = templates[id]
-				const newstate = dup(data)
+				const newstate = Object.assign({}, element.__model__, dup(data))
 				const newhtml = sodajs(template, newstate)
 				morphdom( element, newhtml, lifecycle(element, data, SST))
+				Object.assign( element.__model__, newstate )
 			}
 		},
 
