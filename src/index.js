@@ -36,7 +36,8 @@ const view = View({
 				const children = Array.from(removedNode.querySelectorAll('[data-component]'))
 				children
 					.concat(removedNode.dataset.component ? removedNode : [])
-					.forEach(element => destroy({ element }))
+					.filter( element => !document.body.contains(element) )
+					.forEach( element => destroy({ element }) )
 			}
 		})
 	}
