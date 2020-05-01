@@ -108,7 +108,7 @@ export default function Component ({ name, element, view, component }) {
 const Store = ({ element, name, module, view:View }) => {
 
 	const view = module.view ? module.view : state => state
-	const initialState = View.models[+element.dataset.modelId]
+	const initialState = View.models[element.dataset.modelId]
 	const model = Object.assign({}, module.model, initialState)
 	const title = name.charAt(0).toUpperCase() + name.substring(1)
 
