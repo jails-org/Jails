@@ -10,35 +10,42 @@ export default {
 	},
 
 	start(){
+		const view = getView()
 		view.mode = 'production'
 		view.observe()
 	},
 
 	devStart(){
 		console.time('jails')
+		const view = getView()
 		view.mode = 'development'
 		view.observe()
 		console.timeEnd('jails')
 	}
 }
 
-const view = View({
+const getView = () => {
 
-	onAdd( elements ){
-		elements
-			.filter(el => !ismounted(el))
-			.forEach(element => create({ element, view, modules }))
-	},
+	const view = View({
 
-	onRemove( removedNodes ){
-		removedNodes.forEach(removedNode => {
-			if (removedNode.nodeType === 1) {
-				const children = Array.from(removedNode.querySelectorAll('[data-component]'))
-				children
-					.concat(removedNode.dataset.component ? removedNode : [])
-					.filter( element => !document.body.contains(element) )
-					.forEach( element => destroy({ element }) )
-			}
-		})
-	}
-})
+		onAdd(elements) {
+			elements
+				.filter(el => !ismounted(el))
+				.forEach(element => create({ element, view, modules }))
+		},
+
+		onRemove(removedNodes) {
+			removedNodes.forEach(removedNode => {
+				if (removedNode.nodeType === 1) {
+					const children = Array.from(removedNode.querySelectorAll('[data-component]'))
+					children
+						.concat(removedNode.dataset.component ? removedNode : [])
+						.filter(element => !document.body.contains(element))
+						.forEach(element => destroy({ element }))
+				}
+			})
+		}
+	})
+
+	return view
+}
