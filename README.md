@@ -13,6 +13,9 @@
 
 <br />
 
+### Download Boilerplate
+[ Html Static Boilerplate ](https://github.com/jails-org/Boilerplate/archive/master.zip) ⤓
+
 ## Code Show
 
 **index.htm**
