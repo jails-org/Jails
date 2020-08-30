@@ -6,7 +6,7 @@
 
 # [![npm version](https://badge.fury.io/js/jails-js.svg?v4)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### A Modern Javascript Component Library <br />
+### A Simple Javascript Application Library <br />
 - [**Documentation**](https://jails-org.github.io) 
 - [**Blog**](https://medium.com/jails-org)
 - [**Demos**](https://codesandbox.io/search?query=jails-js)
