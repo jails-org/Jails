@@ -4,7 +4,7 @@
 
 > ### "Simplicity is the Ultimate Sophistication"
 
-# [![npm version](https://badge.fury.io/js/jails-js.svg?v4)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# [![npm version](https://badge.fury.io/js/jails-js.svg?v4)](https://badge.fury.io/js/jails-js)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 🇧🇷
 
 ### A Simple Javascript Application Library <br />
 - [**Documentation**](https://jails-org.github.io) 
