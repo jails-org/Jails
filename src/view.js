@@ -32,7 +32,7 @@ export default function View( callback ) {
 				const newstate = Object.assign({}, element.__model__, dup(data))
 				const newhtml = sodajs(template, newstate)
 				morphdom( element, newhtml, lifecycle(element, data, SST))
-				Object.assign( element.__model__, newstate )
+				Object.assign( {}, element.__model__, newstate )
 			}
 		},
 
