@@ -3,7 +3,8 @@ const _async = {}
 
 export const publish = (name, params) => {
 	_async[name] = Object.assign({}, _async[name], params)
-	topics[name].forEach(topic => topic(params))
+	if( topics[name] )
+		topics[name].forEach(topic => topic(params))
 }
 
 export const subscribe = (name, method) => {
