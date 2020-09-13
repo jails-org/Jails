@@ -49,6 +49,49 @@ export default function range ({ main, elm }) {
     }
 })
 ```
+
+### With State Management
+
+```html
+...
+<div class="range" data-component="range">
+    <label>Weight: <strong class="number" v-html="number"></strong> kg</label><br />
+    <input type="range" name="weight" min="10" max="200" value="75" data-static />
+</div> 
+
+// Or using template tags
+
+<div class="range" data-component="range">
+    <template>
+        <label>Weight: <strong class="number">{{ number }}</strong> kg</label><br />
+        <input type="range" name="weight" min="10" max="200" value="75" data-static />
+    </template>
+</div>
+```
+
+**components/range/index.js**
+
+```js
+export default function range ({ main, msg }) {
+
+    main( _ =>[
+        register
+    ])
+
+    const register = ({ on }) => {
+        on('input', 'input[type=range]', update )
+    }
+
+    const update = event => {
+		msg.set( state => state.number = event.target.value )
+    }
+})
+
+export const model = {
+	number: 75
+}
+```
+
 <br />
 
 ## ScreenCast Demo
