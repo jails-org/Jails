@@ -88,7 +88,7 @@ export default function range ({ main, msg }) {
 })
 
 export const model = {
-	number: 75
+    number: 75
 }
 ```
 
