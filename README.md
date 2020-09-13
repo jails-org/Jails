@@ -83,7 +83,7 @@ export default function range ({ main, msg }) {
     }
 
     const update = event => {
-		msg.set( state => state.number = event.target.value )
+	msg.set( state => state.number = event.target.value )
     }
 })
 
