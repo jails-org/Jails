@@ -55,7 +55,7 @@ export default function range ({ main, elm }) {
 ```html
 ...
 <div class="range" data-component="range">
-    <label>Weight: <strong class="number" v-html="number"></strong> kg</label><br />
+    <label>Weight: <strong class="number" v-html="number">75</strong> kg</label><br />
     <input type="range" name="weight" min="10" max="200" value="75" data-static />
 </div> 
 
