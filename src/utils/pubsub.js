@@ -16,16 +16,10 @@ export const subscribe = (name, method) => {
 }
 
 export const unsubscribe = (topic) => {
-
 	topics[topic.name] = (topics[topic.name] || [])
 		.filter(t => t != topic.method)
-
-	_async[topic.name] = (_async[topic.name] || [])
-		.filter(t => t != topic.method)
-
-	if (!topics[topic.name].length)
+	if (!topics[topic.name].length) {
 		delete topics[topic.name]
-
-	if (!_async[topic.name].length)
 		delete _async[topic.name]
+	}
 }
