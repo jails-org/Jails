@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "jails.packages": "jails-org/packages.git",
-    "morphdom": "^2.5.12",
+    "morphdom": "^2.6.1",
     "sodajs": "^0.4.10"
   }
 }
