@@ -74,7 +74,7 @@ const lifecycle = (elm, data, SST) => ({
 
 	getNodeKey(node) {
 		if (node.nodeType === 1) {
-			return node.dataset.key
+			return node.dataset.key || node.dataset.reactorId
 		}
 		return false
 	},
