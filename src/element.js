@@ -10,6 +10,7 @@ export const create = ({ element, view, modules }) => {
 	const names = element.dataset.component.split(/\s/)
 
 	if(!element.dataset.reactorId){
+		console.log('entrou aqui?', element)
 		view.setNewElement(element)
 	}
 

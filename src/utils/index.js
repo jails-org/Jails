@@ -45,7 +45,7 @@ export const uuid = () => {
 export const setIds = (acc, element) => {
 	const id = uuid()
 	element.setAttribute('data-reactor-id', id)
-	acc[id] = element.outerHTML.replace(/<template*.>/g, '').replace(/<\/template>/g, '')
+	acc[id] = element.outerHTML.replace(/<(x-)?template*.>|<\/(x-)?template>/g, '')
 	return acc
 }
 
@@ -53,22 +53,25 @@ export const createTemplates = ( html, type = 'div' ) => {
 
 	const SELECTOR = '[data-component]:not([data-reactor-id])'
 	const virtual = document.createElement(type)
-	virtual.innerHTML = html//.replace(/<template*.>/g, '').replace(/<\/template>/g, '')
+	virtual.innerHTML = html.replace(/<template*.>/g, '<x-template>').replace(/<\/template>/g, '</x-template>')
 
 	const elements = Array.from(virtual.querySelectorAll(SELECTOR))
-	const templatesElements = Array.from(virtual.querySelectorAll('template'))
-
-	const allElements = templatesElements
-		.reduce((list, T) => list.concat(Array.from(T.content.querySelectorAll(SELECTOR))), elements)
-
-	const templates = allElements.reverse().reduce(setIds, {})
+	const templates = elements.reverse().reduce(setIds, {})
 
 	return {
 		templates,
-		html: virtual.innerHTML
+		html: virtual.innerHTML.replace(/<x-template*.>/g, '<template>').replace(/<\/x-template>/g, '</template>')
 	}
 }
 
 export const dup = (object) => {
 	return JSON.parse(JSON.stringify(object))
+}
+
+export const getParent = (el, selector) => {
+	let elem = el.parentNode
+	for ( ; elem && elem !== document; elem = elem.parentNode ) {
+		if ( elem.matches( selector ) ) return elem
+	}
+	return null
 }

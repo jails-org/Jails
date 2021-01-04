@@ -1,6 +1,7 @@
 import { pandora, log } from 'jails.packages/pandora'
 import { on, off, trigger } from './utils/events'
 import * as Pubsub from './utils/pubsub'
+import { getParent } from './utils'
 
 export default function Component ({ name, element, view, component }) {
 
@@ -43,7 +44,13 @@ export default function Component ({ name, element, view, component }) {
 		},
 
 		update(data) {
-			data.apply ? updater = data : updater(data)
+			if( data.apply ){
+				const _parent = getParent(element, '[data-component]')
+				updater = data
+				updater( _parent.__model__ )
+			}else {
+				updater( data )
+			}
 		},
 
 		destroy(callback) {
