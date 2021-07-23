@@ -20,18 +20,20 @@ export const create = ({ element, view, modules }) => {
 			const component = modules[name]
 
 			nextFrame(_ => {
-				const base = Component({ name, element, view, component })
+				if( element.__instances__ ) {
+					const base = Component({ name, element, view, component })
 
-				element.__instances__[name] = { base, methods: {} }
+					element.__instances__[name] = { base, methods: {} }
 
-				element.__update__ = (state) => {
-					for ( let name in element.__instances__ )
-						element.__instances__[name].base.update(state)
+					element.__update__ = (state) => {
+						for ( let name in element.__instances__ )
+							element.__instances__[name].base.update(state)
+					}
+
+					component.module.default(base)
+					base.__initialize(base)
+					delete base.__initialize
 				}
-
-				component.module.default(base)
-				base.__initialize(base)
-				delete base.__initialize
 			})
 		}
 	})
