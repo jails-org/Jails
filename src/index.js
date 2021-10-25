@@ -86,7 +86,7 @@ const Element = ( element ) => {
 			this.model = Object.assign( this.model, data )
 
 			morphdom( element, sodajs( this.template, ElementInterface.view(this.model) ), {
-				onBeforeElUpdated: function(node, toEl) {
+				onBeforeElUpdated(node, toEl) {
 					if (node.isEqualNode(toEl))
 						return false
 					return true
