@@ -75,3 +75,7 @@ export const getParent = (el, selector) => {
 	}
 	return null
 }
+
+export const stripTemplateTags = ( node ) => {
+	return node.innerHTML.replace(/<template.*?>|<\/template>/g, '')
+}

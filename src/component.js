@@ -1,12 +1,7 @@
-import { pandora, log } from 'jails.packages/pandora'
 import { on, off, trigger } from './utils/events'
-import * as Pubsub from './utils/pubsub'
-import { getParent } from './utils'
 
-export default function Component ({ name, element, view, component }) {
+export default function Component ({ name, element, module, dependencies, Pubsub, ElementInterface }) {
 
-	const module = component.module
-	const store = Store({ name, element, module, view })
 	const subscriptions = []
 	const destroyers = []
 
@@ -17,13 +12,12 @@ export default function Component ({ name, element, view, component }) {
 	const base = {
 
 		name,
-		injection: component.dependencies,
+		dependencies,
 		elm: element,
-		msg: store,
 		publish: Pubsub.publish,
 		unsubscribe: Pubsub.unsubscribe,
 
-		__initialize(base) {
+		__initialize() {
 			resolver(base)
 			base.destroy( _ => {
 				subscriptions.forEach(topic => Pubsub.unsubscribe(topic))
@@ -35,22 +29,13 @@ export default function Component ({ name, element, view, component }) {
 			promise.then(() => fn().forEach(lambda => lambda(base)))
 		},
 
-		render(data) {
-			view.update(element, data)
-		},
-
 		expose(methods) {
-			element.__instances__[name].methods = methods
+
 		},
 
-		update(data) {
-			if( data.apply ){
-				const _parent = getParent(element, '[data-component]')
-				updater = data
-				updater( _parent.__model__ )
-			}else {
-				updater( data )
-			}
+		state: {
+			set( state ) { ElementInterface.update(state) },
+			get() { return ElementInterface.model }
 		},
 
 		destroy(callback) {
@@ -109,35 +94,4 @@ export default function Component ({ name, element, view, component }) {
 	}
 
 	return base
-
-}
-
-const Store = ({ element, name, module, view:View }) => {
-
-	const view = module.view ? module.view : state => state
-	const initialState = View.models[element.dataset.modelId]
-	const model = Object.assign({}, module.model, initialState)
-	const title = name.charAt(0).toUpperCase() + name.substring(1)
-
-	const middlewares = View.mode === 'development'
-		? [log(`Component ${title}`)]
-		: []
-
-	const actions = module.actions || {}
-
-	const store = pandora({
-		model,
-		actions,
-		middlewares,
-		autostart: false,
-		callback(state) {
-			View.update(element, view(state))
-		}
-	})
-
-	if (module.model && Object.keys(module.model).length) {
-		View.update(element, view(model))
-	}
-
-	return store
 }
