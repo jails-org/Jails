@@ -1,4 +1,5 @@
 import { on, off, trigger } from './utils/events'
+import { rAF } from './utils'
 
 export default function Component ({
 	name,
@@ -71,7 +72,7 @@ export default function Component ({
 		get(name, query) {
 
 			return function () {
-				requestAnimationFrame(_ => {
+				rAF(_ => {
 					const args = Array.prototype.slice.call(arguments),
 					method = args.shift(),
 					selector = `[data-component*=${name}]`

@@ -1,7 +1,7 @@
 import morphdom from 'morphdom'
 import sodajs from 'sodajs'
 
-import { uuid, stripTemplateTags } from './utils'
+import { uuid, stripTemplateTags, rAF } from './utils'
 import * as Pubsub from './utils/pubsub'
 import sodaSetConfig from './sodaConfig'
 
@@ -92,7 +92,7 @@ const Element = ( element ) => {
 				}
 			})
 
-			requestAnimationFrame( _ => {
+			rAF( _ => {
 				const elements = Array.from(element.querySelectorAll('[data-component]'))
 				elements.forEach( node => {
 					const initialState = JSON.parse(node.getAttribute('initialState')) || {}
@@ -108,12 +108,15 @@ const Element = ( element ) => {
 	const cs = element.dataset.component.split(/\s/)
 
 	cs.forEach( name => {
+
 		const C = components[name]
 		const { module, dependencies } = C
 		const base = Component({ name, element, dependencies, Pubsub, ElementInterface, AST })
+
 		Object.assign(ElementInterface.model, module.model)
 		module.default(base)
 		base.__initialize()
+
 		ElementInterface.update()
 		ElementInterface.instances[name] = { methods: {} }
 	})
