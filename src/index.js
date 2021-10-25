@@ -77,6 +77,7 @@ const Element = ( element ) => {
 		element,
 		template,
 		instances:{},
+		view: data => data,
 
 		model: Object.assign({}, JSON.parse(element.getAttribute('initialState'))),
 
@@ -84,7 +85,7 @@ const Element = ( element ) => {
 
 			this.model = Object.assign( this.model, data )
 
-			morphdom( element, sodajs( this.template, this.model ), {
+			morphdom( element, sodajs( this.template, ElementInterface.view(this.model) ), {
 				onBeforeElUpdated: function(node, toEl) {
 					if (node.isEqualNode(toEl))
 						return false
@@ -117,6 +118,7 @@ const Element = ( element ) => {
 		module.default(base)
 		base.__initialize()
 
+		ElementInterface.view = module.view || ElementInterface.view
 		ElementInterface.update()
 		ElementInterface.instances[name] = { methods: {} }
 	})
