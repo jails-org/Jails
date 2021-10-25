@@ -76,6 +76,7 @@ const Element = ( element ) => {
 		tplid,
 		element,
 		template,
+		instances:{},
 
 		model: Object.assign({}, JSON.parse(element.getAttribute('initialState'))),
 
@@ -91,7 +92,7 @@ const Element = ( element ) => {
 				}
 			})
 
-			setTimeout( _ => {
+			requestAnimationFrame( _ => {
 				const elements = Array.from(element.querySelectorAll('[data-component]'))
 				elements.forEach( node => {
 					const initialState = JSON.parse(node.getAttribute('initialState')) || {}
@@ -109,10 +110,11 @@ const Element = ( element ) => {
 	cs.forEach( name => {
 		const C = components[name]
 		const { module, dependencies } = C
-		const base = Component({ name, element, module, dependencies, Pubsub, ElementInterface })
+		const base = Component({ name, element, dependencies, Pubsub, ElementInterface, AST })
 		Object.assign(ElementInterface.model, module.model)
 		module.default(base)
 		base.__initialize()
 		ElementInterface.update()
+		ElementInterface.instances[name] = { methods: {} }
 	})
 }

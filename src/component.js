@@ -1,13 +1,19 @@
 import { on, off, trigger } from './utils/events'
 
-export default function Component ({ name, element, module, dependencies, Pubsub, ElementInterface }) {
+export default function Component ({
+	name,
+	element,
+	dependencies,
+	Pubsub,
+	ElementInterface,
+	AST
+}) {
 
 	const subscriptions = []
 	const destroyers = []
 
 	let resolver
 	let promise = new Promise(resolve => resolver = resolve)
-	let updater = () => null
 
 	const base = {
 
@@ -30,7 +36,7 @@ export default function Component ({ name, element, module, dependencies, Pubsub
 		},
 
 		expose(methods) {
-
+			ElementInterface.instances[name].methods = methods
 		},
 
 		state: {
@@ -65,25 +71,29 @@ export default function Component ({ name, element, module, dependencies, Pubsub
 		get(name, query) {
 
 			return function () {
-
-				const args = Array.prototype.slice.call(arguments),
+				requestAnimationFrame(_ => {
+					const args = Array.prototype.slice.call(arguments),
 					method = args.shift(),
 					selector = `[data-component*=${name}]`
+					query = query ? selector + query : selector
 
-				query = query ? selector + query : selector
+					Array.from(element.querySelectorAll(query))
+						.forEach(el => {
+							const item = AST.find( item => item.element == el )
+							if( item ) {
+								const instance = item.instances[name]
+								if (instance && (method in instance.methods))
+									instance.methods[method].apply(null, args)
+							}
+						})
 
-				Array.from(element.querySelectorAll(query))
-					.forEach(el => {
-						const instance = el.__instances__[name]
-						if (instance && (method in instance.methods))
+					if (element.matches(query)) {
+						const item = AST.find( item => item.element == element )
+						const instance = item.instances[name]
+						if (instance && method in instance.methods)
 							instance.methods[method].apply(null, args)
-					})
-
-				if (element.matches(query)) {
-					const instance = element.__instances__[name]
-					if (instance && method in instance.methods)
-						instance.methods[method].apply(null, args)
-				}
+					}
+				})
 			}
 		},
 
