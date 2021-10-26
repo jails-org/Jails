@@ -34,9 +34,11 @@ const Template = {
 	},
 
 	scan( root, callback ) {
-		const list = Array.from( root.querySelectorAll('[data-component]') )
-		const components = root.dataset.component? [root].concat(list) : list
-		components.reverse().forEach( callback )
+		if( root.nodeType === 1 ) {
+			const list = Array.from( root.querySelectorAll('[data-component]') )
+			const components = root.dataset.component? [root].concat(list) : list
+			components.reverse().forEach( callback )
+		}
 	},
 
 	observe() {
