@@ -53,7 +53,7 @@ const Template = {
 	},
 
 	remove( node ) {
-		AST = AST.filter( item => item.element != node )
+		// Need more research here...
 	}
 }
 
@@ -89,6 +89,8 @@ const Element = ( element ) => {
 				onBeforeElUpdated(node, toEl) {
 					if (node.isEqualNode(toEl))
 						return false
+					if( node.nodeType == 1 && node.dataset.static )
+						return false
 					return true
 				}
 			})
@@ -122,4 +124,5 @@ const Element = ( element ) => {
 		ElementInterface.update()
 		ElementInterface.instances[name] = { methods: {} }
 	})
+
 }
