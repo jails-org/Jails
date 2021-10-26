@@ -14,6 +14,6 @@ export const uuid = () => {
 	})
 }
 
-export const stripTemplateTags = ( node ) => {
-	return node.innerHTML.replace(/<template.*?>|<\/template>/g, '')
+export const stripTemplateTags = ( html ) => {
+	return html.replace(/<template.*?>|<\/template>/g, '')
 }

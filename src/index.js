@@ -29,7 +29,7 @@ const Template = {
 
 	start() {
 		const body = document.body
-		const html = stripTemplateTags( body )
+		const html = stripTemplateTags( body.innerHTML )
 		body.innerHTML = html
 	},
 
@@ -68,7 +68,7 @@ const Element = ( element ) => {
 	}else {
 		tplid = uuid()
 		element.setAttribute('tplid', tplid)
-		template = element.outerHTML
+		template = stripTemplateTags( element.outerHTML )
 	}
 
 	const ElementInterface = {
