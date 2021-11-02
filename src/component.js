@@ -11,7 +11,6 @@ export default function Component ({
 }) {
 
 	const subscriptions = []
-	const destroyers = []
 
 	let resolver
 	let promise = new Promise(resolve => resolver = resolve)
@@ -26,10 +25,6 @@ export default function Component ({
 
 		__initialize() {
 			resolver(base)
-			base.destroy( _ => {
-				subscriptions.forEach(topic => Pubsub.unsubscribe(topic))
-				destroyers.forEach(fn => element.removeEventListener(':destroy', fn))
-			})
 		},
 
 		main(fn) {
@@ -46,8 +41,7 @@ export default function Component ({
 		},
 
 		destroy(callback) {
-			destroyers.push(callback)
-			element.addEventListener(':destroy', callback)
+			ElementInterface.destroyers.push(callback)
 		},
 
 		on(name, selectorOrCallback, callback) {

@@ -55,7 +55,8 @@ const Template = {
 	},
 
 	remove( node ) {
-		// Need more research here...
+		const item = AST.find( item => item.element == node )
+		item.destroyers.forEach( destroy => destroy(item) )
 	}
 }
 
@@ -70,7 +71,7 @@ const Element = ( element ) => {
 	}else {
 		tplid = uuid()
 		element.setAttribute('tplid', tplid)
-		template = stripTemplateTags( element.outerHTML )
+		template = createTemplate(element.outerHTML)
 	}
 
 	const ElementInterface = {
@@ -79,6 +80,7 @@ const Element = ( element ) => {
 		element,
 		template,
 		instances:{},
+		destroyers:[],
 		view: data => data,
 
 		model: Object.assign({}, JSON.parse(element.getAttribute('initialState'))),
@@ -97,13 +99,14 @@ const Element = ( element ) => {
 				}
 			})
 
-			rAF( _ => {
-				const elements = Array.from(element.querySelectorAll('[data-component]'))
-				elements.forEach( node => {
-					const initialState = JSON.parse(node.getAttribute('initialState')) || {}
-					const item = AST.find( item => item.element == node )
+			const elements = Array.from(element.querySelectorAll('[data-component]'))
+
+			elements.forEach( node => {
+				const initialState = JSON.parse(node.getAttribute('initialState')) || {}
+				const item = AST.find( item => item.element == node )
+				if( item ) {
 					item.update( Object.assign(initialState, { parent:ElementInterface.model }) )
-				})
+				}
 			})
 		}
 	}
@@ -127,4 +130,17 @@ const Element = ( element ) => {
 		ElementInterface.instances[name] = { methods: {} }
 	})
 
+}
+
+const createTemplate = ( html ) => {
+	const vhtml = stripTemplateTags( html )
+	const vroot = document.createElement('div')
+	vroot.innerHTML = vhtml
+	const components = Array.from(vroot.querySelectorAll('[data-component]'))
+	components.forEach( c => {
+		const cache = AST.find( item => item.tplid === c.getAttribute('tplid') )
+		if( cache )
+			c.outerHTML = cache.template
+	})
+	return vroot.innerHTML
 }
