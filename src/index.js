@@ -98,24 +98,22 @@ const Element = ( element ) => {
 					return true
 				}
 			})
-
-			const elements = Array.from(element.querySelectorAll('[data-component]'))
-
-			elements.forEach( node => {
-				const initialState = JSON.parse(node.getAttribute('initialState')) || {}
-				const item = AST.find( item => item.element == node )
-				if( item ) {
-					item.update( Object.assign(initialState, { parent:ElementInterface.model }) )
-				}
+			rAF(_ => {
+				const elements = Array.from(element.querySelectorAll('[data-component]'))
+				elements.forEach( node => {
+					const initialState = JSON.parse(node.getAttribute('initialState')) || {}
+					const item = AST.find( item => item.element == node )
+					if( item ) {
+						item.update( Object.assign(initialState, { parent:ElementInterface.model }) )
+					}
+				})
 			})
 		}
 	}
 
 	AST.push( ElementInterface )
 
-	const cs = element.dataset.component.split(/\s/)
-
-	cs.forEach( name => {
+	element.dataset.component.split(/\s/).forEach( name => {
 
 		const C = components[name]
 		const { module, dependencies } = C
