@@ -93,7 +93,7 @@ const Element = ( element ) => {
 				onBeforeElUpdated(node, toEl) {
 					if (node.isEqualNode(toEl))
 						return false
-					if( node.nodeType == 1 && node.dataset.static )
+					if( node.nodeType == 1 && 'static' in node.dataset )
 						return false
 					return true
 				}
