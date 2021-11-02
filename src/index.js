@@ -90,9 +90,6 @@ const Element = ( element ) => {
 			this.model = Object.assign( this.model, data )
 
 			morphdom( element, sodajs( this.template, ElementInterface.view(this.model) ), {
-				getNodeKey(node) {
-					return false
-				},
 				onBeforeElUpdated(node, toEl) {
 					if (node.isEqualNode(toEl))
 						return false
