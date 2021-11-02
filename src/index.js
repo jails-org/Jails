@@ -3,7 +3,7 @@ import sodajs from 'sodajs'
 
 import { uuid, stripTemplateTags, rAF } from './utils'
 import * as Pubsub from './utils/pubsub'
-import sodaSetConfig from './sodaConfig'
+import sodaSetConfig from './soda-config'
 
 import Component from './component'
 
