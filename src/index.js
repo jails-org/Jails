@@ -55,6 +55,7 @@ const Template = {
 	},
 
 	remove( node ) {
+
 		const item = AST.find( item => item.element == node )
 		item.destroyers.forEach( destroy => destroy(item) )
 	}
@@ -98,6 +99,7 @@ const Element = ( element ) => {
 					return true
 				}
 			})
+
 			rAF(_ => {
 				const elements = Array.from(element.querySelectorAll('[data-component]'))
 				elements.forEach( node => {
