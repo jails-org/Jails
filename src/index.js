@@ -118,6 +118,12 @@ const Element = ( element ) => {
 	element.dataset.component.split(/\s/).forEach( name => {
 
 		const C = components[name]
+
+		if( !C ) {
+			console.warn(`Jails - Module ${name} not registered`)
+			return
+		}
+
 		const { module, dependencies } = C
 		const base = Component({ name, element, dependencies, Pubsub, ElementInterface, AST })
 
