@@ -44,6 +44,7 @@ export default function Component ({
 				} else {
 					ElementInterface.update(state)
 				}
+				return new Promise((resolve) => rAF(resolve))
 			},
 			get() { return ElementInterface.model }
 		},
