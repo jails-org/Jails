@@ -36,7 +36,15 @@ export default function Component ({
 		},
 
 		state: {
-			set( state ) { ElementInterface.update(state) },
+			set( state ) {
+				if( state.constructor === Function ){
+					const model = ElementInterface.model
+					state(model)
+					ElementInterface.update(model)
+				} else {
+					ElementInterface.update(state)
+				}
+			},
 			get() { return ElementInterface.model }
 		},
 
