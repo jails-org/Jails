@@ -16,7 +16,6 @@ export default {
 
 	start() {
 		Template.start()
-		Template.scan( document.body, Element )
 		Template.observe()
 	},
 
@@ -31,6 +30,7 @@ const Template = {
 		const body = document.body
 		const html = stripTemplateTags( body.innerHTML )
 		body.innerHTML = html
+		Template.scan( document.body, Element )
 	},
 
 	scan( root, callback ) {
@@ -55,9 +55,10 @@ const Template = {
 	},
 
 	remove( node ) {
-
 		const item = AST.find( item => item.element == node )
-		item.destroyers.forEach( destroy => destroy(item) )
+		if( item ){
+			item.dispose()
+		}
 	}
 }
 
@@ -68,7 +69,8 @@ const Element = ( element ) => {
 
 	if( element.getAttribute('tplid') ) {
 		tplid = element.getAttribute('tplid')
-		template = AST.find( item => item.tplid == tplid ).template
+		const item = AST.find( item => item.tplid == tplid )
+		template = item.template
 	}else {
 		tplid = uuid()
 		element.setAttribute('tplid', tplid)
@@ -76,21 +78,34 @@ const Element = ( element ) => {
 	}
 
 	const ElementInterface = {
-
 		tplid,
 		element,
 		template,
 		instances:{},
 		destroyers:[],
+		promises: [],
 		view: data => data,
+		dispose(){
+			if( ElementInterface.promises.length ){
+				Promise.all(ElementInterface.promises).then(_ => {
+					this.destroyers.forEach( destroy => destroy(ElementInterface) )
+				})
+			}else {
+				this.destroyers.forEach( destroy => destroy(ElementInterface) )
+			}
+		},
 
 		model: Object.assign({}, JSON.parse(element.getAttribute('initialState'))),
 
 		update( data ) {
 
-			this.model = Object.assign( this.model, data )
+			this.model = Object.assign( {}, this.model, data )
 
-			morphdom( element, sodajs( this.template, ElementInterface.view(this.model) ), {
+			morphdom( element, sodajs( this.template, this.view(this.model) ), {
+				onNodeDiscarded(node) {
+					Template.scan(node, Template.remove)
+					return true
+				},
 				onBeforeElUpdated(node, toEl) {
 					if (node.isEqualNode(toEl))
 						return false
@@ -106,7 +121,7 @@ const Element = ( element ) => {
 					const initialState = JSON.parse(node.getAttribute('initialState')) || {}
 					const item = AST.find( item => item.element == node )
 					if( item ) {
-						item.update( Object.assign(initialState, { parent:ElementInterface.model }) )
+						item.update( Object.assign(initialState, { parent:this.model }) )
 					}
 				})
 			})
@@ -125,17 +140,22 @@ const Element = ( element ) => {
 		}
 
 		const { module, dependencies } = C
+		ElementInterface.model = Object.assign({}, module.model, ElementInterface.model )
+
 		const base = Component({ name, element, dependencies, Pubsub, ElementInterface, AST })
 
-		Object.assign(ElementInterface.model, module.model)
-		module.default(base)
-		base.__initialize()
+		const promise = module.default(base)
 
+		if( promise && promise.then ) {
+			ElementInterface.promises.push(promise)
+		}
+
+		base.__initialize()
 		ElementInterface.view = module.view || ElementInterface.view
-		ElementInterface.update()
 		ElementInterface.instances[name] = { methods: {} }
 	})
 
+	ElementInterface.update()
 }
 
 const createTemplate = ( html ) => {

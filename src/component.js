@@ -28,7 +28,7 @@ export default function Component ({
 		},
 
 		main(fn) {
-			promise.then(() => fn().forEach(lambda => lambda(base)))
+			promise.then( _ => fn().forEach(lambda => lambda(base)))
 		},
 
 		expose(methods) {
