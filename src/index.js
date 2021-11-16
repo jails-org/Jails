@@ -9,6 +9,7 @@ import Component from './component'
 
 sodaSetConfig( sodajs )
 
+let SST = {}
 let AST = []
 const components = {}
 
@@ -99,7 +100,8 @@ const Element = ( element ) => {
 
 		update( data ) {
 
-			this.model = Object.assign( {}, this.model, data )
+			this.model = Object.assign( { global: SST }, this.model, data )
+			SST = saveGlobal(data)
 
 			morphdom( element, sodajs( this.template, this.view(this.model) ), {
 				onNodeDiscarded(node) {
@@ -120,8 +122,9 @@ const Element = ( element ) => {
 				elements.forEach( node => {
 					const initialState = JSON.parse(node.getAttribute('initialState')) || {}
 					const item = AST.find( item => item.element == node )
+					const { global, parent, ...model } = this.model
 					if( item ) {
-						item.update( Object.assign(initialState, { parent:this.model }) )
+						item.update( Object.assign(initialState, { parent:model, global: SST }))
 					}
 				})
 			})
@@ -169,4 +172,11 @@ const createTemplate = ( html ) => {
 			c.outerHTML = cache.template
 	})
 	return vroot.innerHTML
+}
+
+const saveGlobal = (data) => {
+	Object.assign(SST, data)
+	delete SST.parent
+	delete SST.global
+	return SST
 }
