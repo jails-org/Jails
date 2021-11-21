@@ -86,6 +86,7 @@ const Element = ( element ) => {
 		destroyers:[],
 		promises: [],
 		view: data => data,
+		parentUpdate: data => null,
 		dispose(){
 			if( ElementInterface.promises.length ){
 				Promise.all(ElementInterface.promises).then(_ => {
@@ -102,6 +103,8 @@ const Element = ( element ) => {
 
 			this.model = Object.assign( { global: SST }, this.model, data )
 			SST = saveGlobal(data)
+
+			this.parentUpdate( this.model )
 
 			morphdom( element, sodajs( this.template, this.view(this.model) ), {
 				onNodeDiscarded(node) {
@@ -124,7 +127,8 @@ const Element = ( element ) => {
 					const item = AST.find( item => item.element == node )
 					const { global, parent, ...model } = this.model
 					if( item ) {
-						item.update( Object.assign(initialState, { parent:model, global: SST }))
+						const newmodel = Object.assign(initialState, { parent:model, global: SST })
+						item.update( newmodel )
 					}
 				})
 			})

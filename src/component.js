@@ -74,6 +74,10 @@ export default function Component ({
 			trigger(element, args.shift(), { args: args })
 		},
 
+		update(fn) {
+			ElementInterface.parentUpdate = fn
+		},
+
 		get(name, query) {
 
 			return function () {
