@@ -99,12 +99,13 @@ const Element = ( element ) => {
 
 		model: Object.assign({}, JSON.parse(element.getAttribute('initialState'))),
 
-		update( data ) {
+		update( data, isParentUpdate = false ) {
 
 			this.model = Object.assign( { global: SST }, this.model, data )
 			SST = saveGlobal(data)
 
-			this.parentUpdate( this.model )
+			if( isParentUpdate )
+				this.parentUpdate( this.model )
 
 			morphdom( element, sodajs( this.template, this.view(this.model) ), {
 				onNodeDiscarded(node) {
@@ -128,7 +129,7 @@ const Element = ( element ) => {
 					const { global, parent, ...model } = this.model
 					if( item ) {
 						const newmodel = Object.assign(initialState, { parent:model, global: SST })
-						item.update( newmodel )
+						item.update( newmodel, true )
 					}
 				})
 			})
