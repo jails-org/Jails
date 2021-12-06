@@ -17,3 +17,11 @@ export const uuid = () => {
 export const stripTemplateTags = ( html ) => {
 	return html.replace(/<template.*?>|<\/template>/g, '')
 }
+
+export const stripTemplateTag = ( element ) => {
+	const templates = Array.from(element.querySelectorAll('template'))
+	// https://gist.github.com/harmenjanssen/07e425248779c65bc5d11b02fb913274
+	templates.forEach( template => {
+		template.parentNode.replaceChild(template.content, template )
+	})
+}

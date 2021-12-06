@@ -1,7 +1,7 @@
 import morphdom from 'morphdom'
 import sodajs from 'sodajs'
 
-import { uuid, stripTemplateTags, rAF } from './utils'
+import { uuid, stripTemplateTags, stripTemplateTag, rAF } from './utils'
 import * as Pubsub from './utils/pubsub'
 import sodaSetConfig from './soda-config'
 
@@ -28,9 +28,7 @@ export default {
 const Template = {
 
 	start() {
-		const body = document.body
-		const html = stripTemplateTags( body.innerHTML )
-		body.innerHTML = html
+		stripTemplateTag( document.body )
 		Template.scan( document.body, Element )
 	},
 
