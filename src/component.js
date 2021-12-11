@@ -1,61 +1,58 @@
-import { pandora, log } from 'jails.packages/pandora'
 import { on, off, trigger } from './utils/events'
-import * as Pubsub from './utils/pubsub'
-import { getParent } from './utils'
+import { rAF } from './utils'
 
-export default function Component ({ name, element, view, component }) {
+export default function Component ({
+	name,
+	element,
+	dependencies,
+	Pubsub,
+	ElementInterface,
+	AST
+}) {
 
-	const module = component.module
-	const store = Store({ name, element, module, view })
 	const subscriptions = []
-	const destroyers = []
 
 	let resolver
 	let promise = new Promise(resolve => resolver = resolve)
-	let updater = () => null
 
 	const base = {
 
 		name,
-		injection: component.dependencies,
+		dependencies,
 		elm: element,
-		msg: store,
 		publish: Pubsub.publish,
 		unsubscribe: Pubsub.unsubscribe,
 
-		__initialize(base) {
+		__initialize() {
 			resolver(base)
-			base.destroy( _ => {
-				subscriptions.forEach(topic => Pubsub.unsubscribe(topic))
-				destroyers.forEach(fn => element.removeEventListener(':destroy', fn))
-			})
 		},
 
 		main(fn) {
-			promise.then(() => fn().forEach(lambda => lambda(base)))
-		},
-
-		render(data) {
-			view.update(element, data)
+			promise
+				.then( _ => fn().forEach(lambda => lambda(base)))
+				.catch( err => console.error( err) )
 		},
 
 		expose(methods) {
-			element.__instances__[name].methods = methods
+			ElementInterface.instances[name].methods = methods
 		},
 
-		update(data) {
-			if( data.apply ){
-				const _parent = getParent(element, '[data-component]')
-				updater = data
-				updater( _parent.__model__ )
-			}else {
-				updater( data )
-			}
+		state: {
+			set( state ) {
+				if( state.constructor === Function ){
+					const model = ElementInterface.model
+					state(model)
+					ElementInterface.update(model)
+				} else {
+					ElementInterface.update(state)
+				}
+				return new Promise((resolve) => rAF(resolve))
+			},
+			get() { return ElementInterface.model }
 		},
 
 		destroy(callback) {
-			destroyers.push(callback)
-			element.addEventListener(':destroy', callback)
+			ElementInterface.destroyers.push(callback)
 		},
 
 		on(name, selectorOrCallback, callback) {
@@ -77,28 +74,36 @@ export default function Component ({ name, element, view, component }) {
 			trigger(element, args.shift(), { args: args })
 		},
 
+		update(fn) {
+			ElementInterface.parentUpdate = fn
+		},
+
 		get(name, query) {
 
 			return function () {
-
-				const args = Array.prototype.slice.call(arguments),
+				rAF(_ => {
+					const args = Array.prototype.slice.call(arguments),
 					method = args.shift(),
 					selector = `[data-component*=${name}]`
+					query = query ? selector + query : selector
 
-				query = query ? selector + query : selector
+					Array.from(element.querySelectorAll(query))
+						.forEach(el => {
+							const item = AST.find( item => item.element == el )
+							if( item ) {
+								const instance = item.instances[name]
+								if (instance && (method in instance.methods))
+									instance.methods[method].apply(null, args)
+							}
+						})
 
-				Array.from(element.querySelectorAll(query))
-					.forEach(el => {
-						const instance = el.__instances__[name]
-						if (instance && (method in instance.methods))
+					if (element.matches(query)) {
+						const item = AST.find( item => item.element == element )
+						const instance = item.instances[name]
+						if (instance && method in instance.methods)
 							instance.methods[method].apply(null, args)
-					})
-
-				if (element.matches(query)) {
-					const instance = element.__instances__[name]
-					if (instance && method in instance.methods)
-						instance.methods[method].apply(null, args)
-				}
+					}
+				})
 			}
 		},
 
@@ -109,35 +114,4 @@ export default function Component ({ name, element, view, component }) {
 	}
 
 	return base
-
-}
-
-const Store = ({ element, name, module, view:View }) => {
-
-	const view = module.view ? module.view : state => state
-	const initialState = View.models[element.dataset.modelId]
-	const model = Object.assign({}, module.model, initialState)
-	const title = name.charAt(0).toUpperCase() + name.substring(1)
-
-	const middlewares = View.mode === 'development'
-		? [log(`Component ${title}`)]
-		: []
-
-	const actions = module.actions || {}
-
-	const store = pandora({
-		model,
-		actions,
-		middlewares,
-		autostart: false,
-		callback(state) {
-			View.update(element, view(state))
-		}
-	})
-
-	if (module.model && Object.keys(module.model).length) {
-		View.update(element, view(model))
-	}
-
-	return store
 }

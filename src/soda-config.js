@@ -1,8 +1,8 @@
-import { uuid } from './utils'
+export default function sodaSetConfig (sodajs) {
 
-export default ({ sodajs: soda, models }) => {
+	sodajs.prefix('v-')
 
-	soda.directive('repeat', {
+	sodajs.directive('repeat', {
 
 		priority: 10,
 
@@ -52,16 +52,11 @@ export default ({ sodajs: soda, models }) => {
 				itemScope[trackName] = i
 				itemScope[itemName] = repeatObj[i]
 
-				const components = findComponents(itemNode)
-
-				components.forEach(node => {
-					const ID = uuid()
-					node.setAttribute('data-model-id', ID)
-					models[ID] = itemScope
-				})
-
 				itemNode.removeAttribute(`${this._prefix}repeat`)
 				el.parentNode.insertBefore(itemNode, el)
+
+				Array.from(itemNode.querySelectorAll('[data-component]'))
+					.forEach(node => node.setAttribute('initialState', JSON.stringify(itemScope)))
 
 				compileNode(itemNode, itemScope)
 			}
@@ -84,11 +79,4 @@ export default ({ sodajs: soda, models }) => {
 				el.innerHTML = ''
 		}
 	})
-}
-
-function findComponents(el) {
-	const isComponent = el.getAttribute('data-component')
-	const component = isComponent ? [el] : []
-	const childComponents = Array.prototype.slice.call(el.querySelectorAll('[data-component]'))
-	return component.concat(childComponents)
 }
