@@ -12,6 +12,7 @@ export default function Component ({
 
 	const subscriptions = []
 
+	let stateSubscriptions = []
 	let resolver
 	let promise = new Promise(resolve => resolver = resolve)
 
@@ -43,12 +44,22 @@ export default function Component ({
 					const model = ElementInterface.model
 					state(model)
 					ElementInterface.update(model)
+					stateSubscriptions.forEach( fn => fn(model) )
 				} else {
 					ElementInterface.update(state)
+					stateSubscriptions.forEach( fn => fn(state) )
 				}
 				return new Promise((resolve) => rAF(resolve))
 			},
-			get() { return ElementInterface.model }
+			get() {
+				return ElementInterface.model
+			},
+			subscribe(fn){
+				stateSubscriptions.push(fn)
+			},
+			unsubscribe(fn){
+				stateSubscriptions = stateSubscriptions.filter( item => item !== fn )
+			}
 		},
 
 		destroy(callback) {

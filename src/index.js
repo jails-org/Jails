@@ -105,7 +105,9 @@ const Element = ( element ) => {
 			if( isParentUpdate )
 				this.parentUpdate( this.model )
 
-			morphdom( element, sodajs( this.template, this.view(this.model) ), {
+			const dupdata = JSON.parse(JSON.stringify(this.model))
+
+			morphdom( element, sodajs( this.template, this.view(dupdata) ), {
 				onNodeDiscarded(node) {
 					Template.scan(node, Template.remove)
 					return true
