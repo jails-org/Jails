@@ -44,11 +44,10 @@ export default function Component ({
 					const model = ElementInterface.model
 					state(model)
 					ElementInterface.update(model)
-					stateSubscriptions.forEach( fn => fn(model) )
 				} else {
 					ElementInterface.update(state)
-					stateSubscriptions.forEach( fn => fn(state) )
 				}
+				stateSubscriptions.forEach( fn => fn(ElementInterface.model) )
 				return new Promise((resolve) => rAF(resolve))
 			},
 			get() {
