@@ -47,7 +47,7 @@ export default function Component ({
 					ElementInterface.update(state)
 				}
 				stateSubscriptions.forEach( fn => fn(ElementInterface.model) )
-				return new Promise((resolve) => rAF(resolve))
+				return new Promise((resolve) => rAF(_ => rAF(resolve) ))
 			},
 			get() {
 				return ElementInterface.model

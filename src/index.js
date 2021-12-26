@@ -56,7 +56,8 @@ const Template = {
 	},
 
 	remove( node ) {
-		node.__instance__.dispose()
+		if( node.__instance__)
+			node.__instance__.dispose()
 	}
 }
 
@@ -95,15 +96,20 @@ const Element = ( element ) => {
 		},
 		update( data, isParentUpdate = false ) {
 
-			ElementInterface.model = Object.assign( { global: SST }, ElementInterface.model, data )
+			if( !document.body.contains(element) ) {
+				return
+			}
+
 			SST = saveGlobal(data)
+			ElementInterface.model = Object.assign({ global: SST }, ElementInterface.model, data )
 
 			if( isParentUpdate )
 				ElementInterface.parentUpdate( ElementInterface.model )
 
 			const dupdata = JSON.parse(JSON.stringify(ElementInterface.model))
+			const newhtml = sodajs( ElementInterface.template, ElementInterface.view(dupdata) )
 
-			morphdom( element, sodajs( ElementInterface.template, ElementInterface.view(dupdata) ), {
+			morphdom( element, newhtml, {
 				getNodeKey(node) {
 					if( node.nodeType === 1 && node.dataset.tplid )
 						return node.dataset.key || node.dataset.tplid
@@ -117,18 +123,16 @@ const Element = ( element ) => {
 				onBeforeElChildrenUpdated: update(element)
 			})
 
-			const elements = Array.from(element.querySelectorAll('[data-component]'))
-
-			elements.forEach( node => {
-				const { global, parent, ...model } = ElementInterface.model
-				const attrInitialState = node.getAttribute('initialState')
-				const finalState = attrInitialState? JSON.parse(attrInitialState) : {}
-				const newmodel = Object.assign(finalState, { parent:model, global: SST })
-				rAF(_ => {
-					node.__instance__.update(newmodel, true)
+			Array
+				.from(element.querySelectorAll('[data-component]'))
+				.forEach( node => {
+					if( !node.__instance__ ) return
+					const { global, parent, ...model } = ElementInterface.model
+					const attrInitialState = node.getAttribute('initialState')
+					const finalState = attrInitialState? JSON.parse(attrInitialState) : {}
+					const newmodel = Object.assign(finalState, { parent:model, global: SST })
+					rAF( _ => node.__instance__.update(newmodel, true) )
 				})
-			})
-
 		}
 	}
 
@@ -159,7 +163,7 @@ const Element = ( element ) => {
 		ElementInterface.instances[name] = { methods: {} }
 	})
 
-	ElementInterface.update()
+	rAF( _ => ElementInterface.update() )
 }
 
 const update = (element) => (node, toEl) => {
