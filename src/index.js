@@ -1,7 +1,7 @@
 import morphdom from 'morphdom'
 import sodajs from 'sodajs'
 
-import { uuid, stripTemplateTags, stripTemplateTag, rAF } from './utils'
+import { uuid, stripTemplateTags, stripTemplateTag, rAF, dup } from './utils'
 import * as Pubsub from './utils/pubsub'
 import sodaSetConfig from './soda-config'
 
@@ -106,8 +106,7 @@ const Element = ( element ) => {
 			if( isParentUpdate )
 				ElementInterface.parentUpdate( ElementInterface.model )
 
-			const dupdata = JSON.parse(JSON.stringify(ElementInterface.model))
-			const newhtml = sodajs( ElementInterface.template, ElementInterface.view(dupdata) )
+			const newhtml = sodajs( ElementInterface.template, ElementInterface.view(ElementInterface.model) )
 
 			morphdom( element, newhtml, {
 				getNodeKey(node) {

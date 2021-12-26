@@ -25,3 +25,7 @@ export const stripTemplateTag = ( element ) => {
 		template.parentNode.replaceChild(template.content, template )
 	})
 }
+
+export const dup = (o) => {
+	return JSON.parse( JSON.stringify(o) )
+}
