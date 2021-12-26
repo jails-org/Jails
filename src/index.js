@@ -10,14 +10,15 @@ import Component from './component'
 sodaSetConfig( sodajs )
 
 let SST = {}
-let AST = []
+const templates = {}
 const components = {}
 
 export default {
 
 	start() {
-		Template.start()
+		stripTemplateTag( document.body )
 		Template.observe()
+		Template.start()
 	},
 
 	register( name, module, dependencies = {} ) {
@@ -28,7 +29,6 @@ export default {
 const Template = {
 
 	start() {
-		stripTemplateTag( document.body )
 		Template.scan( document.body, Element )
 	},
 
@@ -36,7 +36,9 @@ const Template = {
 		if( root.nodeType === 1 ) {
 			const list = Array.from( root.querySelectorAll('[data-component]') )
 			const components = root.dataset.component? [root].concat(list) : list
-			components.reverse().forEach( callback )
+			if( components.length ) {
+				components.reverse().forEach( callback )
+			}
 		}
 	},
 
@@ -54,10 +56,7 @@ const Template = {
 	},
 
 	remove( node ) {
-		const item = AST.find( item => item.element == node )
-		if( item ){
-			item.dispose()
-		}
+		node.__instance__.dispose()
 	}
 }
 
@@ -68,12 +67,12 @@ const Element = ( element ) => {
 
 	if( element.getAttribute('tplid') ) {
 		tplid = element.getAttribute('tplid')
-		const item = AST.find( item => item.tplid == tplid )
-		template = item.template
+		template = templates[tplid]
 	}else {
 		tplid = uuid()
 		element.setAttribute('tplid', tplid)
-		template = createTemplate(element.outerHTML)
+		templates[tplid] = createTemplate(element.outerHTML)
+		template = templates[tplid]
 	}
 
 	const ElementInterface = {
@@ -85,58 +84,55 @@ const Element = ( element ) => {
 		promises: [],
 		view: data => data,
 		parentUpdate: data => null,
+		model: Object.assign({}, JSON.parse(element.getAttribute('initialState'))),
 		dispose(){
 			if( ElementInterface.promises.length ){
-				Promise.all(ElementInterface.promises).then(_ => {
-					this.destroyers.forEach( destroy => destroy(ElementInterface) )
-				})
+				Promise.all(ElementInterface.promises)
+					.then(_ => this.destroyers.forEach( destroy => destroy(ElementInterface) ))
 			}else {
 				this.destroyers.forEach( destroy => destroy(ElementInterface) )
 			}
 		},
-
-		model: Object.assign({}, JSON.parse(element.getAttribute('initialState'))),
-
 		update( data, isParentUpdate = false ) {
 
-			this.model = Object.assign( { global: SST }, this.model, data )
+			ElementInterface.model = Object.assign( { global: SST }, ElementInterface.model, data )
 			SST = saveGlobal(data)
 
 			if( isParentUpdate )
-				this.parentUpdate( this.model )
+				ElementInterface.parentUpdate( ElementInterface.model )
 
-			const dupdata = JSON.parse(JSON.stringify(this.model))
+			const dupdata = JSON.parse(JSON.stringify(ElementInterface.model))
 
-			morphdom( element, sodajs( this.template, this.view(dupdata) ), {
+			morphdom( element, sodajs( ElementInterface.template, ElementInterface.view(dupdata) ), {
+				getNodeKey(node) {
+					if( node.nodeType === 1 && node.dataset.tplid )
+						return node.dataset.key || node.dataset.tplid
+					return false
+				},
 				onNodeDiscarded(node) {
 					Template.scan(node, Template.remove)
 					return true
 				},
-				onBeforeElUpdated(node, toEl) {
-					if (node.isEqualNode(toEl))
-						return false
-					if( node.nodeType == 1 && 'static' in node.dataset )
-						return false
-					return true
-				}
+				onBeforeElUpdated: update(element),
+				onBeforeElChildrenUpdated: update(element)
 			})
 
-			rAF(_ => {
-				const elements = Array.from(element.querySelectorAll('[data-component]'))
-				elements.forEach( node => {
-					const initialState = JSON.parse(node.getAttribute('initialState')) || {}
-					const item = AST.find( item => item.element == node )
-					const { global, parent, ...model } = this.model
-					if( item ) {
-						const newmodel = Object.assign(initialState, { parent:model, global: SST })
-						item.update( newmodel, true )
-					}
+			const elements = Array.from(element.querySelectorAll('[data-component]'))
+
+			elements.forEach( node => {
+				const { global, parent, ...model } = ElementInterface.model
+				const attrInitialState = node.getAttribute('initialState')
+				const finalState = attrInitialState? JSON.parse(attrInitialState) : {}
+				const newmodel = Object.assign(finalState, { parent:model, global: SST })
+				rAF(_ => {
+					node.__instance__.update(newmodel, true)
 				})
 			})
+
 		}
 	}
 
-	AST.push( ElementInterface )
+	element.__instance__ = ElementInterface
 
 	element.dataset.component.split(/\s/).forEach( name => {
 
@@ -150,7 +146,7 @@ const Element = ( element ) => {
 		const { module, dependencies } = C
 		ElementInterface.model = Object.assign({}, module.model, ElementInterface.model )
 
-		const base = Component({ name, element, dependencies, Pubsub, ElementInterface, AST })
+		const base = Component({ name, element, dependencies, Pubsub, ElementInterface })
 
 		const promise = module.default(base)
 
@@ -166,15 +162,24 @@ const Element = ( element ) => {
 	ElementInterface.update()
 }
 
+const update = (element) => (node, toEl) => {
+	if (node.isEqualNode(toEl))
+		return false
+	if( node.nodeType == 1 && 'static' in node.dataset )
+		return false
+	return true
+}
+
 const createTemplate = ( html ) => {
 	const vhtml = stripTemplateTags( html )
 	const vroot = document.createElement('div')
 	vroot.innerHTML = vhtml
 	const components = Array.from(vroot.querySelectorAll('[data-component]'))
 	components.forEach( c => {
-		const cache = AST.find( item => item.tplid === c.getAttribute('tplid') )
+		const tplid = c.getAttribute('tplid')
+		const cache = templates[tplid]
 		if( cache )
-			c.outerHTML = cache.template
+			c.outerHTML = cache
 	})
 	return vroot.innerHTML
 }

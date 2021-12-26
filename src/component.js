@@ -6,8 +6,7 @@ export default function Component ({
 	element,
 	dependencies,
 	Pubsub,
-	ElementInterface,
-	AST
+	ElementInterface
 }) {
 
 	const subscriptions = []
@@ -99,17 +98,13 @@ export default function Component ({
 
 					Array.from(element.querySelectorAll(query))
 						.forEach(el => {
-							const item = AST.find( item => item.element == el )
-							if( item ) {
-								const instance = item.instances[name]
-								if (instance && (method in instance.methods))
-									instance.methods[method].apply(null, args)
-							}
+							const instance = el.__instance__.instances[name]
+							if (instance && (method in instance.methods))
+								instance.methods[method].apply(null, args)
 						})
 
 					if (element.matches(query)) {
-						const item = AST.find( item => item.element == element )
-						const instance = item.instances[name]
+						const instance = element.__instance__.instances[name]
 						if (instance && method in instance.methods)
 							instance.methods[method].apply(null, args)
 					}
