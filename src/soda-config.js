@@ -53,6 +53,7 @@ export default function sodaSetConfig (sodajs) {
 				itemScope[itemName] = repeatObj[i]
 
 				itemNode.removeAttribute(`${this._prefix}repeat`)
+
 				el.parentNode.insertBefore(itemNode, el)
 
 				Array.from(itemNode.querySelectorAll('[data-component]'))

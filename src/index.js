@@ -65,6 +65,7 @@ const Element = ( element ) => {
 
 	let tplid
 	let template
+	let updates = []
 
 	if( element.getAttribute('tplid') ) {
 		tplid = element.getAttribute('tplid')
@@ -100,38 +101,50 @@ const Element = ( element ) => {
 				return
 			}
 
-			SST = saveGlobal(data)
-			ElementInterface.model = Object.assign({ global: SST }, ElementInterface.model, data )
+			updates.push( data )
 
-			if( isParentUpdate )
-				ElementInterface.parentUpdate( ElementInterface.model )
+			rAF( _ => {
 
-			const newhtml = sodajs( ElementInterface.template, ElementInterface.view(ElementInterface.model) )
+				if( updates.length ) {
 
-			morphdom( element, newhtml, {
-				getNodeKey(node) {
-					if( node.nodeType === 1 && node.dataset.tplid )
-						return node.dataset.key || node.dataset.tplid
-					return false
-				},
-				onNodeDiscarded(node) {
-					Template.scan(node, Template.remove)
-					return true
-				},
-				onBeforeElUpdated: update(element),
-				onBeforeElChildrenUpdated: update(element)
+					const newdata = {}
+					updates.forEach( d => Object.assign(newdata, d) )
+					updates = []
+					SST = saveGlobal(newdata)
+
+					ElementInterface.model = Object.assign({ global: SST }, ElementInterface.model, newdata )
+
+					if( isParentUpdate )
+						ElementInterface.parentUpdate( ElementInterface.model )
+
+					const newhtml = sodajs( ElementInterface.template, ElementInterface.view(ElementInterface.model) )
+
+					morphdom( element, newhtml, {
+						getNodeKey(node) {
+							if( node.nodeType === 1 && node.dataset.tplid )
+								return node.dataset.key || node.dataset.tplid
+							return false
+						},
+						onNodeDiscarded(node) {
+							Template.scan(node, Template.remove)
+							return true
+						},
+						onBeforeElUpdated: update(element),
+						onBeforeElChildrenUpdated: update(element)
+					})
+
+					Array
+						.from(element.querySelectorAll('[data-component]'))
+						.forEach( node => {
+							if( !node.__instance__ ) return
+							const { global, parent, ...model } = ElementInterface.model
+							const attrInitialState = node.getAttribute('initialState')
+							const finalState = attrInitialState? JSON.parse(attrInitialState) : {}
+							const newmodel = Object.assign(finalState, { parent:model, global: SST })
+							node.__instance__.update(newmodel, true)
+						})
+				}
 			})
-
-			Array
-				.from(element.querySelectorAll('[data-component]'))
-				.forEach( node => {
-					if( !node.__instance__ ) return
-					const { global, parent, ...model } = ElementInterface.model
-					const attrInitialState = node.getAttribute('initialState')
-					const finalState = attrInitialState? JSON.parse(attrInitialState) : {}
-					const newmodel = Object.assign(finalState, { parent:model, global: SST })
-					rAF( _ => node.__instance__.update(newmodel, true) )
-				})
 		}
 	}
 
@@ -162,7 +175,7 @@ const Element = ( element ) => {
 		ElementInterface.instances[name] = { methods: {} }
 	})
 
-	rAF( _ => ElementInterface.update() )
+	ElementInterface.update()
 }
 
 const update = (element) => (node, toEl) => {
