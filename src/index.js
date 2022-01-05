@@ -17,8 +17,8 @@ export default {
 
 	start() {
 		stripTemplateTag( document.body )
-		Template.observe()
 		Template.start()
+		Template.observe()
 	},
 
 	register( name, module, dependencies = {} ) {
@@ -101,15 +101,16 @@ const Element = ( element ) => {
 				return
 			}
 
-			updates.push( data )
+			updates.push(data)
 
 			rAF( _ => {
 
 				if( updates.length ) {
 
 					const newdata = {}
-					updates.forEach( d => Object.assign(newdata, d) )
+					updates.forEach( d => Object.assign(newdata, d ) )
 					updates = []
+
 					SST = saveGlobal(newdata)
 
 					ElementInterface.model = Object.assign({ global: SST }, ElementInterface.model, newdata )
@@ -141,7 +142,7 @@ const Element = ( element ) => {
 							const attrInitialState = node.getAttribute('initialState')
 							const finalState = attrInitialState? JSON.parse(attrInitialState) : {}
 							const newmodel = Object.assign(finalState, { parent:model, global: SST })
-							node.__instance__.update(newmodel, true)
+							rAF( _ => node.__instance__.update(newmodel, true) )
 						})
 				}
 			})
@@ -181,8 +182,12 @@ const Element = ( element ) => {
 const update = (element) => (node, toEl) => {
 	if (node.isEqualNode(toEl))
 		return false
-	if( node.nodeType == 1 && 'static' in node.dataset )
-		return false
+	if( node.nodeType == 1 ) {
+		if( 'static' in node.dataset )
+			return false
+		if ( node !== element && node.dataset.component )
+			return false
+	}
 	return true
 }
 
