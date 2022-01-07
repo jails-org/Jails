@@ -29,3 +29,17 @@ export const stripTemplateTag = ( element ) => {
 export const dup = (o) => {
 	return JSON.parse( JSON.stringify(o) )
 }
+
+export const createTemplate = ( html, templates ) => {
+	const vhtml = stripTemplateTags( html )
+	const vroot = document.createElement('div')
+	vroot.innerHTML = vhtml
+	const components = Array.from(vroot.querySelectorAll('[data-component]'))
+	components.forEach( c => {
+		const tplid = c.getAttribute('tplid')
+		const cache = templates[tplid]
+		if( cache )
+			c.outerHTML = cache
+	})
+	return vroot.innerHTML
+}

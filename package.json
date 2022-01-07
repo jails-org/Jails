@@ -3,9 +3,12 @@
   "version": "5.0.0-beta.2",
   "description": "A Modern Javascript Library",
   "main": "dist/jails.js",
+  "module": "dist/module.js",
+  "types": "dist/types.d.ts",
+  "source": "src/index.ts",
   "scripts": {
-    "start": "webpack --watch --mode=development",
-    "build": "webpack --mode=production",
+    "start": "parcel src/index.ts --out-file jails.js --port 3333",
+    "build": "parcel build src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,15 +28,12 @@
   },
   "homepage": "https://github.com/jails-org/Jails",
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
-    "babel-loader": "^8.0.5",
-    "babel-preset-env": "^1.7.0",
-    "webpack": "^5.59.1",
-    "webpack-cli": "^3.2.1"
+    "parcel": "latest",
+    "typescript": "^4.5.4"
   },
   "dependencies": {
     "morphdom": "^2.6.1",
+    "parcel-bundler": "^1.12.5",
     "sodajs": "^0.4.10"
   }
 }
