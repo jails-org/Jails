@@ -1,6 +1,7 @@
 import { Element } from './Element'
 import { Scanner } from './Scanner'
 import { Component } from './Component'
+import { stripTemplateTag } from './utils'
 
 const components = {}
 
@@ -10,8 +11,10 @@ export default {
 
 		const body: HTMLElement = document.body
 
-		Scanner.observe( body, createElement, disposeElement )
+		stripTemplateTag( body )
+
 		Scanner.scan( body, createElement )
+		Scanner.observe( body, createElement, disposeElement )
 	},
 
 	register( name, module, dependencies = {} ) {
@@ -46,8 +49,9 @@ const createElement = ( element: HTMLElement ) => {
 		base.__initialize()
 		ElementInterface.view = module.view || ElementInterface.view
 		ElementInterface.instances[name] = { methods: {} }
-		ElementInterface.update()
 	})
+
+	ElementInterface.update()
 }
 
 const disposeElement = ( node ) => {

@@ -1,7 +1,6 @@
 {
 	"compilerOptions": {
-		"lib": [
-			"dom"
-		]
+		"lib": [ "dom" ],
+		"sourceMap": true
 	}
 }

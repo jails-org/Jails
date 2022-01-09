@@ -1,10 +1,8 @@
 import { stripTemplateTag, dup, rAF, createTemplate, uuid } from './utils'
-import sodajs from 'sodajs'
 import morphdom from 'morphdom'
 import { setSodaConfig } from './soda-config'
 
-setSodaConfig( sodajs )
-
+const sodajs = setSodaConfig()
 const templates = {}
 
 export const Element = ( el:HTMLElement ) => {
@@ -39,7 +37,7 @@ export const Element = ( el:HTMLElement ) => {
 			}
 		},
 
-		update( data ) {
+		update( data = {}, isParentUpdate ) {
 
 			if( !document.body.contains(el) )
 				return
@@ -50,23 +48,27 @@ export const Element = ( el:HTMLElement ) => {
 
 				if( updates.length ) {
 
-					const originalData = {}
-					updates.forEach( d => Object.assign(originalData, d ) )
+					const newdata = {}
+					updates.forEach( d => Object.assign(newdata, d ) )
 					updates = []
 
-					const newdata = Object.assign({}, dup(api.model), dup(originalData))
-					morphdom( el, sodajs(template, newdata), morphdomOptions )
+					api.model = Object.assign( api.model, newdata )
 
-					api.model = Object.assign( api.model, originalData )
+					if( isParentUpdate ) {
+						api.parentUpdate( api.model )
+					}
+
+					const newhtml = sodajs(template, api.view(dup(api.model)))
+					morphdom( el, newhtml, morphdomOptions )
 
 					Array
 						.from( el.querySelectorAll('[data-component]') )
-						.filter( node => Boolean( node.__instance__ ) )
 						.forEach( node => {
-							const initialState = JSON.parse(node.dataset.initialState || {})
-							const parent = Object.assign({}, api.model )
-							const newdata = Object.assign({}, initialState, { parent })
-							node.__instance__.update(newdata)
+							if( !node.__instance__ ) return
+							const { parent, ...model } = api.model
+							const initialState = node.dataset.initialState? JSON.parse(node.dataset.initialState): {}
+							const newmodel = Object.assign(initialState, { parent:model })
+							node.__instance__.update( newmodel, true )
 						})
 				}
 			})

@@ -1,4 +1,6 @@
-export const setSodaConfig = (sodajs) => {
+import sodajs from 'sodajs'
+
+export const setSodaConfig = () => {
 
 	sodajs.prefix('v-')
 
@@ -80,4 +82,6 @@ export const setSodaConfig = (sodajs) => {
 				el.innerHTML = ''
 		}
 	})
+
+	return sodajs
 }
