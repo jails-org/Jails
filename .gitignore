@@ -5,6 +5,4 @@ files to ignore
 *.swp
 *.out
 node_modules/
-main.js
-index.htm
-example.js
+*.cache

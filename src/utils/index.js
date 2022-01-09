@@ -3,19 +3,11 @@ export const rAF = (fn) => {
 	(requestAnimationFrame || setTimeout)(fn, 1000 / 60)
 }
 
-export const nextFrame = (fn) => {
-	rAF(() => rAF(fn))
-}
-
 export const uuid = () => {
 	return 'xxxxxxxx'.replace(/[xy]/g, (c) => {
 		const r = Math.random() * 8 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
 		return v.toString(8)
 	})
-}
-
-export const stripTemplateTags = ( html ) => {
-	return html.replace(/<template.*?>|<\/template>/g, '')
 }
 
 export const stripTemplateTag = ( element ) => {
@@ -28,4 +20,22 @@ export const stripTemplateTag = ( element ) => {
 
 export const dup = (o) => {
 	return JSON.parse( JSON.stringify(o) )
+}
+
+export const createTemplate = ( html, templates ) => {
+
+	const vroot = document.createElement('div')
+	vroot.innerHTML = html
+	stripTemplateTag( vroot )
+
+	Array
+		.from(vroot.querySelectorAll('[data-component]'))
+		.forEach( c => {
+			const tplid = c.getAttribute('tplid')
+			const cache = templates[tplid]
+			if( cache )
+				c.outerHTML = cache
+		})
+
+	return vroot.innerHTML
 }

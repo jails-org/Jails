@@ -1,13 +1,15 @@
+import * as Pubsub from './utils/pubsub'
 import { on, off, trigger } from './utils/events'
 import { rAF } from './utils'
 
-export default function Component ({
+export const Component = ({
+
 	name,
 	element,
 	dependencies,
-	Pubsub,
 	ElementInterface
-}) {
+
+}) => {
 
 	const subscriptions = []
 

@@ -1,4 +1,6 @@
-export default function sodaSetConfig (sodajs) {
+import sodajs from 'sodajs'
+
+export const setSodaConfig = () => {
 
 	sodajs.prefix('v-')
 
@@ -57,7 +59,7 @@ export default function sodaSetConfig (sodajs) {
 				el.parentNode.insertBefore(itemNode, el)
 
 				Array.from(itemNode.querySelectorAll('[data-component]'))
-					.forEach(node => node.setAttribute('initialState', JSON.stringify(itemScope)))
+					.forEach( node => node.setAttribute('data-initial-state', JSON.stringify(itemScope)) )
 
 				compileNode(itemNode, itemScope)
 			}
@@ -80,4 +82,6 @@ export default function sodaSetConfig (sodajs) {
 				el.innerHTML = ''
 		}
 	})
+
+	return sodajs
 }
