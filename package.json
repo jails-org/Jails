@@ -8,7 +8,7 @@
   "source": "src/index.ts",
   "scripts": {
     "start": "parcel src/index.ts --out-file jails.js --port 3333",
-    "build": "parcel build src/index.js",
+    "build": "parcel build src/index.ts --out-file jails.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
