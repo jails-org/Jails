@@ -1,7 +1,7 @@
 
 export const Scanner = {
 
-	scan( node: HTMLElement, callback: VoidFunction ) {
+	scan( node: HTMLElement, callback ) {
 		if( node.nodeType === 1 ) {
 			const list : Array<HTMLElement> = Array.from( node.querySelectorAll('[data-component]') )
 			const elements : Array<HTMLElement> = node.dataset.component? [node].concat(list) : list
@@ -11,7 +11,7 @@ export const Scanner = {
 		}
 	},
 
-	observe( target: HTMLElement, onAdd: VoidFunction, onRemove: VoidFunction  ) {
+	observe( target: HTMLElement, onAdd, onRemove  ) {
 		const observer = new MutationObserver(mutations => mutations.forEach( mutation => {
 			if (mutation.type === 'childList') {
 				if (mutation.addedNodes.length) {

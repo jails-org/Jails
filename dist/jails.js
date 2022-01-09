@@ -2123,7 +2123,7 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.disposeElement = exports.createElement = exports.El = void 0;
+exports.Element = void 0;
 
 var utils_1 = require("./utils");
 
@@ -2136,80 +2136,77 @@ var soda_config_1 = require("./soda-config");
 (0, soda_config_1.setSodaConfig)(sodajs_1.default);
 var templates = {};
 
-var El = function El(node) {
-  var element = Element(node);
-  return element;
-};
-
-exports.El = El;
-
-var createElement = function createElement(node) {
-  var el = Element(node);
-  el.__instance__ = el;
-
-  if (node.dataset.component == 'A') {
-    console.log('A?');
-    el.update({
-      name: 'Eduardo',
-      items: [{
-        name: 'Roger'
-      }, {
-        name: 'Marta'
-      }, {
-        name: 'Clark'
-      }]
-    });
-    setTimeout(function (_) {
-      el.update({
-        name: 'Teste',
-        items: [{
-          name: 'Mario'
-        }]
-      });
-    }, 5000);
-  } else if (node.dataset.component == 'B') {
-    el.update({
-      name: 'B'
-    });
-  }
-};
-
-exports.createElement = createElement;
-
-var disposeElement = function disposeElement() {};
-
-exports.disposeElement = disposeElement;
-
 var Element = function Element(el) {
   (0, utils_1.stripTemplateTag)(el);
+  var updates = [];
   var model = Object.assign({}, JSON.parse(el.dataset.initialState || '{}'));
-  el.removeAttribute('data-initial-state');
   var morphdomOptions = lifecycle(el);
 
   var _a = getTemplateData(el),
       template = _a.template,
       tplid = _a.tplid;
 
-  return {
+  var api = {
     tplid: tplid,
     el: el,
     template: template,
     model: model,
     parent: {},
-    update: function update(data) {
-      var newdata = Object.assign({}, (0, utils_1.dup)(this.model), (0, utils_1.dup)(data));
-      (0, morphdom_1.default)(el, (0, sodajs_1.default)(template, newdata), morphdomOptions);
-      this.model = Object.assign(this.model, data);
-      Array.from(el.querySelectorAll('[data-component]')).filter(function (node) {
-        return Boolean(node.__instance__);
-      }).forEach(function (node) {
-        return (0, utils_1.rAF)(function (_) {
-          return node.__instance__.update(data);
+    view: function view(_) {
+      return _;
+    },
+    instances: {},
+    destroyers: [],
+    promises: [],
+    parentUpdate: function parentUpdate(data) {
+      return null;
+    },
+    dispose: function dispose() {
+      if (api.promises.length) {
+        Promise.all(api.promises).then(function (_) {
+          return api.destroyers.forEach(function (destroy) {
+            return destroy(api);
+          });
         });
+      } else {
+        api.destroyers.forEach(function (destroy) {
+          return destroy(api);
+        });
+      }
+    },
+    update: function update(data) {
+      if (!document.body.contains(el)) return;
+      updates.push(data);
+      (0, utils_1.rAF)(function (_) {
+        if (updates.length) {
+          var originalData_1 = {};
+          updates.forEach(function (d) {
+            return Object.assign(originalData_1, d);
+          });
+          updates = [];
+          var newdata = Object.assign({}, (0, utils_1.dup)(api.model), (0, utils_1.dup)(originalData_1));
+          (0, morphdom_1.default)(el, (0, sodajs_1.default)(template, newdata), morphdomOptions);
+          api.model = Object.assign(api.model, originalData_1);
+          Array.from(el.querySelectorAll('[data-component]')).filter(function (node) {
+            return Boolean(node.__instance__);
+          }).forEach(function (node) {
+            var initialState = JSON.parse(node.dataset.initialState || {});
+            var parent = Object.assign({}, api.model);
+            var newdata = Object.assign({}, initialState, {
+              parent: parent
+            });
+
+            node.__instance__.update(newdata);
+          });
+        }
       });
     }
   };
+  el.__instance__ = api;
+  return api;
 };
+
+exports.Element = Element;
 
 var lifecycle = function lifecycle(element) {
   return {
@@ -2228,16 +2225,15 @@ var update = function update(element) {
 
     if (node.nodeType == 1) {
       if ('static' in node.dataset) return false;
-      if (node !== element && node.dataset.component && node.__instance__) return false;
     }
 
     return true;
   };
 };
 
-var getTemplateData = function getTemplateData(el) {
-  if (el.getAttribute('tplid')) {
-    var tplid = el.getAttribute('tplid');
+var getTemplateData = function getTemplateData(element) {
+  if (element.getAttribute('tplid')) {
+    var tplid = element.getAttribute('tplid');
     var template = templates[tplid];
     return {
       tplid: tplid,
@@ -2245,8 +2241,8 @@ var getTemplateData = function getTemplateData(el) {
     };
   } else {
     var tplid = (0, utils_1.uuid)();
-    el.setAttribute('tplid', tplid);
-    templates[tplid] = (0, utils_1.createTemplate)(el.outerHTML, templates);
+    element.setAttribute('tplid', tplid);
+    templates[tplid] = (0, utils_1.createTemplate)(element.outerHTML, templates);
     var template = templates[tplid];
     return {
       tplid: tplid,
@@ -2294,7 +2290,318 @@ exports.Scanner = {
     });
   }
 };
-},{}],"index.ts":[function(require,module,exports) {
+},{}],"utils/pubsub.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.unsubscribe = exports.subscribe = exports.publish = void 0;
+var topics = {};
+var _async = {};
+
+var publish = function publish(name, params) {
+  _async[name] = Object.assign({}, _async[name], params);
+  if (topics[name]) topics[name].forEach(function (topic) {
+    return topic(params);
+  });
+};
+
+exports.publish = publish;
+
+var subscribe = function subscribe(name, method) {
+  topics[name] = topics[name] || [];
+  topics[name].push(method);
+
+  if (name in _async) {
+    method(_async[name]);
+  }
+};
+
+exports.subscribe = subscribe;
+
+var unsubscribe = function unsubscribe(topic) {
+  topics[topic.name] = (topics[topic.name] || []).filter(function (t) {
+    return t != topic.method;
+  });
+
+  if (!topics[topic.name].length) {
+    delete topics[topic.name];
+    delete _async[topic.name];
+  }
+};
+
+exports.unsubscribe = unsubscribe;
+},{}],"utils/events.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.trigger = exports.on = exports.off = void 0;
+
+var customEvent = function () {
+  return 'CustomEvent' in window && typeof window.CustomEvent === 'function' ? function (name, data) {
+    return new CustomEvent(name, data);
+  } : function (name, data) {
+    var newEvent = document.createEvent('CustomEvent');
+    newEvent.initCustomEvent(name, true, true, data);
+    return newEvent;
+  };
+}();
+
+var handler = function handler(node, ev) {
+  return function (e) {
+    var scope = this;
+    var detail = e.detail || {};
+
+    node.__events[ev].forEach(function (o) {
+      o.handler.apply(scope, [e].concat(detail.args));
+    });
+  };
+};
+
+var removeListener = function removeListener(node, ev) {
+  if (node.__events[ev] && node.__events[ev].listener) {
+    node.removeEventListener(ev, node.__events[ev].listener, ev == 'focus' || ev == 'blur' || ev == 'mouseenter' || ev == 'mouseleave');
+    delete node.__events[ev];
+  }
+};
+
+var delegate = function delegate(node, selector, callback) {
+  return function (e) {
+    var element = this;
+    var detail = e.detail || {};
+    var parent = e.target;
+
+    while (parent) {
+      if (parent.matches(selector)) {
+        e.delegateTarget = parent;
+        callback.apply(element, [e].concat(detail.args));
+      }
+
+      if (parent === node) break;
+      parent = parent.parentNode;
+    }
+  };
+};
+
+var on = function on(node, ev, selectorOrCallback, callback) {
+  node.__events = node.__events || {};
+  node.__events[ev] = node.__events[ev] || [];
+
+  if (!node.__events[ev].length) {
+    var fn = handler(node, ev);
+    node.addEventListener(ev, fn, ev == 'focus' || ev == 'blur' || ev == 'mouseenter' || ev == 'mouseleave');
+    node.__events[ev].listener = fn;
+  }
+
+  if (selectorOrCallback.call) {
+    node.__events[ev].push({
+      handler: selectorOrCallback,
+      callback: selectorOrCallback
+    });
+  } else {
+    node.__events[ev].push({
+      handler: delegate(node, selectorOrCallback, callback),
+      callback: callback
+    });
+  }
+};
+
+exports.on = on;
+
+var off = function off(node, ev, fn) {
+  if (fn && node.__events[ev] && node.__events[ev].length) {
+    var old = node.__events[ev];
+    node.__events[ev] = node.__events[ev].filter(function (o) {
+      return o.callback != fn;
+    });
+    node.__events[ev].listener = old.listener;
+    if (!node.__events[ev].length) removeListener(node, ev);
+  } else {
+    removeListener(node, ev);
+  }
+};
+
+exports.off = off;
+
+var trigger = function trigger(node, name, args) {
+  node.dispatchEvent(customEvent(name, {
+    bubbles: true,
+    detail: args
+  }));
+};
+
+exports.trigger = trigger;
+},{}],"Component.ts":[function(require,module,exports) {
+"use strict";
+
+var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  Object.defineProperty(o, k2, {
+    enumerable: true,
+    get: function get() {
+      return m[k];
+    }
+  });
+} : function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
+});
+
+var __setModuleDefault = this && this.__setModuleDefault || (Object.create ? function (o, v) {
+  Object.defineProperty(o, "default", {
+    enumerable: true,
+    value: v
+  });
+} : function (o, v) {
+  o["default"] = v;
+});
+
+var __importStar = this && this.__importStar || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) {
+    if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+  }
+
+  __setModuleDefault(result, mod);
+
+  return result;
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Component = void 0;
+
+var Pubsub = __importStar(require("./utils/pubsub"));
+
+var events_1 = require("./utils/events");
+
+var utils_1 = require("./utils");
+
+var Component = function Component(_a) {
+  var name = _a.name,
+      element = _a.element,
+      dependencies = _a.dependencies,
+      ElementInterface = _a.ElementInterface;
+  var subscriptions = [];
+  var stateSubscriptions = [];
+  var resolver;
+  var promise = new Promise(function (resolve) {
+    return resolver = resolve;
+  });
+  var base = {
+    name: name,
+    dependencies: dependencies,
+    elm: element,
+    publish: Pubsub.publish,
+    unsubscribe: Pubsub.unsubscribe,
+    __initialize: function __initialize() {
+      resolver(base);
+    },
+    main: function main(fn) {
+      promise.then(function (_) {
+        return fn().forEach(function (lambda) {
+          return lambda(base);
+        });
+      }).catch(function (err) {
+        return console.error(err);
+      });
+    },
+    expose: function expose(methods) {
+      ElementInterface.instances[name].methods = methods;
+    },
+    state: {
+      set: function set(state) {
+        if (state.constructor === Function) {
+          var model = ElementInterface.model;
+          state(model);
+          ElementInterface.update(model);
+        } else {
+          ElementInterface.update(state);
+        }
+
+        stateSubscriptions.forEach(function (fn) {
+          return fn(ElementInterface.model);
+        });
+        return new Promise(function (resolve) {
+          return (0, utils_1.rAF)(function (_) {
+            return (0, utils_1.rAF)(resolve);
+          });
+        });
+      },
+      get: function get() {
+        return ElementInterface.model;
+      },
+      subscribe: function subscribe(fn) {
+        stateSubscriptions.push(fn);
+      },
+      unsubscribe: function unsubscribe(fn) {
+        stateSubscriptions = stateSubscriptions.filter(function (item) {
+          return item !== fn;
+        });
+      }
+    },
+    destroy: function destroy(callback) {
+      ElementInterface.destroyers.push(callback);
+    },
+    on: function on(name, selectorOrCallback, callback) {
+      (0, events_1.on)(element, name, selectorOrCallback, callback);
+    },
+    off: function off(name, callback) {
+      (0, events_1.off)(element, name, callback);
+    },
+    trigger: function trigger(ev, target, args) {
+      if (target.constructor === String) (0, events_1.trigger)(element.querySelector(target), ev, {
+        args: args
+      });else (0, events_1.trigger)(element, ev, {
+        args: target
+      });
+    },
+    emit: function emit(n, params) {
+      var args = Array.prototype.slice.call(arguments);
+      (0, events_1.trigger)(element, args.shift(), {
+        args: args
+      });
+    },
+    update: function update(fn) {
+      ElementInterface.parentUpdate = fn;
+    },
+    get: function get(name, query) {
+      return function () {
+        (0, utils_1.rAF)(function (_) {
+          var args = Array.prototype.slice.call(arguments),
+              method = args.shift(),
+              selector = "[data-component*=".concat(name, "]");
+          query = query ? selector + query : selector;
+          Array.from(element.querySelectorAll(query)).forEach(function (el) {
+            var instance = el.__instance__.instances[name];
+            if (instance && method in instance.methods) instance.methods[method].apply(null, args);
+          });
+
+          if (element.matches(query)) {
+            var instance = element.__instance__.instances[name];
+            if (instance && method in instance.methods) instance.methods[method].apply(null, args);
+          }
+        });
+      };
+    },
+    subscribe: function subscribe(name, method) {
+      subscriptions.push({
+        name: name,
+        method: method
+      });
+      Pubsub.subscribe(name, method);
+    }
+  };
+  return base;
+};
+
+exports.Component = Component;
+},{"./utils/pubsub":"utils/pubsub.js","./utils/events":"utils/events.js","./utils":"utils/index.js"}],"index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2305,14 +2612,68 @@ var Element_1 = require("./Element");
 
 var Scanner_1 = require("./Scanner");
 
+var Component_1 = require("./Component");
+
+var components = {};
 exports.default = {
   start: function start() {
     var body = document.body;
-    Scanner_1.Scanner.observe(body, Element_1.createElement, Element_1.disposeElement);
-    Scanner_1.Scanner.scan(body, Element_1.createElement);
+    Scanner_1.Scanner.observe(body, createElement, disposeElement);
+    Scanner_1.Scanner.scan(body, createElement);
+  },
+  register: function register(name, module, dependencies) {
+    if (dependencies === void 0) {
+      dependencies = {};
+    }
+
+    components[name] = {
+      name: name,
+      module: module,
+      dependencies: dependencies
+    };
   }
 };
-},{"./Element":"Element.ts","./Scanner":"Scanner.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+var createElement = function createElement(element) {
+  var ElementInterface = (0, Element_1.Element)(element);
+  var names = element.dataset.component.split(/\s/);
+  names.forEach(function (name) {
+    var C = components[name];
+
+    if (!C) {
+      console.warn("Jails - Module ".concat(name, " not registered"));
+      return;
+    }
+
+    var module = C.module,
+        dependencies = C.dependencies;
+    ElementInterface.model = Object.assign({}, module.model, ElementInterface.model);
+    var base = (0, Component_1.Component)({
+      name: name,
+      element: element,
+      dependencies: dependencies,
+      ElementInterface: ElementInterface
+    });
+    var promise = module.default(base);
+
+    if (promise && promise.then) {
+      ElementInterface.promises.push(promise);
+    }
+
+    base.__initialize();
+
+    ElementInterface.view = module.view || ElementInterface.view;
+    ElementInterface.instances[name] = {
+      methods: {}
+    };
+    ElementInterface.update();
+  });
+};
+
+var disposeElement = function disposeElement(node) {
+  if (node.__instance__) node.__instance__.dispose();
+};
+},{"./Element":"Element.ts","./Scanner":"Scanner.ts","./Component":"Component.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2340,7 +2701,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55681" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63826" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

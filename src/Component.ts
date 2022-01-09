@@ -1,12 +1,14 @@
+import * as Pubsub from './utils/pubsub'
 import { on, off, trigger } from './utils/events'
 import { rAF } from './utils'
 
 export const Component = ({
+
 	name,
 	element,
 	dependencies,
-	Pubsub,
-	Element
+	ElementInterface
+
 }) => {
 
 	const subscriptions = []
@@ -34,23 +36,23 @@ export const Component = ({
 		},
 
 		expose(methods) {
-			Element.instances[name].methods = methods
+			ElementInterface.instances[name].methods = methods
 		},
 
 		state: {
 			set( state ) {
 				if( state.constructor === Function ){
-					const model = Element.model
+					const model = ElementInterface.model
 					state(model)
-					Element.update(model)
+					ElementInterface.update(model)
 				} else {
-					Element.update(state)
+					ElementInterface.update(state)
 				}
-				stateSubscriptions.forEach( fn => fn(Element.model) )
+				stateSubscriptions.forEach( fn => fn(ElementInterface.model) )
 				return new Promise((resolve) => rAF(_ => rAF(resolve) ))
 			},
 			get() {
-				return Element.model
+				return ElementInterface.model
 			},
 			subscribe(fn){
 				stateSubscriptions.push(fn)
@@ -61,7 +63,7 @@ export const Component = ({
 		},
 
 		destroy(callback) {
-			Element.destroyers.push(callback)
+			ElementInterface.destroyers.push(callback)
 		},
 
 		on(name, selectorOrCallback, callback) {
@@ -84,7 +86,7 @@ export const Component = ({
 		},
 
 		update(fn) {
-			Element.parentUpdate = fn
+			ElementInterface.parentUpdate = fn
 		},
 
 		get(name, query) {

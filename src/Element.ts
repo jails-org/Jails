@@ -7,73 +7,75 @@ setSodaConfig( sodajs )
 
 const templates = {}
 
-export const El = ( node: HTMLElement ) => {
-
-	const element = Element( node )
-	return element
-}
-
-export const createElement = ( node: HTMLElement ) => {
-
-	const el = Element( node )
-	el.__instance__ = el
-
-	if( node.dataset.component == 'A' ) {
-		console.log('A?')
-		el.update({
-			name: 'Eduardo',
-			items: [
-				{name:'Roger'},
-				{name:'Marta'},
-				{name:'Clark'}
-			]
-		})
-		setTimeout( _ => {
-			el.update({
-				name: 'Teste',
-				items: [{name: 'Mario'}]
-			})
-		}, 5000)
-	}else if( node.dataset.component=='B') {
-		el.update({name: 'B'})
-	}
-
-}
-
-export const disposeElement = () => {
-
-}
-
-const Element = ( el ) => {
+export const Element = ( el:HTMLElement ) => {
 
 	stripTemplateTag( el )
 
+	let updates = []
+
 	const model = Object.assign({}, JSON.parse(el.dataset.initialState || '{}'))
-	el.removeAttribute('data-initial-state')
 	const morphdomOptions = lifecycle(el)
 	const { template, tplid } = getTemplateData(el)
 
-	return {
+	const api = {
 
 		tplid,
 		el,
 		template,
 		model,
 		parent: {},
+		view : _ => _,
+		instances:{},
+		destroyers:[],
+		promises: [],
+		parentUpdate: data => null,
+
+		dispose(){
+			if( api.promises.length ){
+				Promise.all(api.promises)
+					.then(_ => api.destroyers.forEach( destroy => destroy(api) ))
+			}else {
+				api.destroyers.forEach( destroy => destroy(api) )
+			}
+		},
 
 		update( data ) {
 
-			const newdata = Object.assign({}, dup(this.model), dup(data))
-			morphdom( el, sodajs(template, newdata), morphdomOptions )
+			if( !document.body.contains(el) )
+				return
 
-			this.model = Object.assign( this.model, data )
+			updates.push( data )
 
-			Array
-				.from( el.querySelectorAll('[data-component]') )
-				.filter( node => Boolean( node.__instance__ ) )
-				.forEach( node => rAF( _ => node.__instance__.update( data ) ) )
+			rAF( _ => {
+
+				if( updates.length ) {
+
+					const originalData = {}
+					updates.forEach( d => Object.assign(originalData, d ) )
+					updates = []
+
+					const newdata = Object.assign({}, dup(api.model), dup(originalData))
+					morphdom( el, sodajs(template, newdata), morphdomOptions )
+
+					api.model = Object.assign( api.model, originalData )
+
+					Array
+						.from( el.querySelectorAll('[data-component]') )
+						.filter( node => Boolean( node.__instance__ ) )
+						.forEach( node => {
+							const initialState = JSON.parse(node.dataset.initialState || {})
+							const parent = Object.assign({}, api.model )
+							const newdata = Object.assign({}, initialState, { parent })
+							node.__instance__.update(newdata)
+						})
+				}
+			})
 		}
 	}
+
+	el.__instance__ = api
+
+	return api
 }
 
 const lifecycle = ( element: HTMLElement ) => {
@@ -88,27 +90,25 @@ const lifecycle = ( element: HTMLElement ) => {
 	}
 }
 
-const update = (element: HTMLElement ) => (node, toEl) => {
-	if (node.isEqualNode(toEl))
+const update = ( element: HTMLElement ) => ( node: HTMLElement, toEl: HTMLElement ) => {
+	if ( node.isEqualNode(toEl) )
 		return false
 	if( node.nodeType == 1 ) {
 		if( 'static' in node.dataset )
-			return false
-		if ( node !== element && node.dataset.component && node.__instance__ )
 			return false
 	}
 	return true
 }
 
-const getTemplateData = (el) => {
-	if( el.getAttribute('tplid') ) {
-		const tplid = el.getAttribute('tplid')
+const getTemplateData = ( element: HTMLElement ) => {
+	if( element.getAttribute('tplid') ) {
+		const tplid = element.getAttribute('tplid')
 		const template = templates[tplid]
 		return { tplid, template }
 	}else {
 		const tplid = uuid()
-		el.setAttribute('tplid', tplid)
-		templates[tplid] = createTemplate(el.outerHTML, templates)
+		element.setAttribute('tplid', tplid)
+		templates[tplid] = createTemplate(element.outerHTML, templates)
 		const template = templates[tplid]
 		return { tplid, template }
 	}
