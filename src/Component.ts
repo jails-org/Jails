@@ -92,25 +92,23 @@ export const Component = ({
 		get(name, query) {
 
 			return function () {
-				rAF(_ => {
-					const args = Array.prototype.slice.call(arguments),
-					method = args.shift(),
-					selector = `[data-component*=${name}]`
-					query = query ? selector + query : selector
+				const args = Array.prototype.slice.call(arguments),
+				method = args.shift(),
+				selector = `[data-component*=${name}]`
+				query = query ? selector + query : selector
 
-					Array.from(element.querySelectorAll(query))
-						.forEach(el => {
-							const instance = el.__instance__.instances[name]
-							if (instance && (method in instance.methods))
-								instance.methods[method].apply(null, args)
-						})
-
-					if (element.matches(query)) {
-						const instance = element.__instance__.instances[name]
-						if (instance && method in instance.methods)
+				Array.from(element.querySelectorAll(query))
+					.forEach(el => {
+						const instance = el.__instance__.instances[name]
+						if (instance && (method in instance.methods))
 							instance.methods[method].apply(null, args)
-					}
-				})
+					})
+
+				if (element.matches(query)) {
+					const instance = element.__instance__.instances[name]
+					if (instance && method in instance.methods)
+						instance.methods[method].apply(null, args)
+				}
 			}
 		},
 
