@@ -1,7 +1,7 @@
 import { Element } from './Element'
 import { Scanner } from './Scanner'
 import { Component } from './Component'
-import { stripTemplateTag } from './utils'
+import { stripTemplateTag, dup } from './utils'
 
 const components = {}
 
@@ -37,7 +37,7 @@ const createElement = ( element: HTMLElement ) => {
 		}
 
 		const { module, dependencies } = C
-		ElementInterface.model = Object.assign({}, module.model, ElementInterface.model )
+		ElementInterface.model = Object.assign({}, dup(module.model), ElementInterface.model )
 
 		const base = Component({ name, element, dependencies, ElementInterface })
 		const promise = module.default(base)
