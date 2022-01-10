@@ -85,8 +85,8 @@ const lifecycle = ( element: HTMLElement ) => {
 		onBeforeElUpdated: update(element),
 		onBeforeElChildrenUpdated: update(element),
 		getNodeKey(node) {
-			if( node.nodeType === 1 && node.dataset.tplid )
-				return node.dataset.key || node.dataset.tplid
+			if( node.nodeType === 1 && node.getAttribute('tplid') )
+				return node.dataset.key || node.getAttribute('tplid')
 			return false
 		}
 	}
