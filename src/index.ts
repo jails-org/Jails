@@ -37,7 +37,7 @@ const createElement = ( element: HTMLElement ) => {
 		}
 
 		const { module, dependencies } = C
-		ElementInterface.model = Object.assign({}, dup(module.model), ElementInterface.model )
+		ElementInterface.model = Object.assign({}, module.model? dup(module.model) : null, ElementInterface.model )
 
 		const base = Component({ name, element, dependencies, ElementInterface })
 		const promise = module.default(base)

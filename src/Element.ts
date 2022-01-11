@@ -67,7 +67,7 @@ export const Element = ( el:HTMLElement ) => {
 							if( !node.__instance__ ) return
 							const { parent, ...model } = api.model
 							const initialState = node.dataset.initialState? JSON.parse(node.dataset.initialState): {}
-							const newmodel = Object.assign(initialState, { parent:model })
+							const newmodel = Object.assign(initialState, { parent:{ ...model, ...parent} })
 							node.__instance__.update( newmodel, true )
 						})
 				}
