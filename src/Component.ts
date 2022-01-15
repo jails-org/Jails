@@ -1,6 +1,7 @@
 import * as Pubsub from './utils/pubsub'
 import { on, off, trigger } from './utils/events'
 import { rAF } from './utils'
+import { Instances } from './Instances'
 
 export const Component = ({
 
@@ -99,13 +100,13 @@ export const Component = ({
 
 				Array.from(element.querySelectorAll(query))
 					.forEach(el => {
-						const instance = el.__instance__.instances[name]
+						const instance = Instances.get(el).instances[name]
 						if (instance && (method in instance.methods))
 							instance.methods[method].apply(null, args)
 					})
 
 				if (element.matches(query)) {
-					const instance = element.__instance__.instances[name]
+					const instance = Instances.get(element).instances[name]
 					if (instance && method in instance.methods)
 						instance.methods[method].apply(null, args)
 				}

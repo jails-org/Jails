@@ -1,6 +1,7 @@
 import { stripTemplateTag, dup, rAF, createTemplate, uuid } from './utils'
 import morphdom from 'morphdom'
 import { setSodaConfig } from './soda-config'
+import { Instances } from './Instances'
 
 const sodajs = setSodaConfig()
 const templates = {}
@@ -18,7 +19,6 @@ export const Element = ( el:HTMLElement ) => {
 	const api = {
 
 		tplid,
-		el,
 		template,
 		model,
 		parent: {},
@@ -64,18 +64,18 @@ export const Element = ( el:HTMLElement ) => {
 					Array
 						.from( el.querySelectorAll('[data-component]') )
 						.forEach( node => {
-							if( !node.__instance__ ) return
+							if( !Instances.get(node) ) return
 							const { parent, ...model } = api.model
 							const initialState = node.dataset.initialState? JSON.parse(node.dataset.initialState): {}
 							const newmodel = Object.assign(initialState, { parent:{ ...model, ...parent} })
-							node.__instance__.update( newmodel, true )
+							Instances.get(node).update( newmodel, true )
 						})
 				}
 			})
 		}
 	}
 
-	el.__instance__ = api
+	Instances.set(el, api)
 
 	return api
 }
@@ -96,7 +96,9 @@ const update = ( element: HTMLElement ) => ( node: HTMLElement, toEl: HTMLElemen
 	if ( node.isEqualNode(toEl) )
 		return false
 	if( node.nodeType == 1 ) {
-		if( 'static' in node.dataset )
+		if( 'static' in node.dataset)
+			return false
+		if( node.dataset.component && Instances.get(node) && node !== element )
 			return false
 	}
 	return true

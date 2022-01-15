@@ -1,6 +1,7 @@
 import { Element } from './Element'
 import { Scanner } from './Scanner'
 import { Component } from './Component'
+import { Instances } from './Instances'
 import { stripTemplateTag, dup } from './utils'
 
 const components = {}
@@ -55,6 +56,7 @@ const createElement = ( element: HTMLElement ) => {
 }
 
 const disposeElement = ( node ) => {
-	if( node.__instance__)
-		node.__instance__.dispose()
+	const instance = Instances.get(node)
+	if( Instances.get(node) )
+		instance.dispose()
 }
