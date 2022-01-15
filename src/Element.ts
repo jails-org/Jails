@@ -103,6 +103,15 @@ const update = ( element: HTMLElement ) => ( node: HTMLElement, toEl: HTMLElemen
 }
 
 const getTemplateData = ( element: HTMLElement ) => {
+
+	Array
+		.from(element.querySelectorAll('[data-component]'))
+		.forEach( setTemplate )
+
+	return setTemplate( element )
+}
+
+const setTemplate = (element) => {
 	if( element.getAttribute('tplid') ) {
 		const tplid = element.getAttribute('tplid')
 		const template = templates[tplid]
