@@ -14,8 +14,8 @@ export default {
 
 		stripTemplateTag( body )
 
-		Scanner.scan( body, createElement )
 		Scanner.observe( body, createElement, disposeElement )
+		Scanner.scan( body, createElement )
 	},
 
 	register( name, module, dependencies = {} ) {
