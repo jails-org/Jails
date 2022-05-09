@@ -93,8 +93,6 @@ const lifecycle = ( element: HTMLElement ) => {
 }
 
 const update = ( element: HTMLElement ) => ( node: HTMLElement, toEl: HTMLElement ) => {
-	if ( node.isEqualNode(toEl) )
-		return false
 	if( node.nodeType == 1 ) {
 		if( 'static' in node.dataset)
 			return false
