@@ -1,41 +1,42 @@
 {
-  "name": "jails-js",
-  "version": "5.0.0-beta.7",
-  "description": "A Modern Javascript Library",
-  "main": "dist/jails.js",
-  "scripts": {
-    "start": "webpack --watch --mode=development",
-    "build": "webpack --mode=production",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jails-org/Jails.git"
-  },
-  "keywords": [
-    "Jails",
-    "Javascript",
-    "Component",
-    "Micro-Library"
-  ],
-  "author": "javiani",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jails-org/Jails/issues"
-  },
-  "homepage": "https://github.com/jails-org/Jails",
-  "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
-    "babel-loader": "^8.0.5",
-    "babel-preset-env": "^1.7.0",
-    "ts-loader": "^9.2.6",
-    "typescript": "^4.5.4",
-    "webpack": "^5.59.1",
-    "webpack-cli": "^3.2.1"
-  },
-  "dependencies": {
-    "morphdom": "^2.6.1",
-    "sodajs": "^0.4.10"
-  }
+	"name": "jails-js",
+	"version": "5.0.0-beta.7",
+	"description": "A Modern Javascript Library",
+	"main": "dist/jails.js",
+	"scripts": {
+		"start": "webpack --watch --mode=development",
+		"build": "webpack --mode=production",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jails-org/Jails.git"
+	},
+	"keywords": [
+		"Jails",
+		"Javascript",
+		"Component",
+		"Micro-Library"
+	],
+	"author": "javiani",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/jails-org/Jails/issues"
+	},
+	"homepage": "https://github.com/jails-org/Jails",
+	"devDependencies": {
+		"@babel/core": "^7.2.2",
+		"@babel/preset-env": "^7.2.3",
+		"babel-loader": "^8.0.5",
+		"babel-plugin-transform-custom-element-classes": "^0.1.0",
+		"babel-preset-env": "^1.7.0",
+		"ts-loader": "^9.2.6",
+		"typescript": "^4.5.4",
+		"webpack": "^5.59.1",
+		"webpack-cli": "^3.2.1"
+	},
+	"dependencies": {
+		"morphdom": "^2.6.1",
+		"template7": "^1.4.2"
+	}
 }

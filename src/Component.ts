@@ -1,123 +1,151 @@
-import * as Pubsub from './utils/pubsub'
+import { rAF, dup, stripTemplateTag, buildtemplates } from './utils'
 import { on, off, trigger } from './utils/events'
-import { rAF } from './utils'
-import { Instances } from './Instances'
+import { publish, subscribe, unsubscribe } from './utils/pubsub'
+import morphdom from 'morphdom'
 
-export const Component = ({
+type MainArgs = () => Array<Function>
 
-	name,
-	element,
-	dependencies,
-	ElementInterface
+export default function WebComponent(module, dependencies, templates, components) {
 
-}) => {
+	return class extends HTMLElement {
 
-	const subscriptions = []
+		constructor() {
 
-	let stateSubscriptions = []
-	let resolver
-	let promise = new Promise(resolve => resolver = resolve)
+			super()
+			stripTemplateTag(this)
+			buildtemplates(this, components, templates)
 
-	const base = {
+			const tplid = this.getAttribute('tplid')
+			const template = templates[tplid]
 
-		name,
-		dependencies,
-		elm: element,
-		publish: Pubsub.publish,
-		unsubscribe: Pubsub.unsubscribe,
-
-		__initialize() {
-			resolver(base)
-		},
-
-		main(fn) {
-			promise
-				.then( _ => fn().forEach(lambda => lambda(base)))
-				.catch( err => console.error( err) )
-		},
-
-		expose(methods) {
-			ElementInterface.instances[name].methods = methods
-		},
-
-		state: {
-			set( state ) {
-				if( state.constructor === Function ){
-					const model = ElementInterface.model
-					state(model)
-					ElementInterface.update(model)
-				} else {
-					ElementInterface.update(state)
-				}
-				stateSubscriptions.forEach( fn => fn(ElementInterface.model) )
-				return new Promise((resolve) => rAF(_ => rAF(resolve) ))
-			},
-			get() {
-				return ElementInterface.model
-			},
-			subscribe(fn){
-				stateSubscriptions.push(fn)
-			},
-			unsubscribe(fn){
-				stateSubscriptions = stateSubscriptions.filter( item => item !== fn )
+			this.__internal__ = {
+				main: () => null,
+				unmount: () => null,
+				mount: () => null,
+				onupdate: () => null,
+				methods: {},
+				state: module.model
+					? dup(module.model)
+					: (this.dataset.initialState ? JSON.parse(this.dataset.initialState) : {})
 			}
-		},
 
-		destroy(callback) {
-			ElementInterface.destroyers.push(callback)
-		},
+			this.base = {
+				template,
+				dependencies,
+				publish,
+				subscribe,
+				unsubscribe,
+				elm: this,
 
-		on(name, selectorOrCallback, callback) {
-			on(element, name, selectorOrCallback, callback)
-		},
+				main: (fn: MainArgs) => { this.__internal__.main = fn },
+				unmount: (fn: () => null) => { this.__internal__.unmount = fn },
+				mount: (fn: () => null) => { this.__internal__.mount = fn },
+				onupdate: (fn: () => null) => { this.__internal__.onupdate = fn },
 
-		off(name, callback) {
-			off(element, name, callback)
-		},
+				render: (data: any = this.__internal__.state) => {
+					this.__internal__.state = Object.assign(this.__internal__.state, data)
+					const newdata = dup(this.__internal__.state)
+					const newhtml = this.base.template(newdata)
+					morphdom(this, newhtml, morphdomOptions(this, data))
+				},
 
-		trigger(ev, target, args) {
-			if (target.constructor === String)
-				trigger(element.querySelector(target), ev, { args: args })
-			else trigger(element, ev, { args: target })
-		},
+				state: {
+					set: (data: any) => {
+						if (data.constructor === Function) {
+							const newstate = dup(this.__internal__.state)
+							data(newstate)
+							this.base.render(newstate)
+						} else {
+							this.base.render(data)
+						}
+						return new Promise((resolve) => rAF(_ => rAF(resolve)))
+					},
 
-		emit(n, params) {
-			const args = Array.prototype.slice.call(arguments)
-			trigger(element, args.shift(), { args: args })
-		},
+					get: () => {
+						return dup(this.__internal__.state)
+					}
+				},
 
-		update(fn) {
-			ElementInterface.parentUpdate = fn
-		},
+				on: (eventName: string, selectorOrCallback: object | Function, callback: Function) => {
+					on(this, eventName, selectorOrCallback, callback)
+				},
 
-		get(name, query) {
+				off: (eventName: string, callback: Function) => {
+					off(this, eventName, callback)
+				},
 
-			return function () {
-				const args = Array.prototype.slice.call(arguments),
-				method = args.shift(),
-				selector = `[data-component*=${name}]`
-				query = query ? selector + query : selector
+				trigger: (eventName: string, target: string, args: any) => {
+					if (target.constructor === String)
+						trigger(this.querySelector(target), eventName, { args: args })
+					else trigger(this, eventName, { args: target })
+				},
 
-				Array.from(element.querySelectorAll(query))
-					.forEach(el => {
-						const instance = Instances.get(el).instances[name]
-						if (instance && (method in instance.methods))
-							instance.methods[method].apply(null, args)
-					})
-
-				if (element.matches(query)) {
-					const instance = Instances.get(element).instances[name]
-					if (instance && method in instance.methods)
-						instance.methods[method].apply(null, args)
+				emit: (...args) => {
+					trigger(this, args.shift(), { args: args })
 				}
 			}
-		},
 
-		subscribe(name, method) {
-			subscriptions.push({ name, method })
-			Pubsub.subscribe(name, method)
+			module.default(this.base)
+		}
+
+		connectedCallback() {
+			rAF(_ => {
+				this.__internal__.main().forEach(f => f(this.base))
+				this.__internal__.mount(this.base)
+				this.base.render()
+				console.log(this.base.elm)
+			})
+		}
+
+		disconnectedCallback() {
+			this.__internal__.unmount(this.base)
+		}
+
+		attributeChangedCallback() {
+			//TODO
 		}
 	}
+}
 
-	return base
+const morphdomOptions = (_parent, data) => {
+
+	return {
+
+		onNodeAdded: scopeElement(_parent),
+		onElUpdated: scopeElement(_parent),
+
+		onBeforeElChildrenUpdated(node) {
+
+			if ('static' in node.dataset) {
+				return false
+			}
+
+			return true
+		},
+
+		getNodeKey(node) {
+			if (node.nodeType === 1 && node.getAttribute('tplid'))
+				return node.dataset.key || node.getAttribute('tplid')
+			return false
+		}
+	}
+}
+
+const scopeElement = (_parent) => (node) => {
+	if (node.nodeType === 1) {
+		if ('static' in node.dataset) {
+			return false
+		}
+		if (node.getAttribute && node.getAttribute('scope')) {
+			const scope = JSON.parse(node.getAttribute('scope').replace(/\'/g, '\"'))
+			Array.from(node.querySelectorAll('*'))
+				.filter(el => el.__internal__)
+				.map(el => {
+					const data = Object.assign(el.__internal__.state, _parent.__internal__.state, scope)
+					el.__internal__.onupdate(data)
+					return el
+				})
+			node.removeAttribute('scope')
+		}
+	}
 }

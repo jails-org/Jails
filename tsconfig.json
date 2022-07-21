@@ -1,6 +1,14 @@
 {
 	"compilerOptions": {
-		"lib": [ "dom" ],
-		"sourceMap": true
-	}
+		"baseUrl": "./src",
+		"outDir": "./dist/",
+		"target": "es6",
+		"allowJs": true,
+		"lib": [
+			"dom"
+		],
+	},
+	"exclude": [
+		"./node_modules"
+	]
 }
