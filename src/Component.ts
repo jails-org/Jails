@@ -93,7 +93,6 @@ export default function WebComponent(module, dependencies, templates, components
 				this.__internal__.main().forEach(f => f(this.base))
 				this.__internal__.mount(this.base)
 				this.base.render()
-				console.log(this.base.elm)
 			})
 		}
 
