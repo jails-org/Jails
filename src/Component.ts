@@ -24,9 +24,7 @@ export default function WebComponent(module, dependencies, templates, components
 				mount: () => null,
 				onupdate: () => null,
 				methods: {},
-				state: module.model
-					? dup(module.model)
-					: (this.dataset.initialState ? JSON.parse(this.dataset.initialState) : {})
+				state: module.model ? dup(module.model) : {}
 			}
 
 			this.base = {
