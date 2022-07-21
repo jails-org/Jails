@@ -99,6 +99,9 @@ export default function WebComponent(module, dependencies, templates, components
 
 		disconnectedCallback() {
 			this.__internal__.unmount(this.base)
+			delete this.__internal__
+			delete this.base
+			delete this.__events
 		}
 
 		attributeChangedCallback() {
