@@ -16,6 +16,7 @@ export const stripTemplateTag = (element) => {
 	// https://gist.github.com/harmenjanssen/07e425248779c65bc5d11b02fb913274
 	templates.forEach(template => {
 		template.parentNode.replaceChild(template.content, template)
+		stripTemplateTag(template.content)
 	})
 }
 

@@ -1,4 +1,4 @@
-import { stripTemplateTag, buildtemplates } from './utils'
+import { buildtemplates, stripTemplateTag } from './utils'
 import WebComponent from './component'
 
 export const templates = {}
