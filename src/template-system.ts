@@ -1,5 +1,5 @@
 import template7 from 'template7'
-import { stripTemplateTag } from './utils'
+import { stripTemplateTag, decodeHtmlEntities } from './utils'
 
 export default function templateSystem(element) {
 
@@ -21,25 +21,29 @@ export default function templateSystem(element) {
 
 const htmlRepeatAndIf = (vdom) => {
 
-	const nodes = Array.from(vdom.querySelectorAll('[html-repeat],[html-if], [html-ifnot]'))
+	const nodes = Array
+		.from(vdom.querySelectorAll('[html-repeat],[html-if]'))
+		.reverse()
 
 	if (nodes.length) {
+
 		nodes.forEach(node => {
 			if (node.getAttribute('html-repeat')) {
 				const instruction = node.getAttribute('html-repeat')
 				node.removeAttribute('html-repeat')
 				node.setAttribute('scope', '{{scope this}}')
-				node.outerHTML = `{{#each ${instruction}}}${node.outerHTML}{{/each}}`
+				const open = document.createTextNode(`{{#each ${instruction}}}`)
+				const close = document.createTextNode('{{/each}}')
+				node.parentNode.insertBefore(open, node)
+				node.parentNode.insertBefore(close, node.nextSibling)
 			} else if (node.getAttribute('html-if')) {
 				const instruction = node.getAttribute('html-if')
 				node.removeAttribute('html-if')
 				node.setAttribute('scope', '{{scope this}}')
-				node.outerHTML = `{{#if ${instruction}}}${node.outerHTML}{{/if}}`
-			} else if (node.getAttribute('html-ifnot')) {
-				const instruction = node.getAttribute('html-ifnot')
-				node.removeAttribute('html-ifnot')
-				node.setAttribute('scope', '{{scope this}}')
-				node.outerHTML = `{{#unless ${instruction}}}${node.outerHTML}{{/unless}}`
+				const open = document.createTextNode(`{{#ifexp "${instruction}"}}`)
+				const close = document.createTextNode('{{/ifexp}}')
+				node.parentNode.insertBefore(open, node)
+				node.parentNode.insertBefore(close, node.nextSibling)
 			}
 		})
 	}
@@ -53,13 +57,31 @@ template7.global = {}
 /**@Helpers */
 template7.registerHelper('scope', (context, options) => {
 
+	const { data } = options
+	const { first, index, last, root } = data
+
 	const scope = {
 		...context,
-		['$first']: options.data.first,
-		['$index']: options.data.index,
-		['$last']: options.data.last,
-		['$parent']: options.root
+		['$first']: first,
+		['$index']: index,
+		['$last']: last,
+		['$parent']: root
 	}
 
 	return JSON.stringify(scope).replace(/\"/g, '\'')
+})
+
+template7.registerHelper('ifexp', function (value, options) {
+
+	const condition = decodeHtmlEntities(value)
+	const { root, data } = options
+
+	try {
+		const expression = (new Function('root', `with(root){ return ${condition} }`)).call(root, root)
+		return expression ? options.fn(this, data) : options.inverse(this, data)
+
+	} catch (err) {
+		return options.inverse(this, data)
+	}
+
 })

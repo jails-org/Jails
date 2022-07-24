@@ -67,3 +67,9 @@ export const buildtemplates = (target, components, templates) => {
 			return node
 		})
 }
+
+export const decodeHtmlEntities = (str) => {
+	const textarea = document.createElement('textarea')
+	textarea.innerHTML = str
+	return textarea.value
+}

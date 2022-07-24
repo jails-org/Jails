@@ -25,7 +25,7 @@ export default function WebComponent(module, dependencies, templates, components
 				unmount: () => null,
 				mount: () => null,
 				onupdate: () => null,
-				methods: {},
+				view: module.view ? module.view : _ => _,
 				state: module.model ? dup(module.model) : {}
 			}
 
@@ -47,11 +47,13 @@ export default function WebComponent(module, dependencies, templates, components
 					if (!document.body.contains(this))
 						return
 
-					batchUpdates.push(data)
+
+					batchUpdates.push(this.__internal__.view(data))
 
 					rAF(_ => {
 
 						if (batchUpdates.length) {
+
 							const batchData = {}
 							batchUpdates.forEach(d => Object.assign(batchData, d))
 							batchUpdates = []
