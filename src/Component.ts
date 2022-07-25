@@ -1,152 +1,135 @@
+import morphdom from 'morphdom'
+
 import { rAF, dup, buildtemplates } from './utils'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe, unsubscribe } from './utils/pubsub'
-import morphdom from 'morphdom'
 
 type MainArgs = () => Array<Function>
 
-export default function WebComponent(module, dependencies, templates, components) {
+export default function Component(elm, { module, dependencies, templates, components }) {
 
-	return class extends HTMLElement {
+	const options = getOptions(module)
 
-		constructor() {
+	buildtemplates(elm, components, templates)
 
-			super()
+	const tplid = elm.getAttribute('tplid')
+	const template = templates[tplid]
+	const state = { data: module.model ? dup(module.model) : {} }
 
-			let batchUpdates = []
+	let batchUpdates = []
 
-			buildtemplates(this, components, templates)
+	const base = {
+		template,
+		elm,
+		dependencies,
+		publish,
+		subscribe,
+		unsubscribe,
 
-			const tplid = this.getAttribute('tplid')
-			const template = templates[tplid]
+		main(fn: MainArgs) {
+			options.main = fn
+		},
 
-			this.__internal__ = {
-				main: () => null,
-				unmount: () => null,
-				onupdate: _ => _,
-				view: module.view ? module.view : _ => _,
-				state: module.model ? dup(module.model) : {}
-			}
+		unmount(fn) {
+			options.unmount = fn
+		},
 
-			this.base = {
-				template,
-				dependencies,
-				publish,
-				subscribe,
-				unsubscribe,
-				elm: this,
+		onupdate(fn) {
+			options.onupdate = fn
+		},
 
-				main: (fn: MainArgs) => { this.__internal__.main = fn },
-				unmount: (fn: () => null) => { this.__internal__.unmount = fn },
-				onupdate: (fn: () => null) => { this.__internal__.onupdate = fn },
+		on(eventName: string, selectorOrCallback: object | Function, callback: Function) {
+			on(elm, eventName, selectorOrCallback, callback)
+		},
 
-				render: (data: any = this.__internal__.state) => {
+		off(eventName: string, callback: Function) {
+			off(elm, eventName, callback)
+		},
 
-					if (!document.body.contains(this))
-						return
+		trigger(eventName: string, target: string, args: any) {
+			if (target.constructor === String)
+				trigger(elm.querySelector(target), eventName, { args: args })
+			else trigger(elm, eventName, { args: target })
+		},
 
-					batchUpdates.push(this.__internal__.view(data))
+		emit: (...args) => {
+			trigger(elm, args.shift(), { args: args })
+		},
 
-					rAF(_ => {
-
-						if (batchUpdates.length) {
-
-							const batchData = {}
-							batchUpdates.forEach(d => Object.assign(batchData, d))
-							batchUpdates = []
-
-							this.__internal__.state = Object.assign(this.__internal__.state, batchData)
-
-							const newdata = dup(this.__internal__.state)
-							const newhtml = this.base.template(newdata)
-
-							morphdom(this, newhtml, morphdomOptions(this, data))
-
-							Array
-								.from(this.querySelectorAll('[tplid]'))
-								.map(el => {
-									rAF(_ => {
-										el.__internal__.onupdate(newdata)
-										el.base.render(newdata)
-									})
-								})
-						}
-					})
-				},
-
-				state: {
-					set: (data: any) => {
-						if (data.constructor === Function) {
-							const newstate = dup(this.__internal__.state)
-							data(newstate)
-							this.base.render(newstate)
-						} else {
-							this.base.render(data)
-						}
-						return new Promise((resolve) => rAF(_ => rAF(resolve)))
-					},
-
-					get: () => {
-						return dup(this.__internal__.state)
-					}
-				},
-
-				on: (eventName: string, selectorOrCallback: object | Function, callback: Function) => {
-					on(this, eventName, selectorOrCallback, callback)
-				},
-
-				off: (eventName: string, callback: Function) => {
-					off(this, eventName, callback)
-				},
-
-				trigger: (eventName: string, target: string, args: any) => {
-					if (target.constructor === String)
-						trigger(this.querySelector(target), eventName, { args: args })
-					else trigger(this, eventName, { args: target })
-				},
-
-				emit: (...args) => {
-					trigger(this, args.shift(), { args: args })
+		state: {
+			set(data: any) {
+				if (data.constructor === Function) {
+					const newstate = dup(state.data)
+					data(newstate)
+					base.render(newstate)
+				} else {
+					base.render(data)
 				}
+				return new Promise((resolve) => rAF(_ => rAF(resolve)))
+			},
+			get() {
+				return dup(state.data)
 			}
+		},
 
-			module.default(this.base)
-		}
+		render(data: object = state.data) {
 
-		connectedCallback() {
-			this.base.render()
-			this.__internal__.main().forEach(f => f(this.base))
-		}
+			if (!document.body.contains(elm))
+				return
 
-		disconnectedCallback() {
-			this.__internal__.unmount(this.base)
-			delete this.__internal__
-			delete this.base
-			delete this.__events
-		}
+			batchUpdates.push(options.view(data))
 
-		attributeChangedCallback() {
-			//TODO
+			rAF(() => {
+
+				if (batchUpdates.length) {
+
+					const batchData = {}
+					batchUpdates.forEach(d => Object.assign(batchData, d))
+					batchUpdates = []
+
+					state.data = Object.assign(state.data, batchData)
+
+					const newdata = dup(state.data)
+					const newhtml = base.template(newdata)
+
+					morphdom(elm, newhtml, morphdomOptions(elm, options))
+
+					Array
+						.from(elm.querySelectorAll('[tplid]'))
+						.map(el => {
+							rAF(_ => {
+								el.options.onupdate(newdata)
+								el.base.render(newdata)
+							})
+						})
+				}
+			})
 		}
 	}
+
+	return { base, options }
 }
 
-const morphdomOptions = (_parent, data) => {
+const getOptions = (module) => ({
+	main: _ => _,
+	unmount: _ => _,
+	onupdate: _ => _,
+	view: module.view ? module.view : _ => _
+})
 
-	return {
+const morphdomOptions = (_parent, options) => ({
 
-		onNodeAdded: onUpdates(_parent),
-		onElUpdated: onUpdates(_parent),
-		onBeforeElChildrenUpdated: checkStatic,
-		onBeforeElUpdated: checkStatic,
+	onNodeAdded: onUpdates(_parent, options),
+	onElUpdated: onUpdates(_parent, options),
+	onBeforeElChildrenUpdated: checkStatic,
+	onBeforeElUpdated: checkStatic,
 
-		getNodeKey(node) {
-			if (node.nodeType === 1 && node.getAttribute('tplid'))
-				return node.dataset.key || node.getAttribute('tplid')
-			return false
-		}
+	getNodeKey(node) {
+		if (node.nodeType === 1 && node.getAttribute('tplid'))
+			return node.dataset.key || node.getAttribute('tplid')
+		return false
 	}
-}
+})
 
 const checkStatic = (node) => {
 	if ('static' in node.dataset) {
@@ -154,7 +137,7 @@ const checkStatic = (node) => {
 	}
 }
 
-const onUpdates = (_parent) => (node) => {
+const onUpdates = (_parent, options) => (node) => {
 
 	if (node.nodeType === 1) {
 
@@ -164,8 +147,8 @@ const onUpdates = (_parent) => (node) => {
 
 			Array.from(node.querySelectorAll('[tplid]'))
 				.map(el => {
-					const data = Object.assign(el.__internal__.state, dup(_parent.__internal__.state), scope)
-					el.__internal__.onupdate(data)
+					const data = Object.assign({}, _parent.base.state.get(), scope)
+					options.onupdate(data)
 					el.base.render(data)
 				})
 

@@ -10,6 +10,7 @@ export default function templateSystem(element) {
 
 	const newvdom = directives.reduce((_, directive) => directive(vdom), vdom)
 	const html = newvdom.outerHTML.replace(/html-/g, '')
+
 	const template = template7.compile(html)
 
 	return (data) => {

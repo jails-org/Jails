@@ -1,5 +1,5 @@
 import { buildtemplates, stripTemplateTag } from './utils'
-import WebComponent from './component'
+import Element from './element'
 
 export const templates = {}
 export const components = {}
@@ -22,7 +22,7 @@ const registerComponents = () => {
 	Object
 		.values(components)
 		.forEach(({ name, module, dependencies }) => {
-			const Element = WebComponent(module, dependencies, templates, components)
-			customElements.define(name, Element)
+			const Base = Element(module, dependencies, templates, components)
+			customElements.define(name, Base)
 		})
 }
