@@ -24,7 +24,7 @@ export default function WebComponent(module, dependencies, templates, components
 				main: () => null,
 				unmount: () => null,
 				mount: () => null,
-				onupdate: () => null,
+				onupdate: _ => _,
 				view: module.view ? module.view : _ => _,
 				state: module.model ? dup(module.model) : {}
 			}
@@ -68,7 +68,12 @@ export default function WebComponent(module, dependencies, templates, components
 							Array
 								.from(this.querySelectorAll('*'))
 								.filter(el => el.__internal__)
-								.map(el => rAF(_ => el.base.render()))
+								.map(el => {
+									rAF(_ => {
+										el.__internal__.onupdate(newdata)
+										el.base.render(newdata)
+									})
+								})
 						}
 					})
 				},
@@ -166,8 +171,8 @@ const onUpdates = (_parent) => (node) => {
 				.filter(el => el.__internal__)
 				.map(el => {
 					const data = Object.assign(el.__internal__.state, dup(_parent.__internal__.state), scope)
-					el.base.render(Object.assign(data, el.__internal__.onupdate(data)))
-					return el
+					el.__internal__.onupdate(data)
+					el.base.render(data)
 				})
 
 			node.removeAttribute('scope')
