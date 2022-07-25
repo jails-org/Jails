@@ -23,7 +23,6 @@ export default function WebComponent(module, dependencies, templates, components
 			this.__internal__ = {
 				main: () => null,
 				unmount: () => null,
-				mount: () => null,
 				onupdate: _ => _,
 				view: module.view ? module.view : _ => _,
 				state: module.model ? dup(module.model) : {}
@@ -39,7 +38,6 @@ export default function WebComponent(module, dependencies, templates, components
 
 				main: (fn: MainArgs) => { this.__internal__.main = fn },
 				unmount: (fn: () => null) => { this.__internal__.unmount = fn },
-				mount: (fn: () => null) => { this.__internal__.mount = fn },
 				onupdate: (fn: () => null) => { this.__internal__.onupdate = fn },
 
 				render: (data: any = this.__internal__.state) => {
@@ -119,7 +117,6 @@ export default function WebComponent(module, dependencies, templates, components
 
 		connectedCallback() {
 			this.base.render()
-			this.__internal__.mount(this.base)
 			this.__internal__.main().forEach(f => f(this.base))
 		}
 
