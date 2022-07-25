@@ -1,5 +1,7 @@
 import templateSystem from '../template-system'
 
+const textarea = document.createElement('textarea')
+
 export const rAF = (fn) => {
 	(requestAnimationFrame || setTimeout)(fn, 1000 / 60)
 }
@@ -22,24 +24,6 @@ export const stripTemplateTag = (element) => {
 
 export const dup = (o) => {
 	return JSON.parse(JSON.stringify(o))
-}
-
-export const createTemplate = (html, templates) => {
-
-	const vroot = document.createElement('div')
-	vroot.innerHTML = html
-	stripTemplateTag(vroot)
-
-	Array
-		.from(vroot.querySelectorAll('[data-component]'))
-		.forEach(c => {
-			const tplid = c.getAttribute('tplid')
-			const cache = templates[tplid]
-			if (cache)
-				c.outerHTML = cache
-		})
-
-	return vroot.innerHTML
 }
 
 export const createTemplateId = (element, templates) => {
@@ -69,7 +53,6 @@ export const buildtemplates = (target, components, templates) => {
 }
 
 export const decodeHtmlEntities = (str) => {
-	const textarea = document.createElement('textarea')
 	textarea.innerHTML = str
 	return textarea.value
 }

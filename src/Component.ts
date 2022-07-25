@@ -45,7 +45,6 @@ export default function WebComponent(module, dependencies, templates, components
 					if (!document.body.contains(this))
 						return
 
-
 					batchUpdates.push(this.__internal__.view(data))
 
 					rAF(_ => {
@@ -64,8 +63,7 @@ export default function WebComponent(module, dependencies, templates, components
 							morphdom(this, newhtml, morphdomOptions(this, data))
 
 							Array
-								.from(this.querySelectorAll('*'))
-								.filter(el => el.__internal__)
+								.from(this.querySelectorAll('[tplid]'))
 								.map(el => {
 									rAF(_ => {
 										el.__internal__.onupdate(newdata)
@@ -164,8 +162,7 @@ const onUpdates = (_parent) => (node) => {
 
 			const scope = JSON.parse(node.getAttribute('scope').replace(/\'/g, '\"'))
 
-			Array.from(node.querySelectorAll('*'))
-				.filter(el => el.__internal__)
+			Array.from(node.querySelectorAll('[tplid]'))
 				.map(el => {
 					const data = Object.assign(el.__internal__.state, dup(_parent.__internal__.state), scope)
 					el.__internal__.onupdate(data)
