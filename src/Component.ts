@@ -77,32 +77,32 @@ export default function Component(elm, { module, dependencies, templates, compon
 			if (!document.body.contains(elm))
 				return
 
-			batchUpdates.push(options.view(data))
+			batchUpdates.push(data)
 
 			rAF(() => {
+				rAF(() => {
+					if (batchUpdates.length) {
 
-				if (batchUpdates.length) {
+						const batchData = {}
+						batchUpdates.forEach(d => Object.assign(batchData, d))
+						batchUpdates = []
 
-					const batchData = {}
-					batchUpdates.forEach(d => Object.assign(batchData, d))
-					batchUpdates = []
+						state.data = Object.assign(state.data, batchData)
 
-					state.data = Object.assign(state.data, batchData)
+						const newdata = dup(state.data)
+						const newhtml = base.template(options.view(newdata))
 
-					const newdata = dup(state.data)
-					const newhtml = base.template(newdata)
+						morphdom(elm, newhtml, morphdomOptions(elm, options))
 
-					morphdom(elm, newhtml, morphdomOptions(elm, options))
-
-					Array
-						.from(elm.querySelectorAll('[tplid]'))
-						.map(el => {
-							rAF(_ => {
-								el.options.onupdate(newdata)
-								el.base.render(newdata)
+						Array
+							.from(elm.querySelectorAll('[tplid]'))
+							.map(child => {
+								child.options.onupdate(newdata)
+								child.base.render(newdata)
+								return child
 							})
-						})
-				}
+					}
+				})
 			})
 		}
 	}
