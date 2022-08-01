@@ -1,50 +1,70 @@
-import template7 from 'template7'
+import { compile, defaultConfig, filters } from 'squirrelly'
 import { stripTemplateTag, decodeHtmlEntities } from './utils'
+
+const defaultOptions = {
+	...defaultConfig,
+	tags: ['{', '}'],
+	useWith: true
+}
 
 export default function templateSystem(element) {
 
-	const directives = [htmlRepeatAndIf]
 	const vdom = element.cloneNode(true)
 
 	stripTemplateTag(vdom)
 
-	const newvdom = directives.reduce((_, directive) => directive(vdom), vdom)
-	const html = newvdom.outerHTML.replace(/html-/g, '')
+	const newvdom = directives(vdom)
 
-	const template = template7.compile(html)
+	const html = decodeHtmlEntities(
+		newvdom.outerHTML
+			.replace(/html-(selected|checked|readonly|disabled|autoplay)=\"(.*)\"/g, `{@if ($2) }$1{/if}`)
+			.replace(/html-/g, '')
+	)
+
+	const template = compile(html, defaultOptions)
 
 	return (data) => {
-		return template(data)
+		return template(data, defaultOptions)
 	}
 }
 
 /**@Directives */
 
-const htmlRepeatAndIf = (vdom) => {
+const directives = (vdom) => {
 
 	const nodes = Array
-		.from(vdom.querySelectorAll('[html-repeat],[html-if]'))
+		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach]'))
 		.reverse()
 
 	if (nodes.length) {
 
 		nodes.forEach(node => {
-			if (node.getAttribute('html-repeat')) {
-				const instruction = node.getAttribute('html-repeat')
-				node.removeAttribute('html-repeat')
-				node.setAttribute('scope', '{{scope this}}')
-				const open = document.createTextNode(`{{#each ${instruction}}}`)
-				const close = document.createTextNode('{{/each}}')
-				node.parentNode.insertBefore(open, node)
-				node.parentNode.insertBefore(close, node.nextSibling)
+			if (node.getAttribute('html-foreach')) {
+				const instruction = node.getAttribute('html-foreach')
+				const split = instruction.match(/(.*)\sin\s(.*)/)
+				const varname = split[1]
+				const object = split[2]
+				node.removeAttribute('html-foreach')
+				node.setAttribute('scope', `{${varname} | JSON($key, '${varname}')}`)
+				const open = document.createTextNode(`{@foreach(${object}) => $key, ${varname}}`)
+				const close = document.createTextNode('{/foreach}')
+				wrap(open, node, close)
+			} else if (node.getAttribute('html-for')) {
+				const instruction = node.getAttribute('html-for')
+				const split = instruction.match(/(.*)\sin\s(.*)/)
+				const varname = split[1]
+				const object = split[2]
+				node.removeAttribute('html-for')
+				node.setAttribute('scope', `{${varname} | JSON($index, '${varname}')}`)
+				const open = document.createTextNode(`{@each(${object}) => ${varname}, $index}`)
+				const close = document.createTextNode('{/each}')
+				wrap(open, node, close)
 			} else if (node.getAttribute('html-if')) {
 				const instruction = node.getAttribute('html-if')
 				node.removeAttribute('html-if')
-				node.setAttribute('scope', '{{scope this}}')
-				const open = document.createTextNode(`{{#ifexp "${instruction}"}}`)
-				const close = document.createTextNode('{{/ifexp}}')
-				node.parentNode.insertBefore(open, node)
-				node.parentNode.insertBefore(close, node.nextSibling)
+				const open = document.createTextNode(`{@if (${instruction}) }`)
+				const close = document.createTextNode('{/if}')
+				wrap(open, node, close)
 			}
 		})
 	}
@@ -52,37 +72,18 @@ const htmlRepeatAndIf = (vdom) => {
 	return vdom
 }
 
-/**@Global Settings */
-template7.global = {}
+filters.define('JSON', (scope, index, varname) => {
 
-/**@Helpers */
-template7.registerHelper('scope', (context, options) => {
+	const key = index.constructor == String ? '$key' : '$index'
+	const newobject = { $index: index }
 
-	const { data } = options
-	const { first, index, last, root } = data
+	newobject[varname] = scope
+	newobject[key] = index
 
-	const scope = {
-		...context,
-		['$first']: first,
-		['$index']: index,
-		['$last']: last,
-		['$parent']: root
-	}
-
-	return JSON.stringify(scope).replace(/\"/g, '\'')
+	return JSON.stringify(newobject)
 })
 
-template7.registerHelper('ifexp', function (value, options) {
-
-	const condition = decodeHtmlEntities(value)
-	const { root, data } = options
-
-	try {
-		const expression = (new Function('root', `with(root){ return ${condition} }`)).call(root, root)
-		return expression ? options.fn(this, data) : options.inverse(this, data)
-
-	} catch (err) {
-		return options.inverse(this, data)
-	}
-
-})
+const wrap = (open, node, close) => {
+	node.parentNode.insertBefore(open, node)
+	node.parentNode.insertBefore(close, node.nextSibling)
+}
