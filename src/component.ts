@@ -13,6 +13,7 @@ export default function Component(elm, { module, dependencies, templates, compon
 	buildtemplates(elm, components, templates)
 
 	const tplid = elm.getAttribute('tplid')
+
 	const template = templates[tplid]
 	const state = { data: module.model ? dup(module.model) : {} }
 
@@ -77,33 +78,25 @@ export default function Component(elm, { module, dependencies, templates, compon
 			if (!document.body.contains(elm))
 				return
 
-			batchUpdates.push(data)
+			state.data = Object.assign(state.data, data)
 
-			rAF(() => {
-				rAF(() => {
-					if (batchUpdates.length) {
+			const newdata = dup(state.data)
+			const newhtml = base.template(options.view(newdata))
 
-						const batchData = {}
-						batchUpdates.forEach(d => Object.assign(batchData, d))
-						batchUpdates = []
+			morphdom(elm, newhtml, morphdomOptions(elm, options))
 
-						state.data = Object.assign(state.data, batchData)
-
-						const newdata = dup(state.data)
-						const newhtml = base.template(options.view(newdata))
-
-						morphdom(elm, newhtml, morphdomOptions(elm, options))
-
-						Array
-							.from(elm.querySelectorAll('[tplid]'))
-							.map(child => {
-								child.options.onupdate(newdata)
-								child.base.render(newdata)
-								return child
-							})
-					}
+			rAF(_ => {
+				rAF(_ => {
+					Array
+						.from(elm.querySelectorAll('[tplid]'))
+						.forEach(child => {
+							child.options.onupdate(newdata)
+							child.base.render(newdata)
+						})
 				})
+
 			})
+
 		}
 	}
 

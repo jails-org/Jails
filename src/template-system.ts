@@ -1,5 +1,5 @@
 import { compile, defaultConfig, filters } from 'squirrelly'
-import { stripTemplateTag, decodeHtmlEntities } from './utils'
+import { decodeHtmlEntities } from './utils'
 
 const defaultOptions = {
 	...defaultConfig,
@@ -9,14 +9,14 @@ const defaultOptions = {
 
 export default function templateSystem(element) {
 
-	const vdom = element.cloneNode(true)
+	const tree = document.createElement('template')
 
-	stripTemplateTag(vdom)
+	tree.innerHTML = element.outerHTML.replace(/<template.*>|<\/template>/g, '')
 
-	const newvdom = directives(vdom)
+	directives(tree.content)
 
 	const html = decodeHtmlEntities(
-		newvdom.outerHTML
+		tree.innerHTML
 			.replace(/html-(selected|checked|readonly|disabled|autoplay)=\"(.*)\"/g, `{@if ($2) }$1{/if}`)
 			.replace(/html-/g, '')
 	)

@@ -34,19 +34,18 @@ export const createTemplateId = (element, templates) => {
 		const id = uuid()
 		element.setAttribute('tplid', id)
 		templates[id] = templateSystem(element)
-		return templates[id]
 	}
-
-	return templates[tplid]
 }
 
 export const buildtemplates = (target, components, templates) => {
 
 	return Array
 		.from(target.querySelectorAll('*'))
-		.filter(node => node.tagName.toLocaleLowerCase() in components)
+		.filter(node => node.tagName.toLowerCase() in components)
 		.reverse()
 		.map(node => {
+			Array.from(node.querySelectorAll('template'))
+				.map(template => buildtemplates(template.content, components, templates))
 			createTemplateId(node, templates)
 			return node
 		})

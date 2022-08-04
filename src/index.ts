@@ -1,4 +1,4 @@
-import { buildtemplates, stripTemplateTag } from './utils'
+import { buildtemplates } from './utils'
 import Element from './element'
 
 export const templates = {}
@@ -12,7 +12,6 @@ export default {
 
 	start() {
 		const body = document.body
-		stripTemplateTag(body)
 		buildtemplates(body, components, templates)
 		registerComponents()
 	}
