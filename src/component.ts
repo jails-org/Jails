@@ -17,8 +17,6 @@ export default function Component(elm, { module, dependencies, templates, compon
 	const template = templates[tplid]
 	const state = { data: module.model ? dup(module.model) : {} }
 
-	let batchUpdates = []
-
 	const base = {
 		template,
 		elm,
