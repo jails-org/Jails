@@ -11,7 +11,7 @@ export default function templateSystem(element) {
 
 	const tree = document.createElement('template')
 
-	tree.innerHTML = element.outerHTML.replace(/<template.*>|<\/template>/g, '')
+	tree.innerHTML = element.outerHTML.replace(/<\/?template[^>]*>/g, '')
 
 	directives(tree.content)
 
