@@ -4,6 +4,10 @@ export default function Element(module, dependencies, templates, components) {
 
 	return class extends HTMLElement {
 
+		base: any
+		options: any
+		__events: any
+
 		constructor() {
 
 			super()

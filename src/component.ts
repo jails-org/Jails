@@ -9,11 +9,9 @@ type MainArgs = () => Array<Function>
 export default function Component(elm, { module, dependencies, templates, components }) {
 
 	const options = getOptions(module)
-
 	buildtemplates(elm, components, templates)
 
 	const tplid = elm.getAttribute('tplid')
-
 	const template = templates[tplid]
 	const state = { data: module.model ? dup(module.model) : {} }
 
@@ -84,17 +82,13 @@ export default function Component(elm, { module, dependencies, templates, compon
 			morphdom(elm, newhtml, morphdomOptions(elm, options))
 
 			rAF(_ => {
-				rAF(_ => {
-					Array
-						.from(elm.querySelectorAll('[tplid]'))
-						.forEach(child => {
-							child.options.onupdate(newdata)
-							child.base.render(newdata)
-						})
-				})
-
+				Array
+					.from(elm.querySelectorAll('[tplid]'))
+					.forEach((child: any) => {
+						child.options.onupdate(newdata)
+						child.base.render(newdata)
+					})
 			})
-
 		}
 	}
 
@@ -137,7 +131,7 @@ const onUpdates = (_parent, options) => (node) => {
 			const scope = JSON.parse(node.getAttribute('scope').replace(/\'/g, '\"'))
 
 			Array.from(node.querySelectorAll('[tplid]'))
-				.map(el => {
+				.map((el: any) => {
 					const data = Object.assign({}, _parent.base.state.get(), scope)
 					options.onupdate(data)
 					el.base.render(data)
@@ -146,4 +140,6 @@ const onUpdates = (_parent, options) => (node) => {
 			node.removeAttribute('scope')
 		}
 	}
+
+	return node
 }

@@ -3,7 +3,10 @@ import templateSystem from '../template-system'
 const textarea = document.createElement('textarea')
 
 export const rAF = (fn) => {
-	(requestAnimationFrame || setTimeout)(fn, 1000 / 60)
+	if (requestAnimationFrame)
+		return requestAnimationFrame(fn)
+	else
+		return setTimeout(fn, 1000 / 60)
 }
 
 export const uuid = () => {
@@ -16,7 +19,7 @@ export const uuid = () => {
 export const stripTemplateTag = (element) => {
 	const templates = Array.from(element.querySelectorAll('template'))
 	// https://gist.github.com/harmenjanssen/07e425248779c65bc5d11b02fb913274
-	templates.forEach(template => {
+	templates.forEach((template: HTMLTemplateElement) => {
 		template.parentNode.replaceChild(template.content, template)
 		stripTemplateTag(template.content)
 	})
@@ -41,9 +44,9 @@ export const buildtemplates = (target, components, templates) => {
 
 	return Array
 		.from(target.querySelectorAll('*'))
-		.filter(node => node.tagName.toLowerCase() in components)
+		.filter((node: HTMLElement) => node.tagName.toLowerCase() in components)
 		.reverse()
-		.map(node => {
+		.map((node: HTMLElement) => {
 			Array.from(node.querySelectorAll('template'))
 				.map(template => buildtemplates(template.content, components, templates))
 			createTemplateId(node, templates)

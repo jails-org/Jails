@@ -1,7 +1,8 @@
 import { compile, defaultConfig, filters } from 'squirrelly'
+import { SqrlConfig } from 'squirrelly/dist/types/config'
 import { decodeHtmlEntities } from './utils'
 
-const defaultOptions = {
+const defaultOptions: SqrlConfig = {
 	...defaultConfig,
 	tags: ['{', '}'],
 	useWith: true
@@ -38,7 +39,7 @@ const directives = (vdom) => {
 
 	if (nodes.length) {
 
-		nodes.forEach(node => {
+		nodes.forEach((node: HTMLElement) => {
 			if (node.getAttribute('html-foreach')) {
 				const instruction = node.getAttribute('html-foreach')
 				const split = instruction.match(/(.*)\sin\s(.*)/)
