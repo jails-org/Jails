@@ -37,6 +37,6 @@
 	},
 	"dependencies": {
 		"morphdom": "^2.6.1",
-		"squirrelly": "^8.0.8"
+		"squirrelly": "../squirrelly"
 	}
 }

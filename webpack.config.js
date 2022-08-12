@@ -13,23 +13,23 @@ module.exports = {
 	},
 
 	module: {
-        rules: [
-            {
-                test: /\.ts$/,
-                exclude: [/node_modules/],
-                loader: 'ts-loader',
+		rules: [
+			{
+				test: /\.ts$/,
+				exclude: [/node_modules/],
+				loader: 'ts-loader',
 				options: {
 					transpileOnly: true
 				}
-            }
-        ]
-    },
+			}
+		]
+	},
 
 	output: {
-		path		  : path.resolve(__dirname, './dist'),
-		filename	  : '[name].js',
-		libraryTarget : 'umd',
-		library		  : 'jails',
+		path: path.resolve(__dirname, './dist'),
+		filename: '[name].js',
+		libraryTarget: 'umd',
+		library: 'jails',
 		umdNamedDefine: true
 	}
 }
