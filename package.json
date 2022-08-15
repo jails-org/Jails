@@ -37,6 +37,6 @@
 	},
 	"dependencies": {
 		"morphdom": "^2.6.1",
-		"squirrelly": "../squirrelly"
+		"squirrelly": "jails-org/squirrelly"
 	}
 }
