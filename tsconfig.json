@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"target": "ESNext",
 		"esModuleInterop":true,
 		"allowJs": true,
 		"declaration": true,

@@ -8,7 +8,7 @@ const defaultOptions: SqrlConfig = {
 	useWith: true
 }
 
-export default function templateSystem(element) {
+export default function templateSystem( element: HTMLElement ) {
 
 	const tree = document.createElement('template')
 
@@ -24,25 +24,25 @@ export default function templateSystem(element) {
 
 	const template = compile(html, defaultOptions)
 
-	return (data) => {
+	return ( data: object ) => {
 		return template(data, defaultOptions)
 	}
 }
 
 /**@Directives */
 
-const directives = (vdom) => {
+const directives = (vdom: DocumentFragment) => {
 
 	const nodes = Array
 		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach]'))
-		.reverse()
+		.reverse() as Array<HTMLElement>
 
 	if (nodes.length) {
 
-		nodes.forEach((node: HTMLElement) => {
+		nodes.forEach((node: HTMLElement ) => {
 			if (node.getAttribute('html-foreach')) {
-				const instruction = node.getAttribute('html-foreach')
-				const split = instruction.match(/(.*)\sin\s(.*)/)
+				const instruction = node.getAttribute('html-foreach') || ''
+				const split = instruction.match(/(.*)\sin\s(.*)/) || ''
 				const varname = split[1]
 				const object = split[2]
 				node.removeAttribute('html-foreach')
@@ -51,8 +51,8 @@ const directives = (vdom) => {
 				const close = document.createTextNode('{/foreach}')
 				wrap(open, node, close)
 			} else if (node.getAttribute('html-for')) {
-				const instruction = node.getAttribute('html-for')
-				const split = instruction.match(/(.*)\sin\s(.*)/)
+				const instruction = node.getAttribute('html-for') || ''
+				const split = instruction.match(/(.*)\sin\s(.*)/) || ''
 				const varname = split[1]
 				const object = split[2]
 				node.removeAttribute('html-for')
@@ -76,7 +76,7 @@ const directives = (vdom) => {
 filters.define('JSON', (scope, index, varname) => {
 
 	const key = index.constructor == String ? '$key' : '$index'
-	const newobject = { $index: index }
+	const newobject = { $index: index } as any
 
 	newobject[varname] = scope
 	newobject[key] = index
@@ -84,7 +84,7 @@ filters.define('JSON', (scope, index, varname) => {
 	return JSON.stringify(newobject)
 })
 
-const wrap = (open, node, close) => {
-	node.parentNode.insertBefore(open, node)
-	node.parentNode.insertBefore(close, node.nextSibling)
+const wrap = (open: Text, node :HTMLElement, close: Text) => {
+	node.parentNode?.insertBefore(open, node)
+	node.parentNode?.insertBefore(close, node.nextSibling)
 }

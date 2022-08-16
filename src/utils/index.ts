@@ -16,11 +16,11 @@ export const uuid = () => {
 	})
 }
 
-export const stripTemplateTag = (element) => {
+export const stripTemplateTag = ( element:HTMLElement | DocumentFragment | HTMLTemplateElement ) => {
 	const templates = Array.from(element.querySelectorAll('template'))
 	// https://gist.github.com/harmenjanssen/07e425248779c65bc5d11b02fb913274
 	templates.forEach((template: HTMLTemplateElement) => {
-		template.parentNode.replaceChild(template.content, template)
+		template.parentNode?.replaceChild(template.content, template)
 		stripTemplateTag(template.content)
 	})
 }
@@ -29,7 +29,7 @@ export const dup = (o) => {
 	return JSON.parse(JSON.stringify(o))
 }
 
-export const createTemplateId = (element, templates) => {
+export const createTemplateId = (element: HTMLElement, templates: any ) => {
 
 	const tplid = element.getAttribute('tplid')
 
@@ -40,13 +40,13 @@ export const createTemplateId = (element, templates) => {
 	}
 }
 
-export const buildtemplates = (target, components, templates) => {
+export const buildtemplates = ( target: any, components: any, templates: any ) => {
 
 	return Array
 		.from(target.querySelectorAll('*'))
-		.filter((node: HTMLElement) => node.tagName.toLowerCase() in components)
+		.filter((node: any) => node.tagName.toLowerCase() in components)
 		.reverse()
-		.map((node: HTMLElement) => {
+		.map((node: any) => {
 			Array.from(node.querySelectorAll('template'))
 				.map(template => buildtemplates(template.content, components, templates))
 			createTemplateId(node, templates)
@@ -54,7 +54,7 @@ export const buildtemplates = (target, components, templates) => {
 		})
 }
 
-export const decodeHtmlEntities = (str) => {
+export const decodeHtmlEntities = ( str:string ) => {
 	textarea.innerHTML = str
 	return textarea.value
 }

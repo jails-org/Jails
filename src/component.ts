@@ -49,12 +49,12 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 			else trigger(elm, eventName, { args: target })
 		},
 
-		emit: (...args) => {
+		emit: (...args: any) => {
 			trigger(elm, args.shift(), { args: args })
 		},
 
 		state: {
-			set(data: any) {
+			set( data: any ) {
 				if (data.constructor === Function) {
 					const newstate = dup(state.data)
 					data(newstate)
@@ -64,7 +64,7 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 				}
 				return new Promise((resolve) => rAF(_ => rAF(resolve)))
 			},
-			get() {
+			get(): object {
 				return dup(state.data)
 			}
 		},
@@ -95,40 +95,40 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 	return { base, options }
 }
 
-const getOptions = (module) => ({
-	main: _ => _,
-	unmount: _ => _,
-	onupdate: _ => _,
-	view: module.view ? module.view : _ => _
+const getOptions = (module: any) : any => ({
+	main: (a:any) => a,
+	unmount: (a:any) => a,
+	onupdate: (a:any) => a,
+	view: module.view ? module.view : (a:any) => a
 })
 
-const morphdomOptions = (_parent, options) => ({
+const morphdomOptions = (_parent: HTMLElement, options: any) => ({
 
 	onNodeAdded: onUpdates(_parent, options),
 	onElUpdated: onUpdates(_parent, options),
 	onBeforeElChildrenUpdated: checkStatic,
 	onBeforeElUpdated: checkStatic,
 
-	getNodeKey(node) {
+	getNodeKey(node: HTMLElement) {
 		if (node.nodeType === 1 && node.getAttribute('tplid'))
 			return node.dataset.key || node.getAttribute('tplid')
 		return false
 	}
 })
 
-const checkStatic = (node) => {
+const checkStatic = (node: HTMLElement) => {
 	if ('static' in node.dataset) {
 		return false
 	}
 }
 
-const onUpdates = (_parent, options) => (node) => {
+const onUpdates = (_parent: HTMLElement, options: any) => (node: HTMLElement) => {
 
 	if (node.nodeType === 1) {
 
 		if (node.getAttribute && node.getAttribute('scope')) {
 
-			const scope = JSON.parse(node.getAttribute('scope').replace(/\'/g, '\"'))
+			const scope = JSON.parse((node.getAttribute('scope') ||'').replace(/\'/g, '\"'))
 
 			Array.from(node.querySelectorAll('[tplid]'))
 				.map((el: any) => {

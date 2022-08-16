@@ -3,10 +3,6 @@
 	"version": "5.0.0-beta.11",
 	"description": "A Modern Javascript Library",
 	"main": "dist/index.js",
-	"types":"dist/types/index.d.ts",
-	"files":[
-		"/dist"
-	],
 	"scripts": {
 		"start": "webpack --watch --mode=development",
 		"build": "webpack --mode=production",
