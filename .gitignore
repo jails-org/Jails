@@ -5,4 +5,4 @@ files to ignore
 *.swp
 *.out
 node_modules/
-*.cache
+*.parcel-cache
