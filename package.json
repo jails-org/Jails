@@ -8,8 +8,8 @@
 		"/dist"
 	],
 	"scripts": {
-		"start": "tsc --watch & webpack --watch --mode=development",
-		"build": "tsc && webpack --mode=production",
+		"start": "webpack --watch --mode=development",
+		"build": "webpack --mode=production",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
