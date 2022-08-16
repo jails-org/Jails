@@ -1,8 +1,8 @@
 import { buildtemplates } from './utils'
 import Element from './element'
 
-export const templates = {}
-export const components = {}
+export const templates = {} as any
+export const components = {} as any
 
 export default {
 
@@ -20,7 +20,8 @@ export default {
 const registerComponents = () => {
 	Object
 		.values(components)
-		.forEach(({ name, module, dependencies }) => {
+		.forEach((component) => {
+			const { name, module, dependencies } = component as any
 			const Base = Element(module, dependencies, templates, components)
 			customElements.define(name, Base)
 		})

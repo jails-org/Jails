@@ -9,7 +9,7 @@ module.exports = {
 	},
 
 	entry: {
-		jails: './src/index.ts'
+		index: './src/index.ts'
 	},
 
 	module: {

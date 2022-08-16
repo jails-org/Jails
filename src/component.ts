@@ -6,13 +6,13 @@ import { publish, subscribe, unsubscribe } from './utils/pubsub'
 
 type MainArgs = () => Array<Function>
 
-export default function Component(elm, { module, dependencies, templates, components }) {
+export default function Component( elm:HTMLElement, { module, dependencies, templates, components }) {
 
-	const options = getOptions(module)
-	buildtemplates(elm, components, templates)
+	const options = getOptions( module )
+	buildtemplates( elm, components, templates )
 
-	const tplid = elm.getAttribute('tplid')
-	const template = templates[tplid]
+	const tplid:string|null = elm.getAttribute('tplid')
+	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 
 	const base = {

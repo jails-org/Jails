@@ -1,16 +1,12 @@
 {
 	"compilerOptions": {
-		"baseUrl": "./src",
-		"outDir": "./dist/",
-		"target": "es6",
+		"esModuleInterop":true,
 		"allowJs": true,
-		"moduleResolution": "node",
-		"allowSyntheticDefaultImports": true,
-		"lib": [
-			"dom"
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"declarationDir": "./dist/types"
+		},
+		"include": [
+			"src/**/*"
 		]
-	},
-	"exclude": [
-		"./node_modules"
-	]
-}
+  }
