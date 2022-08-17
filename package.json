@@ -1,6 +1,6 @@
 {
 	"name": "jails-js",
-	"version": "5.0.0-beta.12",
+	"version": "5.0.0-beta.13",
 	"description": "A Modern Javascript Library",
 	"main": "dist/index.js",
 	"scripts": {
@@ -37,6 +37,6 @@
 	},
 	"dependencies": {
 		"morphdom": "^2.6.1",
-		"squirrelly": "jails-org/squirrelly"
+		"squirrelly": "^8.0.8"
 	}
 }
