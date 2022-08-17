@@ -44,8 +44,11 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 		},
 
 		trigger(eventName: string, target: string, args: any) {
-			if (target.constructor === String)
-				trigger(elm.querySelector(target), eventName, { args: args })
+			if (target.constructor === String) {
+				Array
+					.from(elm.querySelectorAll(target))
+					.forEach( children => trigger(children, eventName, { args: args }) )
+			}
 			else trigger(elm, eventName, { args: target })
 		},
 
