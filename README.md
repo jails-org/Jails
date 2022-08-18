@@ -6,7 +6,9 @@
 
 <p align="center"><em>Jails is a component library to <br />add javascript behavior to Web Apps as close as possible to vanilla</em></p>
 
-<br />
+<p align="center">
+  <a href="https://jails-org.github.io/">https://jails-org.github.io/</a>
+</p>
 
 <div align="center">
 	<img src="https://badge.fury.io/js/jails-js.svg?v4" alt="Jails Version" />
@@ -30,19 +32,22 @@ Jails was created to add a minimal layer of abstraction to build components for 
 
 ## Best Scenarios to use
 
-Jails is better suited for SSR ( Static Site Rendered ) or SSG ( Static Site Generated ) sites like:
+**Jails is better suited for SSR ( Static Site Rendered ):**
 
 - Wordpress
 - Laravel
 - Ruby on Rails
 - Node Backend with a Template System:
   - Pug, Liquid, Nunjucks, Handlebars etc.
+
+**Or SSG ( Static Site Generated ) like:**
+
 - Hugo
 - Astro
 - Jekill
-  ... Any site you can add a script tag on it. =)
+  ...etc
 
-So if you already have a engine that renders your html, Jails can be a good way to create an elegant event driven system.
+... Any site you can add a script tag on it =). So if you already have a engine that renders your html, Jails can be a good way to create an elegant event driven system.
 
 <br />
 <br />
@@ -57,7 +62,7 @@ So if you already have a engine that renders your html, Jails can be a good way 
 
 ## Code Show
 
-**index.htm**
+**components/ui-range/index.html**
 
 ```html
 ...
@@ -91,6 +96,32 @@ export default function uirange ({ main, elm }) {
 
 ### With State Management
 
+**components/ui-range/index.js**
+
+```js
+export default function uirange ({ main, state }) {
+
+  main( _ =>[
+    register
+  ])
+
+  const register = ({ on }) => {
+    on('input', 'input[type=range]', update )
+  }
+
+  const update = event => {
+    state.set({ number: event.target.value }) // or
+    // state.set( s => s.number = event.target.value ) // If you need to use the previous state
+  }
+})
+
+export const model = {
+  number: 75
+}
+```
+
+**components/ui-range/index.html**
+
 ```html
 ...
 <ui-range class="range">
@@ -114,30 +145,6 @@ export default function uirange ({ main, elm }) {
     />
   </template>
 </ui-range>
-```
-
-**components/ui-range/index.js**
-
-```js
-export default function uirange ({ main, state }) {
-
-  main( _ =>[
-    register
-  ])
-
-  const register = ({ on }) => {
-    on('input', 'input[type=range]', update )
-  }
-
-  const update = event => {
-    state.set({ number: event.target.value }) // or
-    // state.set( s => s.number = event.target.value ) // If you need to use the previous state
-  }
-})
-
-export const model = {
-  number: 75
-}
 ```
 
 <br />
