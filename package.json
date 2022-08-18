@@ -6,6 +6,7 @@
 	"scripts": {
 		"start": "webpack --watch --mode=development",
 		"build": "webpack --mode=production",
+		"publish": "yarn build && npm version prerelease --preid=beta && npm publish",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
