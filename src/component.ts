@@ -120,7 +120,7 @@ const morphdomOptions = (_parent: HTMLElement, options: any) => ({
 })
 
 const checkStatic = (node: HTMLElement) => {
-	if ('static' in node.dataset) {
+	if ('static' in node.dataset || 'html-static' in node.attributes) {
 		return false
 	}
 }
