@@ -4,12 +4,12 @@ import { rAF, dup, buildtemplates } from './utils'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe } from './utils/pubsub'
 
-export default function Component( elm:HTMLElement, { module, dependencies, templates, components }) {
+export default function Component( elm, { module, dependencies, templates, components }) {
 
 	const options = getOptions( module )
 	buildtemplates( elm, components, templates )
 
-	const tplid:string|null = elm.getAttribute('tplid')
+	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 
@@ -32,15 +32,15 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 			options.onupdate = fn
 		},
 
-		on(eventName: string, selectorOrCallback: object | Function, callback: Function) {
+		on(eventName, selectorOrCallback, callback) {
 			on(elm, eventName, selectorOrCallback, callback)
 		},
 
-		off(eventName: string, callback: Function) {
+		off(eventName, callback) {
 			off(elm, eventName, callback)
 		},
 
-		trigger(eventName: string, target: string, args: any) {
+		trigger(eventName, target, args) {
 			if (target.constructor === String) {
 				Array
 					.from(elm.querySelectorAll(target))
@@ -49,12 +49,12 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 			else trigger(elm, eventName, { args: target })
 		},
 
-		emit: (...args: any) => {
+		emit: ( ...args ) => {
 			trigger(elm, args.shift(), { args: args })
 		},
 
 		state: {
-			set( data: any ) {
+			set( data ) {
 				if (data.constructor === Function) {
 					const newstate = dup(state.data)
 					data(newstate)
@@ -64,12 +64,12 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 				}
 				return new Promise((resolve) => rAF(_ => rAF(resolve)))
 			},
-			get(): object {
+			get() {
 				return dup(state.data)
 			}
 		},
 
-		render(data: object = state.data) {
+		render(data = state.data) {
 
 			if (!document.body.contains(elm))
 				return
@@ -95,34 +95,34 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 	return { base, options }
 }
 
-const getOptions = (module: any) : any => ({
-	main: (a:any) => a,
-	unmount: (a:any) => a,
-	onupdate: (a:any) => a,
-	view: module.view ? module.view : (a:any) => a
+const getOptions = (module) => ({
+	main: (a) => a,
+	unmount: (a) => a,
+	onupdate: (a) => a,
+	view: module.view ? module.view : (a) => a
 })
 
-const morphdomOptions = (_parent: HTMLElement, options: any) => ({
+const morphdomOptions = (_parent, options ) => ({
 
 	onNodeAdded: onUpdates(_parent, options),
 	onElUpdated: onUpdates(_parent, options),
 	onBeforeElChildrenUpdated: checkStatic,
 	onBeforeElUpdated: checkStatic,
 
-	getNodeKey(node: HTMLElement) {
+	getNodeKey(node) {
 		if (node.nodeType === 1 && node.getAttribute('tplid'))
 			return node.dataset.key || node.getAttribute('tplid')
 		return false
 	}
 })
 
-const checkStatic = (node: HTMLElement) => {
+const checkStatic = (node) => {
 	if ('static' in node.dataset || 'html-static' in node.attributes) {
 		return false
 	}
 }
 
-const onUpdates = (_parent: any, options: any) => (node: HTMLElement) => {
+const onUpdates = (_parent, options) => (node) => {
 
 	if (node.nodeType === 1) {
 
@@ -131,7 +131,7 @@ const onUpdates = (_parent: any, options: any) => (node: HTMLElement) => {
 			const scope = JSON.parse((node.getAttribute('scope') ||'').replace(/\'/g, '\"'))
 
 			Array.from(node.querySelectorAll('[tplid]'))
-				.map((el: any) => {
+				.map((el) => {
 					const data = Object.assign({}, _parent.base.state.get(), scope)
 					options.onupdate(data)
 					el.base.render(data)

@@ -1,14 +1,10 @@
 import { compile, defaultConfig, filters } from 'squirrelly'
-import { SqrlConfig } from 'squirrelly/dist/types/config'
 import { decodeHtmlEntities } from './utils'
 
-const defaultOptions: SqrlConfig = {
-	...defaultConfig,
-	tags: ['{', '}'],
-	useWith: true
-}
+defaultConfig.tags = ['{', '}']
+defaultConfig.useWith = true
 
-export default function templateSystem( element: HTMLElement ) {
+export default function templateSystem( element ) {
 
 	const tree = document.createElement('template')
 
@@ -22,24 +18,24 @@ export default function templateSystem( element: HTMLElement ) {
 			.replace(/html-/g, '')
 	)
 
-	const template = compile(html, defaultOptions)
+	const template = compile(html, defaultConfig)
 
-	return ( data: object ) => {
-		return template(data, defaultOptions)
+	return ( data ) => {
+		return template(data, defaultConfig)
 	}
 }
 
 /**@Directives */
 
-const directives = (vdom: DocumentFragment) => {
+const directives = (vdom) => {
 
 	const nodes = Array
 		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach]'))
-		.reverse() as Array<HTMLElement>
+		.reverse()
 
 	if (nodes.length) {
 
-		nodes.forEach((node: HTMLElement ) => {
+		nodes.forEach(( node ) => {
 			if (node.getAttribute('html-foreach')) {
 				const instruction = node.getAttribute('html-foreach') || ''
 				const split = instruction.match(/(.*)\sin\s(.*)/) || ''
@@ -84,7 +80,7 @@ filters.define('JSON', (scope, index, varname) => {
 	return JSON.stringify(newobject)
 })
 
-const wrap = (open: Text, node :HTMLElement, close: Text) => {
+const wrap = (open, node, close) => {
 	node.parentNode?.insertBefore(open, node)
 	node.parentNode?.insertBefore(close, node.nextSibling)
 }
