@@ -1,9 +1,14 @@
 
 export type Component = {
 
-	elm: HTMLElement,
+	elm: HTMLElement
+	dependencies: object
 
-	dependencies: object,
+	state : {
+		set( data: object ) : void
+		set( callback: ( state: object ) => any ) : void
+		get() : object
+	}
 
 	main( mainArgs: ( t: any ) => Array<Function> ): void
 
@@ -28,12 +33,6 @@ export type Component = {
 	trigger( eventName: string, selector :string, data: any ): void
 
 	render( data: object ) : void
-
-	state : {
-		set( data: object ) : void
-		set( callback: ( state: object ) => any ) : void
-		get() : object
-	}
 }
 
 export type Model = {
