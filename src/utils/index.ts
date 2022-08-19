@@ -48,7 +48,7 @@ export const buildtemplates = ( target: any, components: any, templates: any ) =
 		.reverse()
 		.map((node: any) => {
 			Array.from(node.querySelectorAll('template'))
-				.map(template => buildtemplates(template.content, components, templates))
+				.map((template:any) => buildtemplates(template.content, components, templates))
 			createTemplateId(node, templates)
 			return node
 		})

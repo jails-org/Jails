@@ -13,13 +13,8 @@ export const subscribe = (name: string, method: Function) => {
 	if (name in _async) {
 		method(_async[name])
 	}
-}
-
-export const unsubscribe = ( topic: any ) => {
-	topics[topic.name] = (topics[topic.name] || [])
-		.filter((t: any) => t != topic.method)
-	if (!topics[topic.name].length) {
-		delete topics[topic.name]
-		delete _async[topic.name]
+	return () => {
+		topics[name] = topics[name].filter( fn => fn != method )
 	}
 }
+

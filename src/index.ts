@@ -1,12 +1,13 @@
+
 import { buildtemplates } from './utils'
 import Element from './element'
 
-export const templates = {} as any
-export const components = {} as any
+const templates = {} as any
+const components = {} as any
 
 export default {
 
-	register( name: string, module: any, dependencies: object = {} ) {
+	register( name: string, module, dependencies: object = {} ) {
 		components[name] = { name, module, dependencies }
 	},
 

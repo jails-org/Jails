@@ -2,9 +2,7 @@ import morphdom from 'morphdom'
 
 import { rAF, dup, buildtemplates } from './utils'
 import { on, off, trigger } from './utils/events'
-import { publish, subscribe, unsubscribe } from './utils/pubsub'
-
-type MainArgs = () => Array<Function>
+import { publish, subscribe } from './utils/pubsub'
 
 export default function Component( elm:HTMLElement, { module, dependencies, templates, components }) {
 
@@ -21,9 +19,8 @@ export default function Component( elm:HTMLElement, { module, dependencies, temp
 		dependencies,
 		publish,
 		subscribe,
-		unsubscribe,
 
-		main(fn: MainArgs) {
+		main(fn) {
 			options.main = fn
 		},
 
@@ -125,7 +122,7 @@ const checkStatic = (node: HTMLElement) => {
 	}
 }
 
-const onUpdates = (_parent: HTMLElement, options: any) => (node: HTMLElement) => {
+const onUpdates = (_parent: any, options: any) => (node: HTMLElement) => {
 
 	if (node.nodeType === 1) {
 
