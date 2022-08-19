@@ -18,6 +18,7 @@ export type Component = {
 	onupdate( callback: () => void ) : void
 
 	on( eventName: string, selector: string, callback: () => void ): void
+
 	on( eventName: string, callback: () => void ): void
 
 	emit( eventName: string, data: any ) : void
