@@ -1,4 +1,3 @@
-
 export type Component = {
 
 	elm: HTMLElement
