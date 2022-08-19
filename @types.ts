@@ -1,5 +1,5 @@
 
-export interface Component {
+export type Component = {
 
 	elm: HTMLElement,
 
@@ -35,7 +35,7 @@ export interface Component {
 	}
 }
 
-export interface Model {
+export type Model = {
 	[key: string] : object
 }
 
