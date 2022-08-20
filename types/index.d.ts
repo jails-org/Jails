@@ -1,4 +1,16 @@
 /// <reference types="node" />
+declare module "template-system" {
+    export default function templateSystem(element: any): (data: any) => string;
+}
+declare module "utils/index" {
+    export const rAF: (fn: any) => number | NodeJS.Timeout;
+    export const uuid: () => string;
+    export const stripTemplateTag: (element: any) => void;
+    export const dup: (o: any) => any;
+    export const createTemplateId: (element: any, templates: any) => void;
+    export const buildtemplates: (target: any, components: any, templates: any) => unknown[];
+    export const decodeHtmlEntities: (str: any) => string;
+}
 declare module "utils/events" {
     export const on: (node: any, ev: any, selectorOrCallback: any, callback: any) => void;
     export const off: (node: any, ev: any, fn: any) => void;
@@ -361,16 +373,4 @@ declare module "index" {
         start(): void;
     };
     export default _default;
-}
-declare module "template-system" {
-    export default function templateSystem(element: any): (data: any) => any;
-}
-declare module "utils/index" {
-    export const rAF: (fn: any) => number | NodeJS.Timeout;
-    export const uuid: () => string;
-    export const stripTemplateTag: (element: any) => void;
-    export const dup: (o: any) => any;
-    export const createTemplateId: (element: any, templates: any) => void;
-    export const buildtemplates: (target: any, components: any, templates: any) => unknown[];
-    export const decodeHtmlEntities: (str: any) => string;
 }
