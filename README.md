@@ -11,8 +11,8 @@
 </p>
 
 <div align="center">
-	<img src="https://badge.fury.io/js/jails-js.svg?v4" alt="Jails Version" />
-	<img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="Jails License" />
+	<img src="https://badge.fury.io/js/jails-js.svg" alt="NPM Jails Version" />
+	<img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
 
 <br />
@@ -24,8 +24,8 @@
 Jails was created to add a minimal layer of abstraction to build components for web applications without moving away from web standards and bringing good old technics to address complexities from modern apps like:
 
 - **Decoupled** - Back-end agnostic, can be used with any back-end framework or language, does not import styles and does not mix html in the code.
-- **Lightweight** - It's a very lightweight library and makes your application lite by keeping html away from your javascript code and therefore smaller bundles.
-- **Interoperability** - It can be integrated and work with any other vanilla ui or behavioral libraries, so you shouldn't have to wait for a Jails chartjs library in order to use, just integrate it without pain.
+- **Lightweight** - It's a very lightweight library (~9kb gzipped) and it makes your application progressively lite by keeping html away from your javascript code and therefore smaller bundles.
+- **Interoperability** - It can be integrated and work with any other vanilla ui or behavioral libraries, so you don't have to wait for a Jails chartjs library in order to use, just integrate it in your app without pain.
 
 <br />
 <br />
