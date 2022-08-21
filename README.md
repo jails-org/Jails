@@ -21,11 +21,11 @@
 
 ## Motivation
 
-Jails was created to add a minimal layer of abstraction to build components for web applications without moving away from web standards and bringing good old technics to address complexities from modern apps like:
+Jails was created to add a minimal layer of abstraction to build components for web applications without moving away from web standards and bringing good old technics to address complexities from modern apps.
 
 - **Decoupled** - Back-end agnostic, can be used with any back-end framework or language, does not import styles and does not mix html in the code.
 - **Lightweight** - It's a very lightweight library (~9kb gzipped) and it makes your application progressively lite by keeping html away from your javascript code and therefore smaller bundles.
-- **Interoperability** - It can be integrated and work with any other vanilla ui or behavioral libraries, so you don't have to wait for a Jails chartjs library in order to use, just integrate it in your app without pain.
+- **interoperable** - It can be integrated and work with any other vanilla ui or behavioral libraries, so you don't have to wait for a Jails chartjs library in order to use, just integrate it in your app without pain.
 
 <br />
 <br />
