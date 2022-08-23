@@ -13,6 +13,8 @@ export default function Component( elm, { module, dependencies, templates, compo
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 
+	let updates = []
+
 	const base = {
 		template,
 		elm,
@@ -71,8 +73,9 @@ export default function Component( elm, { module, dependencies, templates, compo
 
 		render(data = state.data) {
 
-			if (!document.body.contains(elm))
+			if (!document.body.contains(elm)) {
 				return
+			}
 
 			state.data = Object.assign(state.data, data)
 
@@ -127,9 +130,8 @@ const onUpdates = (_parent, options) => (node) => {
 	if (node.nodeType === 1) {
 
 		if (node.getAttribute && node.getAttribute('scope')) {
-
-			const scope = JSON.parse((node.getAttribute('scope') ||'').replace(/\'/g, '\"'))
-
+			const json = node.getAttribute('scope')
+			const scope = (new Function(`return ${json}`))()
 			Array.from(node.querySelectorAll('[tplid]'))
 				.map((el) => {
 					const data = Object.assign({}, _parent.base.state.get(), scope)

@@ -1,4 +1,5 @@
 import Component from './component'
+import { purge } from './utils'
 
 export default function Element(module, dependencies, templates, components) {
 
@@ -6,6 +7,7 @@ export default function Element(module, dependencies, templates, components) {
 
 		base: any
 		options: any
+		returns : any
 		__events: any
 
 		constructor() {
@@ -16,20 +18,31 @@ export default function Element(module, dependencies, templates, components) {
 
 			this.base = base
 			this.options = options
-
-			module.default(base)
+			this.returns = module.default(base)
 		}
 
 		connectedCallback() {
 			this.base.render()
-			this.options.main().forEach(f => f(this.base))
+
+			if( this.returns && this.returns.constructor === Promise ) {
+				this.returns.then( _ => {
+					if( this.base  ) {
+						this.options.main().forEach(f => f(this.base))
+					}
+				})
+			}else {
+				this.options.main().forEach(f => f(this.base))
+			}
 		}
 
 		disconnectedCallback() {
 			this.options.unmount(this.base)
-			delete this.options
-			delete this.base
-			delete this.__events
+			if(!document.body.contains(this) ) {
+				this.__events = null
+				this.base.elm = null
+				this.base = null
+				purge(this)
+			}
 		}
 
 		attributeChangedCallback() {
