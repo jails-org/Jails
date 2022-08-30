@@ -112,7 +112,7 @@ const morphdomOptions = (_parent, options ) => ({
 
 	getNodeKey(node) {
 		if (node.nodeType === 1 && node.getAttribute('tplid')){
-			return 'key' in node.attributes? node.attributes['key'].value : node.getAttribute('tplid')
+			return 'key' in node.attributes? node.attributes.key.value : node.getAttribute('tplid')
 		}
 		return false
 	}
