@@ -13,8 +13,6 @@ export default function Component( elm, { module, dependencies, templates, compo
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 
-	let updates = []
-
 	const base = {
 		template,
 		elm,
@@ -113,14 +111,15 @@ const morphdomOptions = (_parent, options ) => ({
 	onBeforeElUpdated: checkStatic,
 
 	getNodeKey(node) {
-		if (node.nodeType === 1 && node.getAttribute('tplid'))
-			return node.dataset.key || node.getAttribute('tplid')
+		if (node.nodeType === 1 && node.getAttribute('tplid')){
+			return 'html-key' in node.attributes? node.attributes['html-key'].value : node.getAttribute('tplid')
+		}
 		return false
 	}
 })
 
 const checkStatic = (node) => {
-	if ('static' in node.dataset || 'html-static' in node.attributes) {
+	if ('html-static' in node.attributes) {
 		return false
 	}
 }
