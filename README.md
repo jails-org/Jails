@@ -11,7 +11,7 @@
 </p>
 
 <div align="center">
-	<img src="https://badge.fury.io/js/jails-js.svg" alt="NPM Jails Version" />
+	<img src="https://badge.fury.io/js/jails-js.svg?v5" alt="NPM Jails Version" />
 	<img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
 
