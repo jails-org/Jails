@@ -35,6 +35,9 @@ const directives = (vdom) => {
 
 	if (nodes.length) {
 
+		const tagOpen = defaultConfig.tags[0]
+		const tagClose = defaultConfig.tags[1]
+
 		nodes.forEach(( node ) => {
 			if (node.getAttribute('html-foreach')) {
 				const instruction = node.getAttribute('html-foreach') || ''
@@ -42,9 +45,9 @@ const directives = (vdom) => {
 				const varname = split[1]
 				const object = split[2]
 				node.removeAttribute('html-foreach')
-				node.setAttribute('scope', `{${varname} | JSON($key, '${varname}')}`)
-				const open = document.createTextNode(`{@foreach(${object}) => $key, ${varname}}`)
-				const close = document.createTextNode('{/foreach}')
+				node.setAttribute('scope', `${tagOpen}${varname} | JSON($key, '${varname}')${tagClose}`)
+				const open = document.createTextNode(`${tagOpen}@foreach(${object}) => $key, ${varname}${tagClose}`)
+				const close = document.createTextNode(`${tagOpen}/foreach${tagClose}`)
 				wrap(open, node, close)
 			} else if (node.getAttribute('html-for')) {
 				const instruction = node.getAttribute('html-for') || ''
@@ -52,21 +55,25 @@ const directives = (vdom) => {
 				const varname = split[1]
 				const object = split[2]
 				node.removeAttribute('html-for')
-				node.setAttribute('scope', `{${varname} | JSON($index, '${varname}')}`)
-				const open = document.createTextNode(`{@each(${object}) => ${varname}, $index}`)
-				const close = document.createTextNode('{/each}')
+				node.setAttribute('scope', `${tagOpen}${varname} | JSON($index, '${varname}')${tagClose}`)
+				const open = document.createTextNode(`${tagOpen}@each(${object}) => ${varname}, $index${tagClose}`)
+				const close = document.createTextNode(`${tagOpen}/each${tagClose}`)
 				wrap(open, node, close)
 			} else if (node.getAttribute('html-if')) {
 				const instruction = node.getAttribute('html-if')
 				node.removeAttribute('html-if')
-				const open = document.createTextNode(`{@if (${instruction}) }`)
-				const close = document.createTextNode('{/if}')
+				const open = document.createTextNode(`${tagOpen}@if (${instruction}) ${tagClose}`)
+				const close = document.createTextNode(`${tagOpen}/if${tagClose}`)
 				wrap(open, node, close)
 			}
 		})
 	}
 
 	return vdom
+}
+
+export const templateConfig = (options) => {
+	Object.assign(defaultConfig, options)
 }
 
 filters.define('JSON', (scope, index, varname) => {

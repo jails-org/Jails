@@ -1,11 +1,14 @@
 
 import { buildtemplates } from './utils'
+import { templateConfig } from './template-system'
 import Element from './element'
 
 const templates = {}
 const components = {}
 
 export default {
+
+	templateConfig,
 
 	register( name:string, module:any, dependencies: object ) {
 		components[name] = { name, module, dependencies }
