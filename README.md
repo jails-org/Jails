@@ -9,6 +9,10 @@
 <p align="center">
   <a href="https://jails-org.github.io/">https://jails-org.github.io/</a>
 </p>
+<p align="center">
+  Based on <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture 🏝</a>
+</p>
+
 
 <div align="center">
 	<img src="https://badge.fury.io/js/jails-js.svg?v5" alt="NPM Jails Version" />
