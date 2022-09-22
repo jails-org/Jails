@@ -7,6 +7,8 @@ defaultConfig.useWith = true
 export default function templateSystem( element ) {
 
 	const tree = document.createElement('template')
+	const tagOpen = defaultConfig.tags[0]
+	const tagClose = defaultConfig.tags[1]
 
 	tree.innerHTML = element.outerHTML.replace(/<\/?template[^>]*>/g, '')
 
@@ -14,7 +16,7 @@ export default function templateSystem( element ) {
 
 	const html = decodeHtmlEntities(
 		tree.innerHTML
-			.replace(/html-(selected|checked|readonly|disabled|autoplay)=\"(.*)\"/g, `{@if ($2) }$1{/if}`)
+			.replace(/html-(selected|checked|readonly|disabled|autoplay)=\"(.*)\"/g, `${tagOpen}@if ($2) ${tagClose}$1${tagOpen}/if${tagClose}`)
 			.replace(/html-/g, '')
 	)
 
@@ -30,7 +32,7 @@ export default function templateSystem( element ) {
 const directives = (vdom) => {
 
 	const nodes = Array
-		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach]'))
+		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach],[html-inner]'))
 		.reverse()
 
 	if (nodes.length) {
@@ -65,6 +67,10 @@ const directives = (vdom) => {
 				const open = document.createTextNode(`${tagOpen}@if (${instruction}) ${tagClose}`)
 				const close = document.createTextNode(`${tagOpen}/if${tagClose}`)
 				wrap(open, node, close)
+			} else if (node.getAttribute('html-inner')) {
+				const instruction = node.getAttribute('html-inner')
+				node.removeAttribute('html-inner')
+				node.innerHTML = `${tagOpen}${instruction} | safe${tagClose}`
 			}
 		})
 	}
