@@ -10,6 +10,7 @@ export default function templateSystem( element ) {
 	const tagOpen = defaultConfig.tags[0]
 	const tagClose = defaultConfig.tags[1]
 
+	element.initialState = getInitialState(element)
 	tree.innerHTML = element.outerHTML.replace(/<\/?template[^>]*>/g, '')
 
 	directives(tree.content)
@@ -32,7 +33,7 @@ export default function templateSystem( element ) {
 const directives = (vdom) => {
 
 	const nodes = Array
-		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach],[html-inner]'))
+		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach],[html-inner],[html-model]'))
 		.reverse()
 
 	if (nodes.length) {
@@ -96,4 +97,11 @@ filters.define('JSON', (scope, index, varname) => {
 const wrap = (open, node, close) => {
 	node.parentNode?.insertBefore(open, node)
 	node.parentNode?.insertBefore(close, node.nextSibling)
+}
+
+const getInitialState = (element) => {
+	const initialState = element.getAttribute('html-model')
+	if( !initialState ) return null
+	element.removeAttribute('html-model')
+	return JSON.stringify((new Function(`return ${initialState}`))())
 }

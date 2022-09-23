@@ -13,6 +13,8 @@ export default function Component( elm, { module, dependencies, templates, compo
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 
+	state.data = Object.assign( state.data, elm.initialState? JSON.parse(elm.initialState) : null)
+
 	const base = {
 		template,
 		elm,
