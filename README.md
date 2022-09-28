@@ -16,8 +16,8 @@
 
 
 <div align="center">
-	<img src="https://badge.fury.io/js/jails-js.svg?v5" alt="NPM Jails Version" />
-	<img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
+        <img src="https://badge.fury.io/js/jails-js.svg?v5" alt="NPM Jails Version" />
+        <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
 
 <br />
@@ -34,8 +34,8 @@ Jails was created to add a minimal layer of abstraction to build components for 
 
 
 <p align="center">
-    <img width="53%" align="left" src="https://user-images.githubusercontent.com/567506/192670412-0def79ba-6c2e-4a4e-b5e3-40b265599db8.png" />
-    <img width="42%"  align="right" src="https://user-images.githubusercontent.com/567506/192670979-9b18be7d-197e-4dc9-bcac-4165b95a17c8.png" /      
+    <img width="48%" align="left" src="https://user-images.githubusercontent.com/567506/192670412-0def79ba-6c2e-4a4e-b5e3-40b265599db8.png" />
+    <img width="48%"  align="right" src="https://user-images.githubusercontent.com/567506/192670979-9b18be7d-197e-4dc9-bcac-4165b95a17c8.png" /      
 </p>
 
 <br clear="all" />
