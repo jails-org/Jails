@@ -24,7 +24,7 @@
 <br />
 <br />
 
-## Motivation
+## 🕶 Motivation
 
 Jails was created to add a minimal layer of abstraction to build components for web applications without moving away from web standards and bringing good old technics to address complexities from modern apps.
 
@@ -41,7 +41,7 @@ Jails was created to add a minimal layer of abstraction to build components for 
 <br clear="all" />
 <br />
 
-## Best Scenarios to use
+## 🎥 Best Scenarios to use
 Jails is better suited for:
         
 #### Server Site Rendered ( SSR )
@@ -63,13 +63,19 @@ Jails is better suited for:
 
 <br />
         
-## Demos & Docs
+## 📚 Demos & Docs
 
 - [Online Examples & Playground](https://stackblitz.com/@Javiani/collections/jails-organization)
 - [Documentation](https://jails-org.github.io/#/)
 
 <br />
+
+## ✋ Discussions
+Join to the forum and be part of the project by asking, answering or discuss some aspect of the project and be welcome to help in your way.
+➡ [Discussions](https://github.com/jails-org/Jails/discussions)
+
+<br />
         
-## License
+## 🎖 License
 
 [MIT](http://opensource.org/licenses/MIT)
