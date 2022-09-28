@@ -72,6 +72,7 @@ Jails is better suited for:
 
 ## ✋ Discussions
 Join to the forum and be part of the project by asking, answering or discuss some aspect of the project and be welcome to help in your way.
+
 ➡ [Discussions](https://github.com/jails-org/Jails/discussions)
 
 <br />
