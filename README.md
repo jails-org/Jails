@@ -7,11 +7,12 @@
 <p align="center"><em>Jails is a component library to <br />add javascript behavior to Web Apps as close as possible to vanilla</em></p>
 
 <p align="center">
-  <a href="https://jails-org.github.io/">https://jails-org.github.io/</a>
+  <a href="https://jails-org.github.io/">Jails site</a>
 </p>
 <p align="center">
   Based on <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture 🏝</a>
 </p>
+
 
 
 <div align="center">
@@ -31,12 +32,19 @@ Jails was created to add a minimal layer of abstraction to build components for 
 - **Lightweight** - It's a very lightweight library (~9kb gzipped) and it makes your application progressively lite by keeping html away from your javascript code and therefore smaller bundles.
 - **interoperable** - It can be integrated and work with any other vanilla ui or behavioral libraries, so you don't have to wait for a Jails chartjs library in order to use, just integrate it in your app without pain.
 
-<br />
+
+<p align="center">
+    <img width="53%" align="left" src="https://user-images.githubusercontent.com/567506/192670412-0def79ba-6c2e-4a4e-b5e3-40b265599db8.png" />
+    <img width="42%"  align="right" src="https://user-images.githubusercontent.com/567506/192670979-9b18be7d-197e-4dc9-bcac-4165b95a17c8.png" /      
+</p>
+
+<br clear="all" />
 <br />
 
 ## Best Scenarios to use
-
-**Jails is better suited for SSR ( Static Site Rendered ):**
+Jails is better suited for:
+        
+#### Server Site Rendered ( SSR )
 
 - Wordpress
 - Laravel
@@ -44,7 +52,7 @@ Jails was created to add a minimal layer of abstraction to build components for 
 - Node Backend with a Template System:
   - Pug, Liquid, Nunjucks, Handlebars etc.
 
-**Or SSG ( Static Site Generated ) like:**
+#### Static Site Generated ( SSG
 
 - Hugo
 - Astro
@@ -54,105 +62,14 @@ Jails was created to add a minimal layer of abstraction to build components for 
 ... Any site you can add a script tag on it =). So if you already have a engine that renders your html, Jails can be a good way to create an elegant event driven system.
 
 <br />
-<br />
-
+        
 ## Demos & Docs
 
 - [Online Examples & Playground](https://stackblitz.com/@Javiani/collections/jails-organization)
 - [Documentation](https://jails-org.github.io/#/)
 
 <br />
-<br />
-
-## Code Show
-
-**components/ui-range/index.html**
-
-```html
-...
-<ui-range class="range">
-  <label>Weight: <strong class="number">75</strong> kg</label><br />
-  <input type="range" name="weight" min="10" max="200" value="75" />
-</ui-range>
-...
-```
-
-**components/ui-range/index.js**
-
-```js
-export default function uirange ({ main, elm }) {
-
-  const number = elm.querySelector('.number')
-
-  main( _ =>[
-    register
-  ])
-
-  const register = ({ on }) => {
-    on('input', 'input[type=range]', update )
-  }
-
-  const update = event => {
-    number.innerText = event.target.value
-  }
-})
-```
-
-### With State Management
-
-**components/ui-range/index.js**
-
-```js
-export default function uirange ({ main, state }) {
-
-  main( _ =>[
-    register
-  ])
-
-  const register = ({ on }) => {
-    on('input', 'input[type=range]', update )
-  }
-
-  const update = event => {
-    state.set({ number: event.target.value }) // or
-    // state.set( s => s.number = event.target.value ) // If you need to use the previous state
-  }
-})
-
-export const model = {
-  number: 75
-}
-```
-
-**components/ui-range/index.html**
-
-```html
-...
-<ui-range class="range">
-  <label>Weight: <strong class="number">{number}</strong> kg</label
-  ><br />
-  <input type="range" name="weight" min="10" max="200" value="75" html-static />
-</ui-range>
-
-// Or using template tags
-
-<ui-range class="range">
-  <template>
-    <label>Weight: <strong class="number">{number}</strong> kg</label><br />
-    <input
-      type="range"
-      name="weight"
-      min="10"
-      max="200"
-      value="75"
-      html-static
-    />
-  </template>
-</ui-range>
-```
-
-<br />
-
+        
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
