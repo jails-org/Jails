@@ -7,12 +7,15 @@
 <p align="center"><em>Jails is a component library to <br />add javascript behavior to Web Apps as close as possible to vanilla</em></p>
 
 <p align="center">
-  <a href="https://jails-org.github.io/">Jails site</a>
+  <a href="https://jails-org.github.io/">Documentation</a>
 </p>
 <p align="center">
-  Based on <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture 🏝</a>
+  Based on <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture 🏝</a><br />
+  Inspired by <a href="https://guide.elm-lang.org/architecture/" target="_blank">Elm Architecture</a> ƛ
 </p>
-
+<p align="center">
+  
+</p>
 
 
 <div align="center">
