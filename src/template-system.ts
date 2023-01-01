@@ -17,7 +17,8 @@ export default function templateSystem( element ) {
 
 	const html = decodeHtmlEntities(
 		tree.innerHTML
-			.replace(/html-(selected|checked|readonly|disabled|autoplay)=\"(.*)\"/g, `${tagOpen}@if ($2) ${tagClose}$1${tagOpen}/if${tagClose}`)
+			// https://meiert.com/en/blog/boolean-attributes-of-html/
+			.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `${tagOpen}@if ($2) ${tagClose}$1${tagOpen}/if${tagClose}`)
 			.replace(/html-/g, '')
 	)
 
