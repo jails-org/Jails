@@ -34,7 +34,7 @@ export default function templateSystem( element ) {
 const directives = (vdom) => {
 
 	const nodes = Array
-		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach],[html-inner],[html-model]'))
+		.from(vdom.querySelectorAll('[html-for],[html-if],[html-foreach],[html-inner],[html-model],[html-class]'))
 		.reverse()
 
 	if (nodes.length) {
@@ -53,7 +53,7 @@ const directives = (vdom) => {
 				const open = document.createTextNode(`${tagOpen}@foreach(${object}) => $key, ${varname}${tagClose}`)
 				const close = document.createTextNode(`${tagOpen}/foreach${tagClose}`)
 				wrap(open, node, close)
-			} else if (node.getAttribute('html-for')) {
+			} if (node.getAttribute('html-for')) {
 				const instruction = node.getAttribute('html-for') || ''
 				const split = instruction.match(/(.*)\sin\s(.*)/) || ''
 				const varname = split[1]
@@ -63,16 +63,20 @@ const directives = (vdom) => {
 				const open = document.createTextNode(`${tagOpen}@each(${object}) => ${varname}, $index${tagClose}`)
 				const close = document.createTextNode(`${tagOpen}/each${tagClose}`)
 				wrap(open, node, close)
-			} else if (node.getAttribute('html-if')) {
+			} if (node.getAttribute('html-if')) {
 				const instruction = node.getAttribute('html-if')
 				node.removeAttribute('html-if')
 				const open = document.createTextNode(`${tagOpen}@if (${instruction}) ${tagClose}`)
 				const close = document.createTextNode(`${tagOpen}/if${tagClose}`)
 				wrap(open, node, close)
-			} else if (node.getAttribute('html-inner')) {
+			} if (node.getAttribute('html-inner')) {
 				const instruction = node.getAttribute('html-inner')
 				node.removeAttribute('html-inner')
 				node.innerHTML = `${tagOpen}${instruction} | safe${tagClose}`
+			} if (node.getAttribute('html-class')) {
+				const instruction = node.getAttribute('html-class')
+				node.removeAttribute('html-class')
+				node.className += ` ${instruction}`
 			}
 		})
 	}
