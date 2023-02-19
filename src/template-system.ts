@@ -17,9 +17,14 @@ export default function templateSystem( element ) {
 
 	const html = decodeHtmlEntities(
 		tree.innerHTML
+			// Booleans
 			// https://meiert.com/en/blog/boolean-attributes-of-html/
 			.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `${tagOpen}@if ($2) ${tagClose}$1${tagOpen}/if${tagClose}`)
-			.replace(/html-/g, '')
+			// The rest
+			.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
+				value = value.replace(/^{|}$/g, '')
+				return `${tagOpen}@if (${value}) ${tagClose} ${key}=${tagOpen}${value}${tagClose}${tagOpen}/if${tagClose}`
+			})
 	)
 
 	const template = compile(html, defaultConfig)
@@ -74,9 +79,9 @@ const directives = (vdom) => {
 				node.removeAttribute('html-inner')
 				node.innerHTML = `${tagOpen}${instruction} | safe${tagClose}`
 			} if (node.getAttribute('html-class')) {
-				const instruction = node.getAttribute('html-class')
+				const instruction = node.getAttribute('html-class').replace(/^{|}$/g, '')
 				node.removeAttribute('html-class')
-				node.className += ` ${instruction}`
+				node.className += ` ${tagOpen}${instruction}${tagClose}`
 			}
 		})
 	}
