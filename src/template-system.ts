@@ -24,7 +24,7 @@ export default function templateSystem( element ) {
 			.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
 				if( value ) {
 					value = value.replace(/^{|}$/g, '')
-					return `${tagOpen}@if (${value}) ${tagClose} ${key}=${tagOpen}${value}${tagClose}${tagOpen}/if${tagClose}`
+					return `${tagOpen}@if (${value}) ${tagClose} ${key}="${tagOpen}${value}${tagClose}" ${tagOpen}/if${tagClose}`
 				}else {
 					return all
 				}
