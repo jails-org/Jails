@@ -1,6 +1,6 @@
 {
 	"name": "jails-js",
-	"version": "5.0.9",
+	"version": "5.0.10",
 	"description": "Jails | A Functional Component Library",
 	"main": "dist/index.js",
 	"types": "types/index.d.ts",

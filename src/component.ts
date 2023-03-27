@@ -64,7 +64,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 				} else {
 					base.render(data)
 				}
-				return new Promise((resolve) => rAF(_ => rAF(resolve)))
+				return new Promise((resolve) => rAF(_ => rAF(() => resolve(state.data))))
 			},
 			get() {
 				return dup(state.data)
