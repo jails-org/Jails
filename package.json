@@ -1,6 +1,6 @@
 {
 	"name": "jails-js",
-	"version": "5.0.10",
+	"version": "5.0.11",
 	"description": "Jails | A Functional Component Library",
 	"main": "dist/index.js",
 	"types": "types/index.d.ts",
@@ -38,7 +38,7 @@
 		"webpack-cli": "^3.2.1"
 	},
 	"dependencies": {
-		"morphdom": "^2.6.1",
-		"squirrelly": "^8.0.8"
+		"morphdom": "^2.7.0",
+		"squirrelly": "^9.0.0"
 	}
 }

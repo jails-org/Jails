@@ -139,8 +139,8 @@ const onUpdates = (_parent, options) => (node) => {
 					options.onupdate(data)
 					el.base.render(data)
 				})
-
-			node.removeAttribute('scope')
+			// Commenting to avoid unecessary dom updates
+			// node.removeAttribute('scope')
 		}
 	}
 
