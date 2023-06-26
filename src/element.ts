@@ -27,11 +27,11 @@ export default function Element(module, dependencies, templates, components) {
 			if( this.returns && this.returns.constructor === Promise ) {
 				this.returns.then( _ => {
 					if( this.base  ) {
-						this.options.main().forEach(f => f(this.base))
+						this.options.main()?.forEach(f => f(this.base))
 					}
 				})
 			}else {
-				this.options.main().forEach(f => f(this.base))
+				this.options.main()?.forEach(f => f(this.base))
 			}
 		}
 
