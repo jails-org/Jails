@@ -138,6 +138,7 @@ const onUpdates = (_parent, options) => (node) => {
 				.map((el) => {
 					const data = Object.assign({}, _parent.base.state.get(), scope)
 					options.onupdate(data)
+					console.log(el, data)
 					el.base.render(data)
 				})
 			// Commenting to avoid unecessary dom updates

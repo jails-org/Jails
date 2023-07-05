@@ -16,20 +16,22 @@ export default function Template(element) {
 		.replace(regexTags, '${$1}')
 
 	// Directives
-	Array.from(virtual.content.querySelectorAll('[html-for],[html-if],[html-inner],[html-class]')).forEach((node) => {
-		if (node.getAttribute('html-inner')) {
-			innerHTML(node)
-		}
-		if (node.getAttribute('html-for')) {
-			forLoop(node)
-		}
-		if (node.getAttribute('html-if')) {
-			ifClause(node)
-		}
-		if (node.getAttribute('html-class')) {
-			classAttr(node)
-		}
-	})
+	Array
+		.from(virtual.content.querySelectorAll('[html-for],[html-if],[html-inner],[html-class]'))
+		.forEach((node) => {
+			if (node.getAttribute('html-inner')) {
+				innerHTML(node)
+			}
+			if (node.getAttribute('html-for')) {
+				forLoop(node)
+			}
+			if (node.getAttribute('html-if')) {
+				ifClause(node)
+			}
+			if (node.getAttribute('html-class')) {
+				classAttr(node)
+			}
+		})
 
 	const html = virtual.innerHTML
 		// Booleans
