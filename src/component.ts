@@ -93,8 +93,9 @@ export default function Component( elm, { module, dependencies, templates, compo
 				Array
 					.from(elm.querySelectorAll('[tplid]'))
 					.forEach((child: any) => {
-						child.options.onupdate(newdata)
-						child.base.render(Object.assign(newdata, child.base.state.getRaw()))
+						const data = Object.assign(newdata, child.base.state.getRaw())
+						child.options.onupdate(data)
+						child.base.render(data)
 					})
 			})
 		}
