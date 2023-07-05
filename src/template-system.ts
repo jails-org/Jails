@@ -44,7 +44,6 @@ export default function Template(element) {
 				return all
 			}
 		})
-	console.log('with($_data_$){ return `' + decodeHtmlEntities(html) + '`}')
 	return new Function('$_data_$', 'with($_data_$){ return `' + decodeHtmlEntities(html) + '`}')
 }
 
