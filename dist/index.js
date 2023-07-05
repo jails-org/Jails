@@ -799,11 +799,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const morphdom_1 = __importDefault(__webpack_require__(/*! morphdom */ "./node_modules/morphdom/dist/morphdom-esm.js"));
 const utils_1 = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
+const template_system_1 = __webpack_require__(/*! ./template-system */ "./src/template-system.ts");
 const events_1 = __webpack_require__(/*! ./utils/events */ "./src/utils/events.ts");
 const pubsub_1 = __webpack_require__(/*! ./utils/pubsub */ "./src/utils/pubsub.ts");
 function Component(elm, { module, dependencies, templates, components }) {
     const options = getOptions(module);
-    (0, utils_1.buildtemplates)(elm, components, templates);
+    (0, template_system_1.buildtemplates)(elm, components, templates);
     const tplid = elm.getAttribute('tplid');
     const template = tplid ? templates[tplid] : null;
     const state = { data: module.model ? (0, utils_1.dup)(module.model) : {} };
@@ -989,8 +990,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const utils_1 = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
-const template_system_1 = __webpack_require__(/*! ./template-system */ "./src/template-system/index.ts");
+const template_system_1 = __webpack_require__(/*! ./template-system */ "./src/template-system.ts");
 const element_1 = __importDefault(__webpack_require__(/*! ./element */ "./src/element.ts"));
 const templates = {};
 const components = {};
@@ -1001,7 +1001,7 @@ exports["default"] = {
     },
     start() {
         const body = document.body;
-        (0, utils_1.buildtemplates)(body, components, templates);
+        (0, template_system_1.buildtemplates)(body, components, templates);
         registerComponents();
     }
 };
@@ -1018,88 +1018,40 @@ const registerComponents = () => {
 
 /***/ }),
 
-/***/ "./src/template-system/directives.ts":
-/*!*******************************************!*\
-  !*** ./src/template-system/directives.ts ***!
-  \*******************************************/
+/***/ "./src/template-system.ts":
+/*!********************************!*\
+  !*** ./src/template-system.ts ***!
+  \********************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.modelAttr = exports.classAttr = exports.innerHTML = exports.ifClause = exports.forLoop = void 0;
-//
-const utils_1 = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
-const forLoop = (tag) => {
-    const expression = tag.getAttribute('html-for').split(/\sin\s/);
-    const varname = expression[0].trim();
-    const objectname = expression[1].trim();
-    const open = '${ Object.entries(' + objectname + ').map(function( args ){ var ' + varname + ' = args[1]; var $index = args[0]; var $key = args[0]; return `';
-    const close = '`}).join("")}';
-    tag.removeAttribute('html-for');
-    tag.setAttribute('html-scope', '${JSON.stringify(' + varname + ').replace(/"/g, "\'")}');
-    (0, utils_1.wrap)(open, tag, close);
-};
-exports.forLoop = forLoop;
-const ifClause = (tag) => {
-    const expression = tag.getAttribute('html-if');
-    tag.removeAttribute('html-if');
-    const newtag = '${' + expression + '?`' + tag.outerHTML + '`:"" }';
-    tag.outerHTML = newtag;
-};
-exports.ifClause = ifClause;
-const innerHTML = (tag) => {
-    const instruction = tag.getAttribute('html-inner');
-    tag.removeAttribute('html-inner');
-    tag.innerHTML = '${' + instruction + '}';
-};
-exports.innerHTML = innerHTML;
-const classAttr = (tag) => {
-    const instruction = tag.getAttribute('html-class').replace(/^{|}$/g, '');
-    tag.removeAttribute('html-class');
-    tag.className += ' ${' + instruction + '}';
-};
-exports.classAttr = classAttr;
-const modelAttr = (tag) => {
-    const initialState = tag.getAttribute('html-model');
-    tag.initialState = initialState ? JSON.stringify(new Function(`return ${initialState}`)()) : null;
-    tag.removeAttribute('html-model');
-};
-exports.modelAttr = modelAttr;
-
-
-/***/ }),
-
-/***/ "./src/template-system/index.ts":
-/*!**************************************!*\
-  !*** ./src/template-system/index.ts ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.templateConfig = void 0;
-const directives_1 = __webpack_require__(/*! ./directives */ "./src/template-system/directives.ts");
-const utils_1 = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
+exports.buildtemplates = exports.templateConfig = void 0;
+const utils_1 = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
 const virtual = document.createElement('template');
-exports.templateConfig = {};
+const textarea = document.createElement('textarea');
+exports.templateConfig = {
+    tags: ['{', '}']
+};
 function Template(element) {
-    (0, directives_1.modelAttr)(element);
+    const regexTags = new RegExp(`${exports.templateConfig.tags[0]}(.*?)${exports.templateConfig.tags[1]}`, 'g');
+    modelAttr(element);
     virtual.innerHTML = element.outerHTML
         .replace(/<\/?template[^>]*>/g, '')
-        .replace(/\{(.*?)\}/g, '${$1}');
+        .replace(regexTags, '${$1}');
     // Directives
     Array.from(virtual.content.querySelectorAll('[html-for],[html-if],[html-inner],[html-class]')).forEach((node) => {
+        if (node.getAttribute('html-inner')) {
+            innerHTML(node);
+        }
         if (node.getAttribute('html-for')) {
-            (0, directives_1.forLoop)(node);
+            forLoop(node);
         }
-        else if (node.getAttribute('html-if')) {
-            (0, directives_1.ifClause)(node);
+        if (node.getAttribute('html-if')) {
+            ifClause(node);
         }
-        else if (node.getAttribute('html-inner')) {
-            (0, directives_1.innerHTML)(node);
-        }
-        else if (node.getAttribute('html-class')) {
-            (0, directives_1.classAttr)(node);
+        if (node.getAttribute('html-class')) {
+            classAttr(node);
         }
     });
     const html = virtual.innerHTML
@@ -1117,9 +1069,71 @@ function Template(element) {
             return all;
         }
     });
-    return new Function('$_data_$', 'with($_data_$){ return `' + (0, utils_1.decodeHtmlEntities)(html) + '`}');
+    console.log('with($_data_$){ return `' + decodeHtmlEntities(html) + '`}');
+    return new Function('$_data_$', 'with($_data_$){ return `' + decodeHtmlEntities(html) + '`}');
 }
 exports["default"] = Template;
+const buildtemplates = (target, components, templates) => {
+    return Array
+        .from(target.querySelectorAll('*'))
+        .filter((node) => node.tagName.toLowerCase() in components)
+        .reverse()
+        .map((node) => {
+        Array.from(node.querySelectorAll('template'))
+            .map((template) => (0, exports.buildtemplates)(template.content, components, templates));
+        createTemplateId(node, templates);
+        return node;
+    });
+};
+exports.buildtemplates = buildtemplates;
+const forLoop = (tag) => {
+    const expression = tag.getAttribute('html-for').split(/\sin\s/);
+    const varname = expression[0].trim();
+    const objectname = expression[1].trim();
+    const open = '${ Object.entries(' + objectname + ').map(function( args ){ var ' + varname + ' = args[1]; var $index = args[0]; var $key = args[0]; var scope = {}; scope["' + varname + '"]=args[1]; scope.$index = $index; scope.$key= $key; return `';
+    const close = '`}).join("")}';
+    tag.removeAttribute('html-for');
+    tag.setAttribute('html-scope', '${JSON.stringify(scope).replace(/"/g, "\'")}');
+    wrap(open, tag, close);
+};
+const ifClause = (tag) => {
+    const expression = tag.getAttribute('html-if');
+    tag.removeAttribute('html-if');
+    const newtag = '${' + expression + '?`' + tag.outerHTML + '`:"" }';
+    tag.outerHTML = newtag;
+};
+const innerHTML = (tag) => {
+    const instruction = tag.getAttribute('html-inner');
+    tag.removeAttribute('html-inner');
+    tag.innerHTML = '${' + instruction + '}';
+};
+const classAttr = (tag) => {
+    const instruction = tag.getAttribute('html-class').replace(/^{|}$/g, '');
+    tag.removeAttribute('html-class');
+    tag.className += ' ${' + instruction + '}';
+};
+const modelAttr = (tag) => {
+    const initialState = tag.getAttribute('html-model');
+    tag.initialState = initialState ? JSON.stringify(new Function(`return ${initialState}`)()) : null;
+    tag.removeAttribute('html-model');
+};
+const wrap = (open, node, close) => {
+    var _a, _b;
+    (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.insertBefore(document.createTextNode(open), node);
+    (_b = node.parentNode) === null || _b === void 0 ? void 0 : _b.insertBefore(document.createTextNode(close), node.nextSibling);
+};
+const createTemplateId = (element, templates) => {
+    const tplid = element.getAttribute('tplid');
+    if (!tplid) {
+        const id = (0, utils_1.uuid)();
+        element.setAttribute('tplid', id);
+        templates[id] = Template(element);
+    }
+};
+const decodeHtmlEntities = (str) => {
+    textarea.innerHTML = str;
+    return textarea.value;
+};
 
 
 /***/ }),
@@ -1214,22 +1228,11 @@ exports.trigger = trigger;
 /*!****************************!*\
   !*** ./src/utils/index.ts ***!
   \****************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.purge = exports.decodeHtmlEntities = exports.buildtemplates = exports.createTemplateId = exports.dup = exports.stripTemplateTag = exports.uuid = exports.rAF = exports.wrap = void 0;
-const template_system_1 = __importDefault(__webpack_require__(/*! ../template-system */ "./src/template-system/index.ts"));
-const textarea = document.createElement('textarea');
-const wrap = (open, node, close) => {
-    var _a, _b;
-    (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.insertBefore(document.createTextNode(open), node);
-    (_b = node.parentNode) === null || _b === void 0 ? void 0 : _b.insertBefore(document.createTextNode(close), node.nextSibling);
-};
-exports.wrap = wrap;
+exports.purge = exports.dup = exports.uuid = exports.rAF = void 0;
 const rAF = (fn) => {
     if (requestAnimationFrame)
         return requestAnimationFrame(fn);
@@ -1244,47 +1247,10 @@ const uuid = () => {
     });
 };
 exports.uuid = uuid;
-const stripTemplateTag = (element) => {
-    const templates = Array.from(element.querySelectorAll('template'));
-    // https://gist.github.com/harmenjanssen/07e425248779c65bc5d11b02fb913274
-    templates.forEach((template) => {
-        var _a;
-        (_a = template.parentNode) === null || _a === void 0 ? void 0 : _a.replaceChild(template.content, template);
-        (0, exports.stripTemplateTag)(template.content);
-    });
-};
-exports.stripTemplateTag = stripTemplateTag;
 const dup = (o) => {
     return JSON.parse(JSON.stringify(o));
 };
 exports.dup = dup;
-const createTemplateId = (element, templates) => {
-    const tplid = element.getAttribute('tplid');
-    if (!tplid) {
-        const id = (0, exports.uuid)();
-        element.setAttribute('tplid', id);
-        templates[id] = (0, template_system_1.default)(element);
-    }
-};
-exports.createTemplateId = createTemplateId;
-const buildtemplates = (target, components, templates) => {
-    return Array
-        .from(target.querySelectorAll('*'))
-        .filter((node) => node.tagName.toLowerCase() in components)
-        .reverse()
-        .map((node) => {
-        Array.from(node.querySelectorAll('template'))
-            .map((template) => (0, exports.buildtemplates)(template.content, components, templates));
-        (0, exports.createTemplateId)(node, templates);
-        return node;
-    });
-};
-exports.buildtemplates = buildtemplates;
-const decodeHtmlEntities = (str) => {
-    textarea.innerHTML = str;
-    return textarea.value;
-};
-exports.decodeHtmlEntities = decodeHtmlEntities;
 // http://crockford.com/javascript/memory/leak.html
 const purge = (d) => {
     var a = d.attributes, i, l, n;

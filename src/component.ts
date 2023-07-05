@@ -1,6 +1,7 @@
 import morphdom from 'morphdom'
 
-import { rAF, dup, buildtemplates } from './utils'
+import { rAF, dup } from './utils'
+import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe } from './utils/pubsub'
 
