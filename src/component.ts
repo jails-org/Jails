@@ -139,12 +139,15 @@ const onUpdates = (_parent, options) => (node) => {
 		if (node.getAttribute && node.getAttribute('html-scope')) {
 			const json = node.getAttribute('html-scope')
 			const scope = (new Function(`return ${json}`))()
-			Array.from(node.querySelectorAll('[tplid]'))
-				.map((el) => {
-					const data = Object.assign({}, _parent.base.state.get(), scope)
-					options.onupdate(data)
-					el.base.render(data)
-				})
+			rAF(_ => {
+				Array.from(node.querySelectorAll('[tplid]'))
+					.map((el) => {
+						const data = Object.assign({}, _parent.base.state.getRaw(), scope)
+						options.onupdate(data)
+						el.base.render(data)
+					})
+			})
+
 			// Commenting to avoid unecessary dom updates
 			// node.removeAttribute('scope')
 		}
