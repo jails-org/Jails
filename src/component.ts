@@ -130,8 +130,8 @@ const onUpdates = (_parent, options) => (node) => {
 
 	if (node.nodeType === 1) {
 
-		if (node.getAttribute && node.getAttribute('scope')) {
-			const json = node.getAttribute('scope')
+		if (node.getAttribute && node.getAttribute('html-scope')) {
+			const json = node.getAttribute('html-scope')
 			const scope = (new Function(`return ${json}`))()
 			Array.from(node.querySelectorAll('[tplid]'))
 				.map((el) => {

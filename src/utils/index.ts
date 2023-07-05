@@ -2,6 +2,11 @@ import templateSystem from '../template-system'
 
 const textarea = document.createElement('textarea')
 
+export const wrap = (open, node, close) => {
+	node.parentNode?.insertBefore(document.createTextNode(open), node)
+	node.parentNode?.insertBefore(document.createTextNode(close), node.nextSibling)
+}
+
 export const rAF = (fn) => {
 	if (requestAnimationFrame)
 		return requestAnimationFrame(fn)

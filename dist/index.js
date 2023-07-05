@@ -1,2 +1,1410 @@
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define("jails",[],t):"object"==typeof exports?exports.jails=t():e.jails=t()}(self,(()=>(()=>{var e={492:(e,t,n)=>{"use strict";var r;n.r(t),n.d(t,{default:()=>f});var i="undefined"==typeof document?void 0:document,a=!!i&&"content"in i.createElement("template"),o=!!i&&i.createRange&&"createContextualFragment"in i.createRange();function s(e,t){var n,r,i=e.nodeName,a=t.nodeName;return i===a||(n=i.charCodeAt(0),r=a.charCodeAt(0),n<=90&&r>=97?i===a.toUpperCase():r<=90&&n>=97&&a===i.toUpperCase())}function l(e,t,n){e[n]!==t[n]&&(e[n]=t[n],e[n]?e.setAttribute(n,""):e.removeAttribute(n))}var u={OPTION:function(e,t){var n=e.parentNode;if(n){var r=n.nodeName.toUpperCase();"OPTGROUP"===r&&(r=(n=n.parentNode)&&n.nodeName.toUpperCase()),"SELECT"!==r||n.hasAttribute("multiple")||(e.hasAttribute("selected")&&!t.selected&&(e.setAttribute("selected","selected"),e.removeAttribute("selected")),n.selectedIndex=-1)}l(e,t,"selected")},INPUT:function(e,t){l(e,t,"checked"),l(e,t,"disabled"),e.value!==t.value&&(e.value=t.value),t.hasAttribute("value")||e.removeAttribute("value")},TEXTAREA:function(e,t){var n=t.value;e.value!==n&&(e.value=n);var r=e.firstChild;if(r){var i=r.nodeValue;if(i==n||!n&&i==e.placeholder)return;r.nodeValue=n}},SELECT:function(e,t){if(!t.hasAttribute("multiple")){for(var n,r,i=-1,a=0,o=e.firstChild;o;)if("OPTGROUP"===(r=o.nodeName&&o.nodeName.toUpperCase()))o=(n=o).firstChild;else{if("OPTION"===r){if(o.hasAttribute("selected")){i=a;break}a++}!(o=o.nextSibling)&&n&&(o=n.nextSibling,n=null)}e.selectedIndex=i}}};function c(){}function d(e){if(e)return e.getAttribute&&e.getAttribute("id")||e.id}const f=function(e,t,n){if(n||(n={}),"string"==typeof t)if("#document"===e.nodeName||"HTML"===e.nodeName||"BODY"===e.nodeName){var l=t;(t=i.createElement("html")).innerHTML=l}else f=(f=t).trim(),t=a?function(e){var t=i.createElement("template");return t.innerHTML=e,t.content.childNodes[0]}(f):o?function(e){return r||(r=i.createRange()).selectNode(i.body),r.createContextualFragment(e).childNodes[0]}(f):function(e){var t=i.createElement("body");return t.innerHTML=e,t.childNodes[0]}(f);else 11===t.nodeType&&(t=t.firstElementChild);var f,p=n.getNodeKey||d,m=n.onBeforeNodeAdded||c,h=n.onNodeAdded||c,v=n.onBeforeElUpdated||c,g=n.onElUpdated||c,b=n.onBeforeNodeDiscarded||c,y=n.onNodeDiscarded||c,x=n.onBeforeElChildrenUpdated||c,A=n.skipFromChildren||c,_=n.addChild||function(e,t){return e.appendChild(t)},N=!0===n.childrenOnly,$=Object.create(null),S=[];function T(e){S.push(e)}function C(e,t){if(1===e.nodeType)for(var n=e.firstChild;n;){var r=void 0;t&&(r=p(n))?T(r):(y(n),n.firstChild&&C(n,t)),n=n.nextSibling}}function E(e,t,n){!1!==b(e)&&(t&&t.removeChild(e),y(e),C(e,n))}function w(e){h(e);for(var t=e.firstChild;t;){var n=t.nextSibling,r=p(t);if(r){var i=$[r];i&&s(t,i)?(t.parentNode.replaceChild(i,t),O(i,t)):w(t)}else w(t);t=n}}function O(e,t,n){var r=p(t);if(r&&delete $[r],!n){if(!1===v(e,t))return;if(function(e,t){var n,r,i,a,o=t.attributes;if(11!==t.nodeType&&11!==e.nodeType){for(var s=o.length-1;s>=0;s--)r=(n=o[s]).name,i=n.namespaceURI,a=n.value,i?(r=n.localName||r,e.getAttributeNS(i,r)!==a&&("xmlns"===n.prefix&&(r=n.name),e.setAttributeNS(i,r,a))):e.getAttribute(r)!==a&&e.setAttribute(r,a);for(var l=e.attributes,u=l.length-1;u>=0;u--)r=(n=l[u]).name,(i=n.namespaceURI)?(r=n.localName||r,t.hasAttributeNS(i,r)||e.removeAttributeNS(i,r)):t.hasAttribute(r)||e.removeAttribute(r)}}(e,t),g(e),!1===x(e,t))return}"TEXTAREA"!==e.nodeName?function(e,t){var n,r,a,o,l,c=A(e),d=t.firstChild,f=e.firstChild;e:for(;d;){for(o=d.nextSibling,n=p(d);!c&&f;){if(a=f.nextSibling,d.isSameNode&&d.isSameNode(f)){d=o,f=a;continue e}r=p(f);var h=f.nodeType,v=void 0;if(h===d.nodeType&&(1===h?(n?n!==r&&((l=$[n])?a===l?v=!1:(e.insertBefore(l,f),r?T(r):E(f,e,!0),f=l):v=!1):r&&(v=!1),(v=!1!==v&&s(f,d))&&O(f,d)):3!==h&&8!=h||(v=!0,f.nodeValue!==d.nodeValue&&(f.nodeValue=d.nodeValue))),v){d=o,f=a;continue e}r?T(r):E(f,e,!0),f=a}if(n&&(l=$[n])&&s(l,d))c||_(e,l),O(l,d);else{var g=m(d);!1!==g&&(g&&(d=g),d.actualize&&(d=d.actualize(e.ownerDocument||i)),_(e,d),w(d))}d=o,f=a}!function(e,t,n){for(;t;){var r=t.nextSibling;(n=p(t))?T(n):E(t,e,!0),t=r}}(e,f,r);var b=u[e.nodeName];b&&b(e,t)}(e,t):u.TEXTAREA(e,t)}!function e(t){if(1===t.nodeType||11===t.nodeType)for(var n=t.firstChild;n;){var r=p(n);r&&($[r]=n),e(n),n=n.nextSibling}}(e);var j,F,P=e,I=P.nodeType,R=t.nodeType;if(!N)if(1===I)1===R?s(e,t)||(y(e),P=function(e,t){for(var n=e.firstChild;n;){var r=n.nextSibling;t.appendChild(n),n=r}return t}(e,(j=t.nodeName,(F=t.namespaceURI)&&"http://www.w3.org/1999/xhtml"!==F?i.createElementNS(F,j):i.createElement(j)))):P=t;else if(3===I||8===I){if(R===I)return P.nodeValue!==t.nodeValue&&(P.nodeValue=t.nodeValue),P;P=t}if(P===t)y(e);else{if(t.isSameNode&&t.isSameNode(P))return;if(O(P,t,N),S)for(var M=0,H=S.length;M<H;M++){var k=$[S[M]];k&&E(k,k.parentNode,!1)}}return!N&&P!==e&&e.parentNode&&(P.actualize&&(P=P.actualize(e.ownerDocument||i)),e.parentNode.replaceChild(P,e)),P}},565:function(e,t,n){"use strict";var r=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0});const i=r(n(492)),a=n(502),o=n(139),s=n(119);t.default=function(e,{module:t,dependencies:n,templates:r,components:c}){const d=l(t);(0,a.buildtemplates)(e,c,r);const f=e.getAttribute("tplid"),p=f?r[f]:null,m={data:t.model?(0,a.dup)(t.model):{}};m.data=Object.assign(m.data,e.initialState?JSON.parse(e.initialState):null);const h={template:p,elm:e,dependencies:n,publish:s.publish,subscribe:s.subscribe,main(e){d.main=e},unmount(e){d.unmount=e},onupdate(e){d.onupdate=e},on(t,n,r){(0,o.on)(e,t,n,r)},off(t,n){(0,o.off)(e,t,n)},trigger(t,n,r){n.constructor===String?Array.from(e.querySelectorAll(n)).forEach((e=>(0,o.trigger)(e,t,{args:r}))):(0,o.trigger)(e,t,{args:n})},emit:(...t)=>{(0,o.trigger)(e,t.shift(),{args:t})},state:{set(e){if(e.constructor===Function){const t=(0,a.dup)(m.data);e(t),h.render(t)}else h.render(e);return new Promise((e=>(0,a.rAF)((t=>(0,a.rAF)((()=>e(m.data)))))))},get:()=>(0,a.dup)(m.data)},render(t=m.data){if(!document.body.contains(e))return;m.data=Object.assign(m.data,t);const n=(0,a.dup)(m.data),r=h.template(d.view(n));(0,i.default)(e,r,u(e,d)),(0,a.rAF)((t=>{Array.from(e.querySelectorAll("[tplid]")).forEach((e=>{e.options.onupdate(n),e.base.render(n)}))}))}};return{base:h,options:d}};const l=e=>({main:e=>e,unmount:e=>e,onupdate:e=>e,view:e.view?e.view:e=>e}),u=(e,t)=>({onNodeAdded:d(e,t),onElUpdated:d(e,t),onBeforeElChildrenUpdated:c,onBeforeElUpdated:c,getNodeKey:e=>!(1!==e.nodeType||!e.getAttribute("tplid"))&&("key"in e.attributes?e.attributes.key.value:e.getAttribute("tplid"))}),c=e=>{if("html-static"in e.attributes)return!1},d=(e,t)=>n=>{if(1===n.nodeType&&n.getAttribute&&n.getAttribute("scope")){const r=n.getAttribute("scope"),i=new Function(`return ${r}`)();Array.from(n.querySelectorAll("[tplid]")).map((n=>{const r=Object.assign({},e.base.state.get(),i);t.onupdate(r),n.base.render(r)}))}return n}},747:function(e,t,n){"use strict";var r=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0});const i=r(n(565)),a=n(502);t.default=function(e,t,n,r){return class extends HTMLElement{constructor(){super();const{base:a,options:o}=(0,i.default)(this,{module:e,dependencies:t,templates:n,components:r});this.base=a,this.options=o,this.returns=e.default(a)}connectedCallback(){var e;this.base.render(),this.returns&&this.returns.constructor===Promise?this.returns.then((e=>{var t;this.base&&(null===(t=this.options.main())||void 0===t||t.forEach((e=>e(this.base))))})):null===(e=this.options.main())||void 0===e||e.forEach((e=>e(this.base)))}disconnectedCallback(){this.options.unmount(this.base),document.body.contains(this)||(this.__events=null,this.base.elm=null,this.base=null,(0,a.purge)(this))}attributeChangedCallback(){}}}},341:function(e,t,n){"use strict";var r=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0});const i=n(502),a=n(585),o=r(n(747)),s={},l={};t.default={templateConfig:a.templateConfig,register(e,t,n){l[e]={name:e,module:t,dependencies:n}},start(){const e=document.body;(0,i.buildtemplates)(e,l,s),u()}};const u=()=>{Object.values(l).forEach((e=>{const{name:t,module:n,dependencies:r}=e,i=(0,o.default)(n,r,s,l);customElements.define(t,i)}))}},585:(e,t,n)=>{"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.templateConfig=void 0;const r=n(641),i=n(502);r.defaultConfig.tags=["{","}"],r.defaultConfig.useWith=!0,t.default=function(e){const t=document.createElement("template"),n=r.defaultConfig.tags[0],o=r.defaultConfig.tags[1];e.initialState=s(e),t.innerHTML=e.outerHTML.replace(/<\/?template[^>]*>/g,""),a(t.content);const l=(0,i.decodeHtmlEntities)(t.innerHTML.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g,`${n}@if ($2) ${o}$1${n}/if${o}`).replace(/html-(.*?)=\"(.*?)\"/g,((e,t,r)=>r?(r=r.replace(/^{|}$/g,""),`${n}@if (${r}) ${o} ${t}="${n}${r}${o}" ${n}/if${o}`):e))),u=(0,r.compile)(l,r.defaultConfig);return e=>u(e,r.defaultConfig)};const a=e=>{const t=Array.from(e.querySelectorAll("[html-for],[html-if],[html-foreach],[html-inner],[html-model],[html-class]")).reverse();if(t.length){const e=r.defaultConfig.tags[0],n=r.defaultConfig.tags[1];t.forEach((t=>{if(t.getAttribute("html-foreach")){const r=(t.getAttribute("html-foreach")||"").match(/(.*)\sin\s(.*)/)||"",i=r[1],a=r[2];t.removeAttribute("html-foreach"),t.setAttribute("scope",`${e}${i} | JSON($key, '${i}')${n}`);const s=document.createTextNode(`${e}@foreach(${a}) => $key, ${i}${n}`),l=document.createTextNode(`${e}/foreach${n}`);o(s,t,l)}if(t.getAttribute("html-for")){const r=(t.getAttribute("html-for")||"").match(/(.*)\sin\s(.*)/)||"",i=r[1],a=r[2];t.removeAttribute("html-for"),t.setAttribute("scope",`${e}${i} | JSON($index, '${i}')${n}`);const s=document.createTextNode(`${e}@each(${a}) => ${i}, $index${n}`),l=document.createTextNode(`${e}/each${n}`);o(s,t,l)}if(t.getAttribute("html-if")){const r=t.getAttribute("html-if");t.removeAttribute("html-if");const i=document.createTextNode(`${e}@if (${r}) ${n}`),a=document.createTextNode(`${e}/if${n}`);o(i,t,a)}if(t.getAttribute("html-inner")){const r=t.getAttribute("html-inner");t.removeAttribute("html-inner"),t.innerHTML=`${e}${r} | safe${n}`}if(t.getAttribute("html-class")){const r=t.getAttribute("html-class").replace(/^{|}$/g,"");t.removeAttribute("html-class"),t.className+=` ${e}${r}${n}`}}))}return e};t.templateConfig=e=>{Object.assign(r.defaultConfig,e)},r.filters.define("JSON",((e,t,n)=>{const r=t.constructor==String?"$key":"$index",i={$index:t};return i[n]=e,i[r]=t,JSON.stringify(i)}));const o=(e,t,n)=>{var r,i;null===(r=t.parentNode)||void 0===r||r.insertBefore(e,t),null===(i=t.parentNode)||void 0===i||i.insertBefore(n,t.nextSibling)},s=e=>{const t=e.getAttribute("html-model");return t?(e.removeAttribute("html-model"),JSON.stringify(new Function(`return ${t}`)())):null}},139:(e,t)=>{"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.trigger=t.off=t.on=void 0;const n="CustomEvent"in window&&"function"==typeof window.CustomEvent?(e,t)=>new CustomEvent(e,t):(e,t)=>{const n=document.createEvent("CustomEvent");return n.initCustomEvent(e,!0,!0,t),n},r=(e,t)=>function(n){const r=this,i=n.detail||{};e.__events[t].forEach((e=>{e.handler.apply(r,[n].concat(i.args))}))},i=(e,t)=>{e.__events[t]&&e.__events[t].listener&&(e.removeEventListener(t,e.__events[t].listener,"focus"==t||"blur"==t||"mouseenter"==t||"mouseleave"==t),delete e.__events[t])},a=(e,t,n)=>function(r){const i=this,a=r.detail||{};let o=r.target;for(;o&&(o.matches(t)&&(r.delegateTarget=o,n.apply(i,[r].concat(a.args))),o!==e);)o=o.parentNode};t.on=(e,t,n,i)=>{if(e.__events=e.__events||{},e.__events[t]=e.__events[t]||[],!e.__events[t].length){const n=r(e,t);e.addEventListener(t,n,"focus"==t||"blur"==t||"mouseenter"==t||"mouseleave"==t),e.__events[t].listener=n}n.call?e.__events[t].push({handler:n,callback:n}):e.__events[t].push({handler:a(e,n,i),callback:i})},t.off=(e,t,n)=>{if(n&&e.__events[t]&&e.__events[t].length){var r=e.__events[t];e.__events[t]=e.__events[t].filter((function(e){return e.callback!=n})),e.__events[t].listener=r.listener,e.__events[t].length||i(e,t)}else i(e,t)},t.trigger=(e,t,r)=>{e.dispatchEvent(n(t,{bubbles:!0,detail:r}))}},502:function(e,t,n){"use strict";var r=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0}),t.purge=t.decodeHtmlEntities=t.buildtemplates=t.createTemplateId=t.dup=t.stripTemplateTag=t.uuid=t.rAF=void 0;const i=r(n(585)),a=document.createElement("textarea");t.rAF=e=>requestAnimationFrame?requestAnimationFrame(e):setTimeout(e,1e3/60),t.uuid=()=>"xxxxxxxx".replace(/[xy]/g,(e=>{const t=8*Math.random()|0;return("x"==e?t:3&t|8).toString(8)})),t.stripTemplateTag=e=>{Array.from(e.querySelectorAll("template")).forEach((e=>{var n;null===(n=e.parentNode)||void 0===n||n.replaceChild(e.content,e),(0,t.stripTemplateTag)(e.content)}))},t.dup=e=>JSON.parse(JSON.stringify(e)),t.createTemplateId=(e,n)=>{if(!e.getAttribute("tplid")){const r=(0,t.uuid)();e.setAttribute("tplid",r),n[r]=(0,i.default)(e)}},t.buildtemplates=(e,n,r)=>Array.from(e.querySelectorAll("*")).filter((e=>e.tagName.toLowerCase()in n)).reverse().map((e=>(Array.from(e.querySelectorAll("template")).map((e=>(0,t.buildtemplates)(e.content,n,r))),(0,t.createTemplateId)(e,r),e))),t.decodeHtmlEntities=e=>(a.innerHTML=e,a.value),t.purge=e=>{var n,r,i,a=e.attributes;if(a)for(n=a.length-1;n>=0;n-=1)"function"==typeof e[i=a[n].name]&&(e[i]=null);if(a=e.childNodes)for(r=a.length,n=0;n<r;n+=1)(0,t.purge)(e.childNodes[n])}},119:(e,t)=>{"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.subscribe=t.publish=void 0;const n={},r={};t.publish=(e,t)=>{r[e]=Object.assign({},r[e],t),n[e]&&n[e].forEach((e=>e(t)))},t.subscribe=(e,t)=>(n[e]=n[e]||[],n[e].push(t),e in r&&t(r[e]),()=>{n[e]=n[e].filter((e=>e!=t))})},641:function(e,t){!function(e){"use strict";function t(e){var n,r,i=new Error(e);return n=i,r=t.prototype,Object.setPrototypeOf?Object.setPrototypeOf(n,r):n.__proto__=r,i}function n(e,n,r){var i=n.slice(0,r).split(/\n/),a=i.length,o=i[a-1].length+1;throw t(e+=" at line "+a+" col "+o+":\n\n  "+n.split(/\n/)[a-1]+"\n  "+Array(o).join(" ")+"^")}t.prototype=Object.create(Error.prototype,{name:{value:"Squirrelly Error",enumerable:!1}});var r=new Function("return this")().Promise,i=!1;try{i=new Function("return (async function(){}).constructor")()}catch(e){if(!(e instanceof SyntaxError))throw e}var a=function(e,t){return"(function(){\n    try{\n      return "+e+" == undefined || "+e+" == null? '': "+e+"\n    }catch(err) {\n      return ''\n    }\n  })()"};function o(e,t){return Object.prototype.hasOwnProperty.call(e,t)}function s(e,t,n){for(var r in t)o(t,r)&&(null==t[r]||"object"!=typeof t[r]||"storage"!==r&&"prefixes"!==r||n?e[r]=t[r]:e[r]=s({},t[r]));return e}var l=/^async +/,u=/`(?:\\[\s\S]|\${(?:[^{}]|{(?:[^{}]|{[^}]*})*})*}|(?!\${)[^\\`])*`/g,c=/'(?:\\[\s\w"'\\`]|[^\n\r'\\])*?'/g,d=/"(?:\\[\s\w"'\\`]|[^\n\r"\\])*?"/g,f=/[.*+\-?^${}()|[\]\\]/g;function p(e){return f.test(e)?e.replace(f,"\\$&"):e}function m(e,r){r.rmWhitespace&&(e=e.replace(/[\r\n]+/g,"\n").replace(/^\s+|\s+$/gm,"")),u.lastIndex=0,c.lastIndex=0,d.lastIndex=0;var i=r.prefixes,a=[i.h,i.b,i.i,i.r,i.c,i.e].reduce((function(e,t){return e&&t?e+"|"+p(t):t?p(t):e}),""),o=new RegExp("([|()]|=>)|('|\"|`|\\/\\*)|\\s*((\\/)?(-|_)?"+p(r.tags[1])+")","g"),s=new RegExp("([^]*?)"+p(r.tags[0])+"(-|_)?\\s*("+a+")?\\s*","g"),f=0,m=!1;function h(t,i){var a,p={f:[]},h=0,v="c";function g(t){var i=e.slice(f,t),a=i.trim();if("f"===v)"safe"===a?p.raw=!0:r.async&&l.test(a)?(a=a.replace(l,""),p.f.push([a,"",!0])):p.f.push([a,""]);else if("fp"===v)p.f[p.f.length-1][1]+=a;else if("err"===v){if(a){var o=i.search(/\S/);n("invalid syntax",e,f+o)}}else p[v]=a;f=t+1}for("h"===i||"b"===i||"c"===i?v="n":"r"===i&&(p.raw=!0,i="i"),o.lastIndex=f;null!==(a=o.exec(e));){var b=a[1],y=a[2],x=a[3],A=a[4],_=a[5],N=a.index;if(b)"("===b?(0===h&&("n"===v?(g(N),v="p"):"f"===v&&(g(N),v="fp")),h++):")"===b?0==--h&&"c"!==v&&(g(N),v="err"):0===h&&"|"===b?(g(N),v="f"):"=>"===b&&(g(N),f+=1,v="res");else if(y)if("/*"===y){var $=e.indexOf("*/",o.lastIndex);-1===$&&n("unclosed comment",e,a.index),o.lastIndex=$+2}else"'"===y?(c.lastIndex=a.index,c.exec(e)?o.lastIndex=c.lastIndex:n("unclosed string",e,a.index)):'"'===y?(d.lastIndex=a.index,d.exec(e)?o.lastIndex=d.lastIndex:n("unclosed string",e,a.index)):"`"===y&&(u.lastIndex=a.index,u.exec(e)?o.lastIndex=u.lastIndex:n("unclosed string",e,a.index));else if(x)return g(N),f=N+a[0].length,s.lastIndex=f,m=_,A&&"h"===i&&(i="s"),p.t=i,p}return n("unclosed tag",e,t),p}var v=function a(o,u){o.b=[],o.d=[];var c,d=!1,p=[];function v(e,t){e&&(e=function(e,t,n,r){var i,a;return"string"==typeof t.autoTrim?i=a=t.autoTrim:Array.isArray(t.autoTrim)&&(i=t.autoTrim[1],a=t.autoTrim[0]),(n||!1===n)&&(i=n),(r||!1===r)&&(a=r),"slurp"===i&&"slurp"===a?e.trim():("_"===i||"slurp"===i?e=String.prototype.trimLeft?e.trimLeft():e.replace(/^[\s\uFEFF\xA0]+/,""):"-"!==i&&"nl"!==i||(e=e.replace(/^(?:\n|\r|\r\n)/,"")),"_"===a||"slurp"===a?e=String.prototype.trimRight?e.trimRight():e.replace(/[\s\uFEFF\xA0]+$/,""):"-"!==a&&"nl"!==a||(e=e.replace(/(?:\n|\r|\r\n)$/,"")),e)}(e,r,m,t))&&(e=e.replace(/\\|'/g,"\\$&").replace(/\r\n|\n|\r/g,"\\n"),p.push(e))}for(;null!==(c=s.exec(e));){var g,b=c[1],y=c[2],x=c[3]||"";for(var A in i)if(i[A]===x){g=A;break}v(b,y),f=c.index+c[0].length,g||n("unrecognized tag type: "+x,e,f);var _=h(c.index,g),N=_.t;if("h"===N){var $=_.n||"";r.async&&l.test($)&&(_.a=!0,_.n=$.replace(l,"")),_=a(_),p.push(_)}else if("c"===N){if(o.n===_.n)return d?(d.d=p,o.b.push(d)):o.d=p,o;n("Helper start and end don't match",e,c.index+c[0].length)}else if("b"===N){d?(d.d=p,o.b.push(d)):o.d=p;var S=_.n||"";r.async&&l.test(S)&&(_.a=!0,_.n=S.replace(l,"")),d=_,p=[]}else if("s"===N){var T=_.n||"";r.async&&l.test(T)&&(_.a=!0,_.n=T.replace(l,"")),p.push(_)}else p.push(_)}if(!u)throw t('unclosed helper "'+o.n+'"');return v(e.slice(f,e.length),!1),o.d=p,o}({f:[]},!0);if(r.plugins)for(var g=0;g<r.plugins.length;g++){var b=r.plugins[g];b.processAST&&(v.d=b.processAST(v.d,r))}return v.d}function h(e,t){var n=m(e,t),r="var tR='';"+(t.useWith?"with("+t.varName+"||{}){":"")+x(n,t)+"if(cb){cb(null,tR)} return tR"+(t.useWith?"}":"");if(t.plugins)for(var i=0;i<t.plugins.length;i++){var a=t.plugins[i];a.processFnString&&(r=a.processFnString(r,t))}return r}function v(e,t){for(var n=0;n<t.length;n++){var r=t[n][0],i=t[n][1];e=(t[n][2]?"await ":"")+"c.l('F','"+r+"')("+e,i&&(e+=","+i),e+=")"}return e}function g(e,t,n,r,i,a){var o="{exec:"+(i?"async ":"")+y(n,t,e)+",params:["+r+"]";return a&&(o+=",name:'"+a+"'"),i&&(o+=",async:true"),o+"}"}function b(e,t){for(var n="[",r=0;r<e.length;r++){var i=e[r];n+=g(t,i.res||"",i.d,i.p||"",i.a,i.n),r<e.length&&(n+=",")}return n+"]"}function y(e,t,n){return"function("+t+"){var tR='';"+x(e,n)+"return tR}"}function x(e,t){for(var n=0,r=e.length,i="";n<r;n++){var o=e[n];if("string"==typeof o)i+="tR+='"+o+"';";else{o.c=a(o.c||""),o.p=a(o.p||"");var s=o.t,l=o.c,u=o.f,c=o.n||"",d=o.p,f=o.res||"",p=o.b,m=!!o.a;if("i"===s){t.defaultFilter&&(l="c.l('F','"+t.defaultFilter+"')("+l+")");var h=v(l,u);!o.raw&&t.autoEscape&&(h="c.l('F','e')("+h+")"),i+="tR+="+h+";"}else if("h"===s)if(t.storage.nativeHelpers.get(c))i+=t.storage.nativeHelpers.get(c)(o,t);else{var y=(m?"await ":"")+"c.l('H','"+c+"')("+g(t,f,o.d,d,m);y+=p?","+b(p,t):",[]",i+="tR+="+v(y+=",c)",u)+";"}else"s"===s?i+="tR+="+v((m?"await ":"")+"c.l('H','"+c+"')({params:["+d+"]},[],c)",u)+";":"e"===s&&(i+=l+"\n")}}return i}var A=function(){function e(e){this.cache=e}return e.prototype.define=function(e,t){this.cache[e]=t},e.prototype.get=function(e){return this.cache[e]},e.prototype.remove=function(e){delete this.cache[e]},e.prototype.reset=function(){this.cache={}},e.prototype.load=function(e){s(this.cache,e,!0)},e}();function _(e,n,r,i){if(n&&n.length>0)throw t((i?"Native":"")+"Helper '"+e+"' doesn't accept blocks");if(r&&r.length>0)throw t((i?"Native":"")+"Helper '"+e+"' doesn't accept filters")}var N={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};function $(e){return N[e]}var S=new A({}),T=new A({each:function(e,t){var n="",r=e.params[0];if(_("each",t,!1),e.async)return new Promise((function(t){!function e(t,n,r,i,a){r(t[n],n).then((function(o){i+=o,n===t.length-1?a(i):e(t,n+1,r,i,a)}))}(r,0,e.exec,n,t)}));for(var i=0;i<r.length;i++)n+=e.exec(r[i],i);return n},foreach:function(e,t){var n=e.params[0];if(_("foreach",t,!1),e.async)return new Promise((function(t){!function e(t,n,r,i,a,o){i(n[r],t[n[r]]).then((function(s){a+=s,r===n.length-1?o(a):e(t,n,r+1,i,a,o)}))}(n,Object.keys(n),0,e.exec,"",t)}));var r="";for(var i in n)o(n,i)&&(r+=e.exec(i,n[i]));return r},include:function(e,n,r){_("include",n,!1);var i=r.storage.templates.get(e.params[0]);if(!i)throw t('Could not fetch template "'+e.params[0]+'"');return i(e.params[1],r)},extends:function(e,n,r){var i=e.params[1]||{};i.content=e.exec();for(var a=0;a<n.length;a++){var o=n[a];i[o.name]=o.exec()}var s=r.storage.templates.get(e.params[0]);if(!s)throw t('Could not fetch template "'+e.params[0]+'"');return s(i,r)},useScope:function(e,t){return _("useScope",t,!1),e.exec(e.params[0])}}),C=new A({if:function(e,t){_("if",!1,e.f,!0);var n="if("+e.p+"){"+x(e.d,t)+"}";if(e.b)for(var r=0;r<e.b.length;r++){var i=e.b[r];"else"===i.n?n+="else{"+x(i.d,t)+"}":"elif"===i.n&&(n+="else if("+i.p+"){"+x(i.d,t)+"}")}return n},try:function(e,n){if(_("try",!1,e.f,!0),!e.b||1!==e.b.length||"catch"!==e.b[0].n)throw t("native helper 'try' only accepts 1 block, 'catch'");var r="try{"+x(e.d,n)+"}",i=e.b[0];return r+"catch"+(i.res?"("+i.res+")":"")+"{"+x(i.d,n)+"}"},block:function(e,t){return _("block",e.b,e.f,!0),"if(!"+t.varName+"["+e.p+"]){tR+=("+y(e.d,"",t)+")()}else{tR+="+t.varName+"["+e.p+"]}"}}),E=new A({e:function(e){var t=String(e);return/[&<>"']/.test(t)?t.replace(/[&<>"']/g,$):t}}),w={varName:"it",autoTrim:[!1,"nl"],autoEscape:!0,defaultFilter:!1,tags:["{{","}}"],l:function(e,n){if("H"===e){var r=this.storage.helpers.get(n);if(r)return r;throw t("Can't find helper '"+n+"'")}if("F"===e){var i=this.storage.filters.get(n);if(i)return i;throw t("Can't find filter '"+n+"'")}},async:!1,storage:{helpers:T,nativeHelpers:C,filters:E,templates:S},prefixes:{h:"@",b:"#",i:"",r:"*",c:"/",e:"!"},cache:!1,plugins:[],useWith:!1};function O(e,t){var n={};return s(n,w),t&&s(n,t),e&&s(n,e),n.l.bind(n),n}function j(e,n){var r=O(n||{}),a=Function;if(r.async){if(!i)throw t("This environment doesn't support async/await");a=i}try{return new a(r.varName,"c","cb",h(e,r))}catch(n){throw n instanceof SyntaxError?t("Bad template syntax\n\n"+n.message+"\n"+Array(n.message.length+1).join("=")+"\n"+h(e,r)):n}}function F(e,t){var n;return t.cache&&t.name&&t.storage.templates.get(t.name)?t.storage.templates.get(t.name):(n="function"==typeof e?e:j(e,t),t.cache&&t.name&&t.storage.templates.define(t.name,n),n)}w.l.bind(w),e.compile=j,e.compileScope=x,e.compileScopeIntoFunction=y,e.compileToString=h,e.defaultConfig=w,e.filters=E,e.getConfig=O,e.helpers=T,e.nativeHelpers=C,e.parse=m,e.render=function(e,n,i,a){var o=O(i||{});if(!o.async)return F(e,o)(n,o);if(!a){if("function"==typeof r)return new r((function(t,r){try{t(F(e,o)(n,o))}catch(e){r(e)}}));throw t("Please provide a callback function, this env doesn't support Promises")}try{F(e,o)(n,o,a)}catch(e){return a(e)}},e.templates=S,Object.defineProperty(e,"__esModule",{value:!0})}(t)}},t={};function n(r){var i=t[r];if(void 0!==i)return i.exports;var a=t[r]={exports:{}};return e[r].call(a.exports,a,a.exports,n),a.exports}return n.d=(e,t)=>{for(var r in t)n.o(t,r)&&!n.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},n.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t),n.r=e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n(341)})()));
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define("jails", [], factory);
+	else if(typeof exports === 'object')
+		exports["jails"] = factory();
+	else
+		root["jails"] = factory();
+})(self, () => {
+return /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./node_modules/morphdom/dist/morphdom-esm.js":
+/*!****************************************************!*\
+  !*** ./node_modules/morphdom/dist/morphdom-esm.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var DOCUMENT_FRAGMENT_NODE = 11;
+
+function morphAttrs(fromNode, toNode) {
+    var toNodeAttrs = toNode.attributes;
+    var attr;
+    var attrName;
+    var attrNamespaceURI;
+    var attrValue;
+    var fromValue;
+
+    // document-fragments dont have attributes so lets not do anything
+    if (toNode.nodeType === DOCUMENT_FRAGMENT_NODE || fromNode.nodeType === DOCUMENT_FRAGMENT_NODE) {
+      return;
+    }
+
+    // update attributes on original DOM element
+    for (var i = toNodeAttrs.length - 1; i >= 0; i--) {
+        attr = toNodeAttrs[i];
+        attrName = attr.name;
+        attrNamespaceURI = attr.namespaceURI;
+        attrValue = attr.value;
+
+        if (attrNamespaceURI) {
+            attrName = attr.localName || attrName;
+            fromValue = fromNode.getAttributeNS(attrNamespaceURI, attrName);
+
+            if (fromValue !== attrValue) {
+                if (attr.prefix === 'xmlns'){
+                    attrName = attr.name; // It's not allowed to set an attribute with the XMLNS namespace without specifying the `xmlns` prefix
+                }
+                fromNode.setAttributeNS(attrNamespaceURI, attrName, attrValue);
+            }
+        } else {
+            fromValue = fromNode.getAttribute(attrName);
+
+            if (fromValue !== attrValue) {
+                fromNode.setAttribute(attrName, attrValue);
+            }
+        }
+    }
+
+    // Remove any extra attributes found on the original DOM element that
+    // weren't found on the target element.
+    var fromNodeAttrs = fromNode.attributes;
+
+    for (var d = fromNodeAttrs.length - 1; d >= 0; d--) {
+        attr = fromNodeAttrs[d];
+        attrName = attr.name;
+        attrNamespaceURI = attr.namespaceURI;
+
+        if (attrNamespaceURI) {
+            attrName = attr.localName || attrName;
+
+            if (!toNode.hasAttributeNS(attrNamespaceURI, attrName)) {
+                fromNode.removeAttributeNS(attrNamespaceURI, attrName);
+            }
+        } else {
+            if (!toNode.hasAttribute(attrName)) {
+                fromNode.removeAttribute(attrName);
+            }
+        }
+    }
+}
+
+var range; // Create a range object for efficently rendering strings to elements.
+var NS_XHTML = 'http://www.w3.org/1999/xhtml';
+
+var doc = typeof document === 'undefined' ? undefined : document;
+var HAS_TEMPLATE_SUPPORT = !!doc && 'content' in doc.createElement('template');
+var HAS_RANGE_SUPPORT = !!doc && doc.createRange && 'createContextualFragment' in doc.createRange();
+
+function createFragmentFromTemplate(str) {
+    var template = doc.createElement('template');
+    template.innerHTML = str;
+    return template.content.childNodes[0];
+}
+
+function createFragmentFromRange(str) {
+    if (!range) {
+        range = doc.createRange();
+        range.selectNode(doc.body);
+    }
+
+    var fragment = range.createContextualFragment(str);
+    return fragment.childNodes[0];
+}
+
+function createFragmentFromWrap(str) {
+    var fragment = doc.createElement('body');
+    fragment.innerHTML = str;
+    return fragment.childNodes[0];
+}
+
+/**
+ * This is about the same
+ * var html = new DOMParser().parseFromString(str, 'text/html');
+ * return html.body.firstChild;
+ *
+ * @method toElement
+ * @param {String} str
+ */
+function toElement(str) {
+    str = str.trim();
+    if (HAS_TEMPLATE_SUPPORT) {
+      // avoid restrictions on content for things like `<tr><th>Hi</th></tr>` which
+      // createContextualFragment doesn't support
+      // <template> support not available in IE
+      return createFragmentFromTemplate(str);
+    } else if (HAS_RANGE_SUPPORT) {
+      return createFragmentFromRange(str);
+    }
+
+    return createFragmentFromWrap(str);
+}
+
+/**
+ * Returns true if two node's names are the same.
+ *
+ * NOTE: We don't bother checking `namespaceURI` because you will never find two HTML elements with the same
+ *       nodeName and different namespace URIs.
+ *
+ * @param {Element} a
+ * @param {Element} b The target element
+ * @return {boolean}
+ */
+function compareNodeNames(fromEl, toEl) {
+    var fromNodeName = fromEl.nodeName;
+    var toNodeName = toEl.nodeName;
+    var fromCodeStart, toCodeStart;
+
+    if (fromNodeName === toNodeName) {
+        return true;
+    }
+
+    fromCodeStart = fromNodeName.charCodeAt(0);
+    toCodeStart = toNodeName.charCodeAt(0);
+
+    // If the target element is a virtual DOM node or SVG node then we may
+    // need to normalize the tag name before comparing. Normal HTML elements that are
+    // in the "http://www.w3.org/1999/xhtml"
+    // are converted to upper case
+    if (fromCodeStart <= 90 && toCodeStart >= 97) { // from is upper and to is lower
+        return fromNodeName === toNodeName.toUpperCase();
+    } else if (toCodeStart <= 90 && fromCodeStart >= 97) { // to is upper and from is lower
+        return toNodeName === fromNodeName.toUpperCase();
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Create an element, optionally with a known namespace URI.
+ *
+ * @param {string} name the element name, e.g. 'div' or 'svg'
+ * @param {string} [namespaceURI] the element's namespace URI, i.e. the value of
+ * its `xmlns` attribute or its inferred namespace.
+ *
+ * @return {Element}
+ */
+function createElementNS(name, namespaceURI) {
+    return !namespaceURI || namespaceURI === NS_XHTML ?
+        doc.createElement(name) :
+        doc.createElementNS(namespaceURI, name);
+}
+
+/**
+ * Copies the children of one DOM element to another DOM element
+ */
+function moveChildren(fromEl, toEl) {
+    var curChild = fromEl.firstChild;
+    while (curChild) {
+        var nextChild = curChild.nextSibling;
+        toEl.appendChild(curChild);
+        curChild = nextChild;
+    }
+    return toEl;
+}
+
+function syncBooleanAttrProp(fromEl, toEl, name) {
+    if (fromEl[name] !== toEl[name]) {
+        fromEl[name] = toEl[name];
+        if (fromEl[name]) {
+            fromEl.setAttribute(name, '');
+        } else {
+            fromEl.removeAttribute(name);
+        }
+    }
+}
+
+var specialElHandlers = {
+    OPTION: function(fromEl, toEl) {
+        var parentNode = fromEl.parentNode;
+        if (parentNode) {
+            var parentName = parentNode.nodeName.toUpperCase();
+            if (parentName === 'OPTGROUP') {
+                parentNode = parentNode.parentNode;
+                parentName = parentNode && parentNode.nodeName.toUpperCase();
+            }
+            if (parentName === 'SELECT' && !parentNode.hasAttribute('multiple')) {
+                if (fromEl.hasAttribute('selected') && !toEl.selected) {
+                    // Workaround for MS Edge bug where the 'selected' attribute can only be
+                    // removed if set to a non-empty value:
+                    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12087679/
+                    fromEl.setAttribute('selected', 'selected');
+                    fromEl.removeAttribute('selected');
+                }
+                // We have to reset select element's selectedIndex to -1, otherwise setting
+                // fromEl.selected using the syncBooleanAttrProp below has no effect.
+                // The correct selectedIndex will be set in the SELECT special handler below.
+                parentNode.selectedIndex = -1;
+            }
+        }
+        syncBooleanAttrProp(fromEl, toEl, 'selected');
+    },
+    /**
+     * The "value" attribute is special for the <input> element since it sets
+     * the initial value. Changing the "value" attribute without changing the
+     * "value" property will have no effect since it is only used to the set the
+     * initial value.  Similar for the "checked" attribute, and "disabled".
+     */
+    INPUT: function(fromEl, toEl) {
+        syncBooleanAttrProp(fromEl, toEl, 'checked');
+        syncBooleanAttrProp(fromEl, toEl, 'disabled');
+
+        if (fromEl.value !== toEl.value) {
+            fromEl.value = toEl.value;
+        }
+
+        if (!toEl.hasAttribute('value')) {
+            fromEl.removeAttribute('value');
+        }
+    },
+
+    TEXTAREA: function(fromEl, toEl) {
+        var newValue = toEl.value;
+        if (fromEl.value !== newValue) {
+            fromEl.value = newValue;
+        }
+
+        var firstChild = fromEl.firstChild;
+        if (firstChild) {
+            // Needed for IE. Apparently IE sets the placeholder as the
+            // node value and vise versa. This ignores an empty update.
+            var oldValue = firstChild.nodeValue;
+
+            if (oldValue == newValue || (!newValue && oldValue == fromEl.placeholder)) {
+                return;
+            }
+
+            firstChild.nodeValue = newValue;
+        }
+    },
+    SELECT: function(fromEl, toEl) {
+        if (!toEl.hasAttribute('multiple')) {
+            var selectedIndex = -1;
+            var i = 0;
+            // We have to loop through children of fromEl, not toEl since nodes can be moved
+            // from toEl to fromEl directly when morphing.
+            // At the time this special handler is invoked, all children have already been morphed
+            // and appended to / removed from fromEl, so using fromEl here is safe and correct.
+            var curChild = fromEl.firstChild;
+            var optgroup;
+            var nodeName;
+            while(curChild) {
+                nodeName = curChild.nodeName && curChild.nodeName.toUpperCase();
+                if (nodeName === 'OPTGROUP') {
+                    optgroup = curChild;
+                    curChild = optgroup.firstChild;
+                } else {
+                    if (nodeName === 'OPTION') {
+                        if (curChild.hasAttribute('selected')) {
+                            selectedIndex = i;
+                            break;
+                        }
+                        i++;
+                    }
+                    curChild = curChild.nextSibling;
+                    if (!curChild && optgroup) {
+                        curChild = optgroup.nextSibling;
+                        optgroup = null;
+                    }
+                }
+            }
+
+            fromEl.selectedIndex = selectedIndex;
+        }
+    }
+};
+
+var ELEMENT_NODE = 1;
+var DOCUMENT_FRAGMENT_NODE$1 = 11;
+var TEXT_NODE = 3;
+var COMMENT_NODE = 8;
+
+function noop() {}
+
+function defaultGetNodeKey(node) {
+  if (node) {
+    return (node.getAttribute && node.getAttribute('id')) || node.id;
+  }
+}
+
+function morphdomFactory(morphAttrs) {
+
+  return function morphdom(fromNode, toNode, options) {
+    if (!options) {
+      options = {};
+    }
+
+    if (typeof toNode === 'string') {
+      if (fromNode.nodeName === '#document' || fromNode.nodeName === 'HTML' || fromNode.nodeName === 'BODY') {
+        var toNodeHtml = toNode;
+        toNode = doc.createElement('html');
+        toNode.innerHTML = toNodeHtml;
+      } else {
+        toNode = toElement(toNode);
+      }
+    } else if (toNode.nodeType === DOCUMENT_FRAGMENT_NODE$1) {
+      toNode = toNode.firstElementChild;
+    }
+
+    var getNodeKey = options.getNodeKey || defaultGetNodeKey;
+    var onBeforeNodeAdded = options.onBeforeNodeAdded || noop;
+    var onNodeAdded = options.onNodeAdded || noop;
+    var onBeforeElUpdated = options.onBeforeElUpdated || noop;
+    var onElUpdated = options.onElUpdated || noop;
+    var onBeforeNodeDiscarded = options.onBeforeNodeDiscarded || noop;
+    var onNodeDiscarded = options.onNodeDiscarded || noop;
+    var onBeforeElChildrenUpdated = options.onBeforeElChildrenUpdated || noop;
+    var skipFromChildren = options.skipFromChildren || noop;
+    var addChild = options.addChild || function(parent, child){ return parent.appendChild(child); };
+    var childrenOnly = options.childrenOnly === true;
+
+    // This object is used as a lookup to quickly find all keyed elements in the original DOM tree.
+    var fromNodesLookup = Object.create(null);
+    var keyedRemovalList = [];
+
+    function addKeyedRemoval(key) {
+      keyedRemovalList.push(key);
+    }
+
+    function walkDiscardedChildNodes(node, skipKeyedNodes) {
+      if (node.nodeType === ELEMENT_NODE) {
+        var curChild = node.firstChild;
+        while (curChild) {
+
+          var key = undefined;
+
+          if (skipKeyedNodes && (key = getNodeKey(curChild))) {
+            // If we are skipping keyed nodes then we add the key
+            // to a list so that it can be handled at the very end.
+            addKeyedRemoval(key);
+          } else {
+            // Only report the node as discarded if it is not keyed. We do this because
+            // at the end we loop through all keyed elements that were unmatched
+            // and then discard them in one final pass.
+            onNodeDiscarded(curChild);
+            if (curChild.firstChild) {
+              walkDiscardedChildNodes(curChild, skipKeyedNodes);
+            }
+          }
+
+          curChild = curChild.nextSibling;
+        }
+      }
+    }
+
+    /**
+    * Removes a DOM node out of the original DOM
+    *
+    * @param  {Node} node The node to remove
+    * @param  {Node} parentNode The nodes parent
+    * @param  {Boolean} skipKeyedNodes If true then elements with keys will be skipped and not discarded.
+    * @return {undefined}
+    */
+    function removeNode(node, parentNode, skipKeyedNodes) {
+      if (onBeforeNodeDiscarded(node) === false) {
+        return;
+      }
+
+      if (parentNode) {
+        parentNode.removeChild(node);
+      }
+
+      onNodeDiscarded(node);
+      walkDiscardedChildNodes(node, skipKeyedNodes);
+    }
+
+    // // TreeWalker implementation is no faster, but keeping this around in case this changes in the future
+    // function indexTree(root) {
+    //     var treeWalker = document.createTreeWalker(
+    //         root,
+    //         NodeFilter.SHOW_ELEMENT);
+    //
+    //     var el;
+    //     while((el = treeWalker.nextNode())) {
+    //         var key = getNodeKey(el);
+    //         if (key) {
+    //             fromNodesLookup[key] = el;
+    //         }
+    //     }
+    // }
+
+    // // NodeIterator implementation is no faster, but keeping this around in case this changes in the future
+    //
+    // function indexTree(node) {
+    //     var nodeIterator = document.createNodeIterator(node, NodeFilter.SHOW_ELEMENT);
+    //     var el;
+    //     while((el = nodeIterator.nextNode())) {
+    //         var key = getNodeKey(el);
+    //         if (key) {
+    //             fromNodesLookup[key] = el;
+    //         }
+    //     }
+    // }
+
+    function indexTree(node) {
+      if (node.nodeType === ELEMENT_NODE || node.nodeType === DOCUMENT_FRAGMENT_NODE$1) {
+        var curChild = node.firstChild;
+        while (curChild) {
+          var key = getNodeKey(curChild);
+          if (key) {
+            fromNodesLookup[key] = curChild;
+          }
+
+          // Walk recursively
+          indexTree(curChild);
+
+          curChild = curChild.nextSibling;
+        }
+      }
+    }
+
+    indexTree(fromNode);
+
+    function handleNodeAdded(el) {
+      onNodeAdded(el);
+
+      var curChild = el.firstChild;
+      while (curChild) {
+        var nextSibling = curChild.nextSibling;
+
+        var key = getNodeKey(curChild);
+        if (key) {
+          var unmatchedFromEl = fromNodesLookup[key];
+          // if we find a duplicate #id node in cache, replace `el` with cache value
+          // and morph it to the child node.
+          if (unmatchedFromEl && compareNodeNames(curChild, unmatchedFromEl)) {
+            curChild.parentNode.replaceChild(unmatchedFromEl, curChild);
+            morphEl(unmatchedFromEl, curChild);
+          } else {
+            handleNodeAdded(curChild);
+          }
+        } else {
+          // recursively call for curChild and it's children to see if we find something in
+          // fromNodesLookup
+          handleNodeAdded(curChild);
+        }
+
+        curChild = nextSibling;
+      }
+    }
+
+    function cleanupFromEl(fromEl, curFromNodeChild, curFromNodeKey) {
+      // We have processed all of the "to nodes". If curFromNodeChild is
+      // non-null then we still have some from nodes left over that need
+      // to be removed
+      while (curFromNodeChild) {
+        var fromNextSibling = curFromNodeChild.nextSibling;
+        if ((curFromNodeKey = getNodeKey(curFromNodeChild))) {
+          // Since the node is keyed it might be matched up later so we defer
+          // the actual removal to later
+          addKeyedRemoval(curFromNodeKey);
+        } else {
+          // NOTE: we skip nested keyed nodes from being removed since there is
+          //       still a chance they will be matched up later
+          removeNode(curFromNodeChild, fromEl, true /* skip keyed nodes */);
+        }
+        curFromNodeChild = fromNextSibling;
+      }
+    }
+
+    function morphEl(fromEl, toEl, childrenOnly) {
+      var toElKey = getNodeKey(toEl);
+
+      if (toElKey) {
+        // If an element with an ID is being morphed then it will be in the final
+        // DOM so clear it out of the saved elements collection
+        delete fromNodesLookup[toElKey];
+      }
+
+      if (!childrenOnly) {
+        // optional
+        if (onBeforeElUpdated(fromEl, toEl) === false) {
+          return;
+        }
+
+        // update attributes on original DOM element first
+        morphAttrs(fromEl, toEl);
+        // optional
+        onElUpdated(fromEl);
+
+        if (onBeforeElChildrenUpdated(fromEl, toEl) === false) {
+          return;
+        }
+      }
+
+      if (fromEl.nodeName !== 'TEXTAREA') {
+        morphChildren(fromEl, toEl);
+      } else {
+        specialElHandlers.TEXTAREA(fromEl, toEl);
+      }
+    }
+
+    function morphChildren(fromEl, toEl) {
+      var skipFrom = skipFromChildren(fromEl);
+      var curToNodeChild = toEl.firstChild;
+      var curFromNodeChild = fromEl.firstChild;
+      var curToNodeKey;
+      var curFromNodeKey;
+
+      var fromNextSibling;
+      var toNextSibling;
+      var matchingFromEl;
+
+      // walk the children
+      outer: while (curToNodeChild) {
+        toNextSibling = curToNodeChild.nextSibling;
+        curToNodeKey = getNodeKey(curToNodeChild);
+
+        // walk the fromNode children all the way through
+        while (!skipFrom && curFromNodeChild) {
+          fromNextSibling = curFromNodeChild.nextSibling;
+
+          if (curToNodeChild.isSameNode && curToNodeChild.isSameNode(curFromNodeChild)) {
+            curToNodeChild = toNextSibling;
+            curFromNodeChild = fromNextSibling;
+            continue outer;
+          }
+
+          curFromNodeKey = getNodeKey(curFromNodeChild);
+
+          var curFromNodeType = curFromNodeChild.nodeType;
+
+          // this means if the curFromNodeChild doesnt have a match with the curToNodeChild
+          var isCompatible = undefined;
+
+          if (curFromNodeType === curToNodeChild.nodeType) {
+            if (curFromNodeType === ELEMENT_NODE) {
+              // Both nodes being compared are Element nodes
+
+              if (curToNodeKey) {
+                // The target node has a key so we want to match it up with the correct element
+                // in the original DOM tree
+                if (curToNodeKey !== curFromNodeKey) {
+                  // The current element in the original DOM tree does not have a matching key so
+                  // let's check our lookup to see if there is a matching element in the original
+                  // DOM tree
+                  if ((matchingFromEl = fromNodesLookup[curToNodeKey])) {
+                    if (fromNextSibling === matchingFromEl) {
+                      // Special case for single element removals. To avoid removing the original
+                      // DOM node out of the tree (since that can break CSS transitions, etc.),
+                      // we will instead discard the current node and wait until the next
+                      // iteration to properly match up the keyed target element with its matching
+                      // element in the original tree
+                      isCompatible = false;
+                    } else {
+                      // We found a matching keyed element somewhere in the original DOM tree.
+                      // Let's move the original DOM node into the current position and morph
+                      // it.
+
+                      // NOTE: We use insertBefore instead of replaceChild because we want to go through
+                      // the `removeNode()` function for the node that is being discarded so that
+                      // all lifecycle hooks are correctly invoked
+                      fromEl.insertBefore(matchingFromEl, curFromNodeChild);
+
+                      // fromNextSibling = curFromNodeChild.nextSibling;
+
+                      if (curFromNodeKey) {
+                        // Since the node is keyed it might be matched up later so we defer
+                        // the actual removal to later
+                        addKeyedRemoval(curFromNodeKey);
+                      } else {
+                        // NOTE: we skip nested keyed nodes from being removed since there is
+                        //       still a chance they will be matched up later
+                        removeNode(curFromNodeChild, fromEl, true /* skip keyed nodes */);
+                      }
+
+                      curFromNodeChild = matchingFromEl;
+                    }
+                  } else {
+                    // The nodes are not compatible since the "to" node has a key and there
+                    // is no matching keyed node in the source tree
+                    isCompatible = false;
+                  }
+                }
+              } else if (curFromNodeKey) {
+                // The original has a key
+                isCompatible = false;
+              }
+
+              isCompatible = isCompatible !== false && compareNodeNames(curFromNodeChild, curToNodeChild);
+              if (isCompatible) {
+                // We found compatible DOM elements so transform
+                // the current "from" node to match the current
+                // target DOM node.
+                // MORPH
+                morphEl(curFromNodeChild, curToNodeChild);
+              }
+
+            } else if (curFromNodeType === TEXT_NODE || curFromNodeType == COMMENT_NODE) {
+              // Both nodes being compared are Text or Comment nodes
+              isCompatible = true;
+              // Simply update nodeValue on the original node to
+              // change the text value
+              if (curFromNodeChild.nodeValue !== curToNodeChild.nodeValue) {
+                curFromNodeChild.nodeValue = curToNodeChild.nodeValue;
+              }
+
+            }
+          }
+
+          if (isCompatible) {
+            // Advance both the "to" child and the "from" child since we found a match
+            // Nothing else to do as we already recursively called morphChildren above
+            curToNodeChild = toNextSibling;
+            curFromNodeChild = fromNextSibling;
+            continue outer;
+          }
+
+          // No compatible match so remove the old node from the DOM and continue trying to find a
+          // match in the original DOM. However, we only do this if the from node is not keyed
+          // since it is possible that a keyed node might match up with a node somewhere else in the
+          // target tree and we don't want to discard it just yet since it still might find a
+          // home in the final DOM tree. After everything is done we will remove any keyed nodes
+          // that didn't find a home
+          if (curFromNodeKey) {
+            // Since the node is keyed it might be matched up later so we defer
+            // the actual removal to later
+            addKeyedRemoval(curFromNodeKey);
+          } else {
+            // NOTE: we skip nested keyed nodes from being removed since there is
+            //       still a chance they will be matched up later
+            removeNode(curFromNodeChild, fromEl, true /* skip keyed nodes */);
+          }
+
+          curFromNodeChild = fromNextSibling;
+        } // END: while(curFromNodeChild) {}
+
+        // If we got this far then we did not find a candidate match for
+        // our "to node" and we exhausted all of the children "from"
+        // nodes. Therefore, we will just append the current "to" node
+        // to the end
+        if (curToNodeKey && (matchingFromEl = fromNodesLookup[curToNodeKey]) && compareNodeNames(matchingFromEl, curToNodeChild)) {
+          // MORPH
+          if(!skipFrom){ addChild(fromEl, matchingFromEl); }
+          morphEl(matchingFromEl, curToNodeChild);
+        } else {
+          var onBeforeNodeAddedResult = onBeforeNodeAdded(curToNodeChild);
+          if (onBeforeNodeAddedResult !== false) {
+            if (onBeforeNodeAddedResult) {
+              curToNodeChild = onBeforeNodeAddedResult;
+            }
+
+            if (curToNodeChild.actualize) {
+              curToNodeChild = curToNodeChild.actualize(fromEl.ownerDocument || doc);
+            }
+            addChild(fromEl, curToNodeChild);
+            handleNodeAdded(curToNodeChild);
+          }
+        }
+
+        curToNodeChild = toNextSibling;
+        curFromNodeChild = fromNextSibling;
+      }
+
+      cleanupFromEl(fromEl, curFromNodeChild, curFromNodeKey);
+
+      var specialElHandler = specialElHandlers[fromEl.nodeName];
+      if (specialElHandler) {
+        specialElHandler(fromEl, toEl);
+      }
+    } // END: morphChildren(...)
+
+    var morphedNode = fromNode;
+    var morphedNodeType = morphedNode.nodeType;
+    var toNodeType = toNode.nodeType;
+
+    if (!childrenOnly) {
+      // Handle the case where we are given two DOM nodes that are not
+      // compatible (e.g. <div> --> <span> or <div> --> TEXT)
+      if (morphedNodeType === ELEMENT_NODE) {
+        if (toNodeType === ELEMENT_NODE) {
+          if (!compareNodeNames(fromNode, toNode)) {
+            onNodeDiscarded(fromNode);
+            morphedNode = moveChildren(fromNode, createElementNS(toNode.nodeName, toNode.namespaceURI));
+          }
+        } else {
+          // Going from an element node to a text node
+          morphedNode = toNode;
+        }
+      } else if (morphedNodeType === TEXT_NODE || morphedNodeType === COMMENT_NODE) { // Text or comment node
+        if (toNodeType === morphedNodeType) {
+          if (morphedNode.nodeValue !== toNode.nodeValue) {
+            morphedNode.nodeValue = toNode.nodeValue;
+          }
+
+          return morphedNode;
+        } else {
+          // Text node to something else
+          morphedNode = toNode;
+        }
+      }
+    }
+
+    if (morphedNode === toNode) {
+      // The "to node" was not compatible with the "from node" so we had to
+      // toss out the "from node" and use the "to node"
+      onNodeDiscarded(fromNode);
+    } else {
+      if (toNode.isSameNode && toNode.isSameNode(morphedNode)) {
+        return;
+      }
+
+      morphEl(morphedNode, toNode, childrenOnly);
+
+      // We now need to loop over any keyed nodes that might need to be
+      // removed. We only do the removal if we know that the keyed node
+      // never found a match. When a keyed node is matched up we remove
+      // it out of fromNodesLookup and we use fromNodesLookup to determine
+      // if a keyed node has been matched up or not
+      if (keyedRemovalList) {
+        for (var i=0, len=keyedRemovalList.length; i<len; i++) {
+          var elToRemove = fromNodesLookup[keyedRemovalList[i]];
+          if (elToRemove) {
+            removeNode(elToRemove, elToRemove.parentNode, false);
+          }
+        }
+      }
+    }
+
+    if (!childrenOnly && morphedNode !== fromNode && fromNode.parentNode) {
+      if (morphedNode.actualize) {
+        morphedNode = morphedNode.actualize(fromNode.ownerDocument || doc);
+      }
+      // If we had to swap out the from node with a new node because the old
+      // node was not compatible with the target node then we need to
+      // replace the old DOM node in the original DOM tree. This is only
+      // possible if the original DOM node was part of a DOM tree which
+      // we know is the case if it has a parent node.
+      fromNode.parentNode.replaceChild(morphedNode, fromNode);
+    }
+
+    return morphedNode;
+  };
+}
+
+var morphdom = morphdomFactory(morphAttrs);
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (morphdom);
+
+
+/***/ }),
+
+/***/ "./src/component.ts":
+/*!**************************!*\
+  !*** ./src/component.ts ***!
+  \**************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const morphdom_1 = __importDefault(__webpack_require__(/*! morphdom */ "./node_modules/morphdom/dist/morphdom-esm.js"));
+const utils_1 = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
+const events_1 = __webpack_require__(/*! ./utils/events */ "./src/utils/events.ts");
+const pubsub_1 = __webpack_require__(/*! ./utils/pubsub */ "./src/utils/pubsub.ts");
+function Component(elm, { module, dependencies, templates, components }) {
+    const options = getOptions(module);
+    (0, utils_1.buildtemplates)(elm, components, templates);
+    const tplid = elm.getAttribute('tplid');
+    const template = tplid ? templates[tplid] : null;
+    const state = { data: module.model ? (0, utils_1.dup)(module.model) : {} };
+    state.data = Object.assign(state.data, elm.initialState ? JSON.parse(elm.initialState) : null);
+    const base = {
+        template,
+        elm,
+        dependencies,
+        publish: pubsub_1.publish,
+        subscribe: pubsub_1.subscribe,
+        main(fn) {
+            options.main = fn;
+        },
+        unmount(fn) {
+            options.unmount = fn;
+        },
+        onupdate(fn) {
+            options.onupdate = fn;
+        },
+        on(eventName, selectorOrCallback, callback) {
+            (0, events_1.on)(elm, eventName, selectorOrCallback, callback);
+        },
+        off(eventName, callback) {
+            (0, events_1.off)(elm, eventName, callback);
+        },
+        trigger(eventName, target, args) {
+            if (target.constructor === String) {
+                Array
+                    .from(elm.querySelectorAll(target))
+                    .forEach(children => (0, events_1.trigger)(children, eventName, { args: args }));
+            }
+            else
+                (0, events_1.trigger)(elm, eventName, { args: target });
+        },
+        emit: (...args) => {
+            (0, events_1.trigger)(elm, args.shift(), { args: args });
+        },
+        state: {
+            set(data) {
+                if (data.constructor === Function) {
+                    const newstate = (0, utils_1.dup)(state.data);
+                    data(newstate);
+                    base.render(newstate);
+                }
+                else {
+                    base.render(data);
+                }
+                return new Promise((resolve) => (0, utils_1.rAF)(_ => (0, utils_1.rAF)(() => resolve(state.data))));
+            },
+            get() {
+                return (0, utils_1.dup)(state.data);
+            }
+        },
+        render(data = state.data) {
+            if (!document.body.contains(elm)) {
+                return;
+            }
+            state.data = Object.assign(state.data, data);
+            const newdata = (0, utils_1.dup)(state.data);
+            const newhtml = base.template(options.view(newdata));
+            (0, morphdom_1.default)(elm, newhtml, morphdomOptions(elm, options));
+            (0, utils_1.rAF)(_ => {
+                Array
+                    .from(elm.querySelectorAll('[tplid]'))
+                    .forEach((child) => {
+                    child.options.onupdate(newdata);
+                    child.base.render(newdata);
+                });
+            });
+        }
+    };
+    return { base, options };
+}
+exports["default"] = Component;
+const getOptions = (module) => ({
+    main: (a) => a,
+    unmount: (a) => a,
+    onupdate: (a) => a,
+    view: module.view ? module.view : (a) => a
+});
+const morphdomOptions = (_parent, options) => ({
+    onNodeAdded: onUpdates(_parent, options),
+    onElUpdated: onUpdates(_parent, options),
+    onBeforeElChildrenUpdated: checkStatic,
+    onBeforeElUpdated: checkStatic,
+    getNodeKey(node) {
+        if (node.nodeType === 1 && node.getAttribute('tplid')) {
+            return 'key' in node.attributes ? node.attributes.key.value : node.getAttribute('tplid');
+        }
+        return false;
+    }
+});
+const checkStatic = (node) => {
+    if ('html-static' in node.attributes) {
+        return false;
+    }
+};
+const onUpdates = (_parent, options) => (node) => {
+    if (node.nodeType === 1) {
+        if (node.getAttribute && node.getAttribute('html-scope')) {
+            const json = node.getAttribute('html-scope');
+            const scope = (new Function(`return ${json}`))();
+            Array.from(node.querySelectorAll('[tplid]'))
+                .map((el) => {
+                const data = Object.assign({}, _parent.base.state.get(), scope);
+                options.onupdate(data);
+                el.base.render(data);
+            });
+            // Commenting to avoid unecessary dom updates
+            // node.removeAttribute('scope')
+        }
+    }
+    return node;
+};
+
+
+/***/ }),
+
+/***/ "./src/element.ts":
+/*!************************!*\
+  !*** ./src/element.ts ***!
+  \************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const component_1 = __importDefault(__webpack_require__(/*! ./component */ "./src/component.ts"));
+const utils_1 = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
+function Element(module, dependencies, templates, components) {
+    return class extends HTMLElement {
+        constructor() {
+            super();
+            const { base, options } = (0, component_1.default)(this, { module, dependencies, templates, components });
+            this.base = base;
+            this.options = options;
+            this.returns = module.default(base);
+        }
+        connectedCallback() {
+            var _a;
+            this.base.render();
+            if (this.returns && this.returns.constructor === Promise) {
+                this.returns.then(_ => {
+                    var _a;
+                    if (this.base) {
+                        (_a = this.options.main()) === null || _a === void 0 ? void 0 : _a.forEach(f => f(this.base));
+                    }
+                });
+            }
+            else {
+                (_a = this.options.main()) === null || _a === void 0 ? void 0 : _a.forEach(f => f(this.base));
+            }
+        }
+        disconnectedCallback() {
+            this.options.unmount(this.base);
+            if (!document.body.contains(this)) {
+                this.__events = null;
+                this.base.elm = null;
+                this.base = null;
+                (0, utils_1.purge)(this);
+            }
+        }
+        attributeChangedCallback() {
+            //TODO
+        }
+    };
+}
+exports["default"] = Element;
+
+
+/***/ }),
+
+/***/ "./src/index.ts":
+/*!**********************!*\
+  !*** ./src/index.ts ***!
+  \**********************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const utils_1 = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
+const template_system_1 = __webpack_require__(/*! ./template-system */ "./src/template-system/index.ts");
+const element_1 = __importDefault(__webpack_require__(/*! ./element */ "./src/element.ts"));
+const templates = {};
+const components = {};
+exports["default"] = {
+    templateConfig: template_system_1.templateConfig,
+    register(name, module, dependencies) {
+        components[name] = { name, module, dependencies };
+    },
+    start() {
+        const body = document.body;
+        (0, utils_1.buildtemplates)(body, components, templates);
+        registerComponents();
+    }
+};
+const registerComponents = () => {
+    Object
+        .values(components)
+        .forEach((component) => {
+        const { name, module, dependencies } = component;
+        const Base = (0, element_1.default)(module, dependencies, templates, components);
+        customElements.define(name, Base);
+    });
+};
+
+
+/***/ }),
+
+/***/ "./src/template-system/directives.ts":
+/*!*******************************************!*\
+  !*** ./src/template-system/directives.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.modelAttr = exports.classAttr = exports.innerHTML = exports.ifClause = exports.forLoop = void 0;
+//
+const utils_1 = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
+const forLoop = (tag) => {
+    const expression = tag.getAttribute('html-for').split(/\sin\s/);
+    const varname = expression[0].trim();
+    const objectname = expression[1].trim();
+    const open = '${ Object.entries(' + objectname + ').map(function( args ){ var ' + varname + ' = args[1]; var $index = args[0]; var $key = args[0]; return `';
+    const close = '`}).join("")}';
+    tag.removeAttribute('html-for');
+    tag.setAttribute('html-scope', '${JSON.stringify(' + varname + ').replace(/"/g, "\'")}');
+    (0, utils_1.wrap)(open, tag, close);
+};
+exports.forLoop = forLoop;
+const ifClause = (tag) => {
+    const expression = tag.getAttribute('html-if');
+    tag.removeAttribute('html-if');
+    const newtag = '${' + expression + '?`' + tag.outerHTML + '`:"" }';
+    tag.outerHTML = newtag;
+};
+exports.ifClause = ifClause;
+const innerHTML = (tag) => {
+    const instruction = tag.getAttribute('html-inner');
+    tag.removeAttribute('html-inner');
+    tag.innerHTML = '${' + instruction + '}';
+};
+exports.innerHTML = innerHTML;
+const classAttr = (tag) => {
+    const instruction = tag.getAttribute('html-class').replace(/^{|}$/g, '');
+    tag.removeAttribute('html-class');
+    tag.className += ' ${' + instruction + '}';
+};
+exports.classAttr = classAttr;
+const modelAttr = (tag) => {
+    const initialState = tag.getAttribute('html-model');
+    tag.initialState = initialState ? JSON.stringify(new Function(`return ${initialState}`)()) : null;
+    tag.removeAttribute('html-model');
+};
+exports.modelAttr = modelAttr;
+
+
+/***/ }),
+
+/***/ "./src/template-system/index.ts":
+/*!**************************************!*\
+  !*** ./src/template-system/index.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.templateConfig = void 0;
+const directives_1 = __webpack_require__(/*! ./directives */ "./src/template-system/directives.ts");
+const utils_1 = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
+const virtual = document.createElement('template');
+exports.templateConfig = {};
+function Template(element) {
+    (0, directives_1.modelAttr)(element);
+    virtual.innerHTML = element.outerHTML
+        .replace(/<\/?template[^>]*>/g, '')
+        .replace(/\{(.*?)\}/g, '${$1}');
+    // Directives
+    Array.from(virtual.content.querySelectorAll('[html-for],[html-if],[html-inner],[html-class]')).forEach((node) => {
+        if (node.getAttribute('html-for')) {
+            (0, directives_1.forLoop)(node);
+        }
+        else if (node.getAttribute('html-if')) {
+            (0, directives_1.ifClause)(node);
+        }
+        else if (node.getAttribute('html-inner')) {
+            (0, directives_1.innerHTML)(node);
+        }
+        else if (node.getAttribute('html-class')) {
+            (0, directives_1.classAttr)(node);
+        }
+    });
+    const html = virtual.innerHTML
+        // Booleans
+        // https://meiert.com/en/blog/boolean-attributes-of-html/
+        .replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, '${$2?"$1":""}')
+        .replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
+        if (key == 'scope' || key == 'model')
+            return all;
+        if (value) {
+            value = value.replace(/^{|}$/g, '');
+            return '${ (' + value + ') ? `' + key + '="${' + value + '}"`:""}';
+        }
+        else {
+            return all;
+        }
+    });
+    return new Function('$_data_$', 'with($_data_$){ return `' + (0, utils_1.decodeHtmlEntities)(html) + '`}');
+}
+exports["default"] = Template;
+
+
+/***/ }),
+
+/***/ "./src/utils/events.ts":
+/*!*****************************!*\
+  !*** ./src/utils/events.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.trigger = exports.off = exports.on = void 0;
+const customEvent = (() => {
+    return ('CustomEvent' in window && typeof window.CustomEvent === 'function')
+        ? (name, data) => new CustomEvent(name, data)
+        : (name, data) => {
+            const newEvent = document.createEvent('CustomEvent');
+            newEvent.initCustomEvent(name, true, true, data);
+            return newEvent;
+        };
+})();
+const handler = (node, ev) => {
+    return function (e) {
+        const scope = this;
+        const detail = e.detail || {};
+        node.__events[ev].forEach(o => {
+            o.handler.apply(scope, [e].concat(detail.args));
+        });
+    };
+};
+const removeListener = (node, ev) => {
+    if (node.__events[ev] && node.__events[ev].listener) {
+        node.removeEventListener(ev, node.__events[ev].listener, (ev == 'focus' || ev == 'blur' || ev == 'mouseenter' || ev == 'mouseleave'));
+        delete node.__events[ev];
+    }
+};
+const delegate = (node, selector, callback) => {
+    return function (e) {
+        const element = this;
+        const detail = e.detail || {};
+        let parent = e.target;
+        while (parent) {
+            if (parent.matches(selector)) {
+                e.delegateTarget = parent;
+                callback.apply(element, [e].concat(detail.args));
+            }
+            if (parent === node)
+                break;
+            parent = parent.parentNode;
+        }
+    };
+};
+const on = (node, ev, selectorOrCallback, callback) => {
+    node.__events = node.__events || {};
+    node.__events[ev] = (node.__events[ev] || []);
+    if (!node.__events[ev].length) {
+        const fn = handler(node, ev);
+        node.addEventListener(ev, fn, (ev == 'focus' || ev == 'blur' || ev == 'mouseenter' || ev == 'mouseleave'));
+        node.__events[ev].listener = fn;
+    }
+    if (selectorOrCallback.call) {
+        node.__events[ev].push({ handler: selectorOrCallback, callback: selectorOrCallback });
+    }
+    else {
+        node.__events[ev].push({ handler: delegate(node, selectorOrCallback, callback), callback });
+    }
+};
+exports.on = on;
+const off = (node, ev, fn) => {
+    if (fn && node.__events[ev] && node.__events[ev].length) {
+        var old = node.__events[ev];
+        node.__events[ev] = node.__events[ev].filter(function (o) { return o.callback != fn; });
+        node.__events[ev].listener = old.listener;
+        if (!node.__events[ev].length)
+            removeListener(node, ev);
+    }
+    else {
+        removeListener(node, ev);
+    }
+};
+exports.off = off;
+const trigger = (node, name, args) => {
+    node.dispatchEvent(customEvent(name, { bubbles: true, detail: args }));
+};
+exports.trigger = trigger;
+
+
+/***/ }),
+
+/***/ "./src/utils/index.ts":
+/*!****************************!*\
+  !*** ./src/utils/index.ts ***!
+  \****************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.purge = exports.decodeHtmlEntities = exports.buildtemplates = exports.createTemplateId = exports.dup = exports.stripTemplateTag = exports.uuid = exports.rAF = exports.wrap = void 0;
+const template_system_1 = __importDefault(__webpack_require__(/*! ../template-system */ "./src/template-system/index.ts"));
+const textarea = document.createElement('textarea');
+const wrap = (open, node, close) => {
+    var _a, _b;
+    (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.insertBefore(document.createTextNode(open), node);
+    (_b = node.parentNode) === null || _b === void 0 ? void 0 : _b.insertBefore(document.createTextNode(close), node.nextSibling);
+};
+exports.wrap = wrap;
+const rAF = (fn) => {
+    if (requestAnimationFrame)
+        return requestAnimationFrame(fn);
+    else
+        return setTimeout(fn, 1000 / 60);
+};
+exports.rAF = rAF;
+const uuid = () => {
+    return 'xxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 8 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(8);
+    });
+};
+exports.uuid = uuid;
+const stripTemplateTag = (element) => {
+    const templates = Array.from(element.querySelectorAll('template'));
+    // https://gist.github.com/harmenjanssen/07e425248779c65bc5d11b02fb913274
+    templates.forEach((template) => {
+        var _a;
+        (_a = template.parentNode) === null || _a === void 0 ? void 0 : _a.replaceChild(template.content, template);
+        (0, exports.stripTemplateTag)(template.content);
+    });
+};
+exports.stripTemplateTag = stripTemplateTag;
+const dup = (o) => {
+    return JSON.parse(JSON.stringify(o));
+};
+exports.dup = dup;
+const createTemplateId = (element, templates) => {
+    const tplid = element.getAttribute('tplid');
+    if (!tplid) {
+        const id = (0, exports.uuid)();
+        element.setAttribute('tplid', id);
+        templates[id] = (0, template_system_1.default)(element);
+    }
+};
+exports.createTemplateId = createTemplateId;
+const buildtemplates = (target, components, templates) => {
+    return Array
+        .from(target.querySelectorAll('*'))
+        .filter((node) => node.tagName.toLowerCase() in components)
+        .reverse()
+        .map((node) => {
+        Array.from(node.querySelectorAll('template'))
+            .map((template) => (0, exports.buildtemplates)(template.content, components, templates));
+        (0, exports.createTemplateId)(node, templates);
+        return node;
+    });
+};
+exports.buildtemplates = buildtemplates;
+const decodeHtmlEntities = (str) => {
+    textarea.innerHTML = str;
+    return textarea.value;
+};
+exports.decodeHtmlEntities = decodeHtmlEntities;
+// http://crockford.com/javascript/memory/leak.html
+const purge = (d) => {
+    var a = d.attributes, i, l, n;
+    if (a) {
+        for (i = a.length - 1; i >= 0; i -= 1) {
+            n = a[i].name;
+            if (typeof d[n] === 'function') {
+                d[n] = null;
+            }
+        }
+    }
+    a = d.childNodes;
+    if (a) {
+        l = a.length;
+        for (i = 0; i < l; i += 1) {
+            (0, exports.purge)(d.childNodes[i]);
+        }
+    }
+};
+exports.purge = purge;
+
+
+/***/ }),
+
+/***/ "./src/utils/pubsub.ts":
+/*!*****************************!*\
+  !*** ./src/utils/pubsub.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.subscribe = exports.publish = void 0;
+const topics = {};
+const _async = {};
+const publish = (name, params) => {
+    _async[name] = Object.assign({}, _async[name], params);
+    if (topics[name])
+        topics[name].forEach(topic => topic(params));
+};
+exports.publish = publish;
+const subscribe = (name, method) => {
+    topics[name] = topics[name] || [];
+    topics[name].push(method);
+    if (name in _async) {
+        method(_async[name]);
+    }
+    return () => {
+        topics[name] = topics[name].filter(fn => fn != method);
+    };
+};
+exports.subscribe = subscribe;
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/index.ts");
+/******/ 	
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
+});
 //# sourceMappingURL=index.js.map
