@@ -69,6 +69,10 @@ export default function Component( elm, { module, dependencies, templates, compo
 			},
 			get() {
 				return dup(state.data)
+			},
+
+			getRaw(){
+				return state.data
 			}
 		},
 
@@ -90,7 +94,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 					.from(elm.querySelectorAll('[tplid]'))
 					.forEach((child: any) => {
 						child.options.onupdate(newdata)
-						child.base.render(newdata)
+						child.base.render(Object.assign(newdata, child.base.state.getRaw()))
 					})
 			})
 		}
@@ -138,7 +142,6 @@ const onUpdates = (_parent, options) => (node) => {
 				.map((el) => {
 					const data = Object.assign({}, _parent.base.state.get(), scope)
 					options.onupdate(data)
-					console.log(el, data)
 					el.base.render(data)
 				})
 			// Commenting to avoid unecessary dom updates
