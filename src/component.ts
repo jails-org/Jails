@@ -68,6 +68,9 @@ export default function Component( elm, { module, dependencies, templates, compo
 			},
 			get() {
 				return dup(state.data)
+			},
+			getRaw(){
+				return state.data
 			}
 		},
 
@@ -88,8 +91,9 @@ export default function Component( elm, { module, dependencies, templates, compo
 				Array
 					.from(elm.querySelectorAll('[tplid]'))
 					.forEach((child: any) => {
-						child.options.onupdate(newdata)
-						child.base.render(newdata)
+						const data = Object.assign(newdata, child.base.state.getRaw())
+						child.options.onupdate(data)
+						child.base.render(data)
 					})
 			})
 		}
@@ -113,14 +117,17 @@ const morphdomOptions = (_parent, options ) => ({
 	onBeforeElUpdated: checkStatic,
 
 	getNodeKey(node) {
-		if (node.nodeType === 1 && node.getAttribute('tplid')){
-			return 'key' in node.attributes? node.attributes.key.value : node.getAttribute('tplid')
+		if( node.nodeType === 1 ){
+			if( node.id ) return node.id
+			else if( node.getAttribute('tplid') ) return node.getAttribute('tplid')
+			else if( node.getAttribute('html-key') ) return node.getAttribute('html-key')
 		}
 		return false
 	}
 })
 
 const checkStatic = (node) => {
+
 	if ('html-static' in node.attributes) {
 		return false
 	}
@@ -133,12 +140,14 @@ const onUpdates = (_parent, options) => (node) => {
 		if (node.getAttribute && node.getAttribute('scope')) {
 			const json = node.getAttribute('scope')
 			const scope = (new Function(`return ${json}`))()
-			Array.from(node.querySelectorAll('[tplid]'))
-				.map((el) => {
-					const data = Object.assign({}, _parent.base.state.get(), scope)
-					options.onupdate(data)
-					el.base.render(data)
-				})
+			rAF(_ => {
+				Array.from(node.querySelectorAll('[tplid]'))
+					.map((el) => {
+						const data = Object.assign({}, _parent.base.state.getRaw(), scope)
+						options.onupdate(data)
+						el.base.render(data)
+					})
+			})
 			// Commenting to avoid unecessary dom updates
 			// node.removeAttribute('scope')
 		}

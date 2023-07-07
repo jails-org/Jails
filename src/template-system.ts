@@ -22,6 +22,9 @@ export default function templateSystem( element ) {
 			.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `${tagOpen}@if ($2) ${tagClose}$1${tagOpen}/if${tagClose}`)
 			// The rest
 			.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
+				if( key === 'key') {
+					return all
+				}
 				if( value ) {
 					value = value.replace(/^{|}$/g, '')
 					return `${tagOpen}@if (${value}) ${tagClose} ${key}="${tagOpen}${value}${tagClose}" ${tagOpen}/if${tagClose}`

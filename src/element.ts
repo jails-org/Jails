@@ -1,5 +1,5 @@
 import Component from './component'
-import { purge } from './utils'
+import { purge, rAF } from './utils'
 
 export default function Element(module, dependencies, templates, components) {
 
@@ -37,12 +37,14 @@ export default function Element(module, dependencies, templates, components) {
 
 		disconnectedCallback() {
 			this.options.unmount(this.base)
-			if(!document.body.contains(this) ) {
-				this.__events = null
-				this.base.elm = null
-				this.base = null
-				purge(this)
-			}
+			rAF(() => {
+				if(!document.body.contains(this) ) {
+					this.__events = null
+					this.base.elm = null
+					this.base = null
+					purge(this)
+				}
+			})
 		}
 
 		attributeChangedCallback() {
