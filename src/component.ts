@@ -88,13 +88,10 @@ export default function Component( elm, { module, dependencies, templates, compo
 			morphdom(elm, newhtml, morphdomOptions(elm, options))
 
 			rAF(_ => {
-				Array
-					.from(elm.querySelectorAll('[tplid]'))
-					.forEach((child: any) => {
-						const data = Object.assign(newdata, child.base.state.getRaw())
-						child.options.onupdate(data)
-						child.base.render(data)
-					})
+				Array.from(elm.querySelectorAll('[tplid]')).forEach((child: any) => {
+					child.options.onupdate(newdata)
+					child.base.render(newdata)
+				})
 			})
 		}
 	}
