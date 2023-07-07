@@ -968,12 +968,14 @@ function Element(module, dependencies, templates, components) {
         }
         disconnectedCallback() {
             this.options.unmount(this.base);
-            if (!document.body.contains(this)) {
-                this.__events = null;
-                this.base.elm = null;
-                this.base = null;
-                (0, utils_1.purge)(this);
-            }
+            (0, utils_1.rAF)(() => {
+                if (!document.body.contains(this)) {
+                    this.__events = null;
+                    this.base.elm = null;
+                    this.base = null;
+                    (0, utils_1.purge)(this);
+                }
+            });
         }
         attributeChangedCallback() {
             //TODO
@@ -1044,7 +1046,7 @@ function Template(element) {
     modelAttr(element);
     virtual.innerHTML = element.outerHTML
         .replace(/<\/?template[^>]*>/g, '')
-        .replace(regexTags, '${$1}');
+        .replace(regexTags, '${sanitize("$1")}');
     // Directives
     Array
         .from(virtual.content.querySelectorAll('[html-for],[html-if],[html-inner],[html-class]'))
@@ -1077,7 +1079,16 @@ function Template(element) {
             return all;
         }
     });
-    return new Function('$_data_$', 'with($_data_$){ return `' + decodeHtmlEntities(html) + '`}');
+    return new Function('$_data_$', 'var $key, $index, $scope;' +
+        `function sanitize(valueStr){
+			try{
+				Object.assign($_data_$, $scope);
+				return new Function("data", " with(data) { return "+valueStr+ "} ")($_data_$)
+			}catch(e) {
+				return ''
+			}
+		}` +
+        'with($_data_$){ return `' + decodeHtmlEntities(html) + '`}');
 }
 exports["default"] = Template;
 const buildtemplates = (target, components, templates) => {
@@ -1097,10 +1108,10 @@ const forLoop = (tag) => {
     const expression = tag.getAttribute('html-for').split(/\sin\s/);
     const varname = expression[0].trim();
     const objectname = expression[1].trim();
-    const open = '${ Object.entries(' + objectname + ').map(function( args ){ var ' + varname + ' = args[1]; var $index = args[0]; var $key = args[0]; var scope = {}; scope["' + varname + '"]=args[1]; scope.$index = $index; scope.$key= $key; return `';
+    const open = '${ Object.entries(' + objectname + ').map(function( args ){ var ' + varname + ' = args[1]; var $index = args[0]; var $key = args[0]; $scope = {}; $scope["' + varname + '"]=args[1]; $scope.$index = $index; $scope.$key= $key; return `';
     const close = '`}).join("")}';
     tag.removeAttribute('html-for');
-    tag.setAttribute('html-scope', '${JSON.stringify(scope).replace(/"/g, "\'")}');
+    tag.setAttribute('html-scope', '${JSON.stringify($scope).replace(/"/g, "\'")}');
     wrap(open, tag, close);
 };
 const ifClause = (tag) => {

@@ -8,12 +8,13 @@ export const templateConfig = {
 }
 
 export default function Template(element) {
+
 	const regexTags = new RegExp(`${templateConfig.tags[0]}(.*?)${templateConfig.tags[1]}`, 'g')
 	modelAttr(element)
 
 	virtual.innerHTML = element.outerHTML
 		.replace(/<\/?template[^>]*>/g, '')
-		.replace(regexTags, '${$1}')
+		.replace(regexTags, '${sanitize("$1")}')
 
 	// Directives
 	Array
@@ -46,11 +47,23 @@ export default function Template(element) {
 				return all
 			}
 		})
-	return new Function('$_data_$', 'with($_data_$){ return `' + decodeHtmlEntities(html) + '`}')
+
+	return new Function(
+		'$_data_$',
+		'var $key, $index, $scope;' +
+		`function sanitize(valueStr){
+			try{
+				Object.assign($_data_$, $scope);
+				return new Function("data", " with(data) { return "+valueStr+ "} ")($_data_$)
+			}catch(e) {
+				return ''
+			}
+		}`+
+		'with($_data_$){ return `' + decodeHtmlEntities(html) + '`}'
+	)
 }
 
 export const buildtemplates = ( target, components, templates ) => {
-
 	return Array
 		.from(target.querySelectorAll('*'))
 		.filter((node) => node.tagName.toLowerCase() in components)
@@ -67,10 +80,10 @@ const forLoop = (tag) => {
 	const expression = tag.getAttribute('html-for').split(/\sin\s/)
 	const varname = expression[0].trim()
 	const objectname = expression[1].trim()
-	const open = '${ Object.entries(' + objectname + ').map(function( args ){ var ' + varname + ' = args[1]; var $index = args[0]; var $key = args[0]; var scope = {}; scope["'+varname+'"]=args[1]; scope.$index = $index; scope.$key= $key; return `'
+	const open = '${ Object.entries(' + objectname + ').map(function( args ){ var ' + varname + ' = args[1]; var $index = args[0]; var $key = args[0]; $scope = {}; $scope["'+varname+'"]=args[1]; $scope.$index = $index; $scope.$key= $key; return `'
 	const close = '`}).join("")}'
 	tag.removeAttribute('html-for')
-	tag.setAttribute('html-scope', '${JSON.stringify(scope).replace(/"/g, "\'")}')
+	tag.setAttribute('html-scope', '${JSON.stringify($scope).replace(/"/g, "\'")}')
 	wrap(open, tag, close)
 }
 
@@ -105,9 +118,7 @@ const wrap = (open, node, close) => {
 }
 
 const createTemplateId = (element, templates ) => {
-
 	const tplid = element.getAttribute('tplid')
-
 	if (!tplid) {
 		const id = uuid()
 		element.setAttribute('tplid', id)
