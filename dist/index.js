@@ -786,6 +786,77 @@ var morphdom = morphdomFactory(morphAttrs);
 
 /***/ }),
 
+/***/ "./src/Transpile.ts":
+/*!**************************!*\
+  !*** ./src/Transpile.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+function Transpile(html, config) {
+    const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g');
+    const virtual = document.createElement('template');
+    virtual.innerHTML = html.replace(/<\/?template[^>]*>/g, '');
+    Array.from(virtual.content.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]')).forEach((element) => {
+        const htmlFor = element.getAttribute('html-for');
+        const htmlIf = element.getAttribute('html-if');
+        const htmlInner = element.getAttribute('html-inner');
+        const htmlClass = element.getAttribute('html-class');
+        if (htmlFor) {
+            const split = htmlFor.match(/(.*)\sin\s(.*)/) || '';
+            const varname = split[1];
+            const object = split[2];
+            element.removeAttribute('html-for');
+            const open = document.createTextNode(`<% for(var $index in ${object}){ var $key = $index; var ${varname} = ${object}[$index]; var scope = ${varname}; scope.$index = $index; scope.$key = $key %>`);
+            const close = document.createTextNode(`<%}%>`);
+            element.setAttribute('html-scope', `<%=JSON.stringify(scope).replace(/\"/g, "'")%>`);
+            wrap(open, element, close);
+        }
+        if (htmlIf) {
+            element.removeAttribute('html-if');
+            const open = document.createTextNode(`<% if ( safe(function(){return ${htmlIf};}) ){ %>`);
+            const close = document.createTextNode(`<% } %>`);
+            wrap(open, element, close);
+        }
+        if (htmlInner) {
+            element.removeAttribute('html-inner');
+            element.innerHTML = `<%=${htmlInner}%>`;
+        }
+        if (htmlClass) {
+            element.removeAttribute('html-class');
+            element.className += ` <%=${htmlClass}%>`;
+        }
+    });
+    return (virtual.innerHTML
+        .replace(regexTags, '<%=$1%>')
+        // Booleans
+        // https://meiert.com/en/blog/boolean-attributes-of-html/
+        .replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `<%if($2){%>$1<%}%>`)
+        // The rest
+        .replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
+        if (key === 'key' || key === 'model' || key == 'scope') {
+            return all;
+        }
+        if (value) {
+            value = value.replace(/^{|}$/g, '');
+            return `<%if (${value}) {%> ${key}="<%=${value}%>" <%}%>`;
+        }
+        else {
+            return all;
+        }
+    }));
+}
+exports["default"] = Transpile;
+const wrap = (open, node, close) => {
+    var _a, _b;
+    (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.insertBefore(open, node);
+    (_b = node.parentNode) === null || _b === void 0 ? void 0 : _b.insertBefore(close, node.nextSibling);
+};
+
+
+/***/ }),
+
 /***/ "./src/component.ts":
 /*!**************************!*\
   !*** ./src/component.ts ***!
@@ -867,7 +938,7 @@ function Component(elm, { module, dependencies, templates, components }) {
             }
             state.data = Object.assign(state.data, data);
             const newdata = (0, utils_1.dup)(state.data);
-            const newhtml = base.template(options.view(newdata));
+            const newhtml = base.template.call(options.view(newdata));
             (0, morphdom_1.default)(elm, newhtml, morphdomOptions(elm, options));
             (0, utils_1.rAF)(_ => {
                 Array
@@ -909,7 +980,7 @@ const checkStatic = (node) => {
 const onUpdates = (_parent, options) => (node) => {
     if (node.nodeType === 1) {
         if (node.getAttribute && node.getAttribute('html-scope')) {
-            const json = node.getAttribute('html-scope');
+            const json = node.getAttribute('html-scope').replace(/\"/, "'");
             const scope = (new Function(`return ${json}`))();
             (0, utils_1.rAF)(_ => {
                 Array.from(node.querySelectorAll('[tplid]'))
@@ -1030,65 +1101,38 @@ const registerComponents = () => {
 /*!********************************!*\
   !*** ./src/template-system.ts ***!
   \********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.buildtemplates = exports.templateConfig = void 0;
+const Transpile_1 = __importDefault(__webpack_require__(/*! ./Transpile */ "./src/Transpile.ts"));
 const utils_1 = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
-const virtual = document.createElement('template');
 const textarea = document.createElement('textarea');
 exports.templateConfig = {
-    tags: ['{', '}']
+    tags: ['${', '}']
 };
 function Template(element) {
-    const regexTags = new RegExp(`${exports.templateConfig.tags[0]}(.*?)${exports.templateConfig.tags[1]}`, 'g');
-    modelAttr(element);
-    virtual.innerHTML = element.outerHTML
-        .replace(/<\/?template[^>]*>/g, '')
-        .replace(regexTags, '${sanitize("$1")}');
-    // Directives
-    Array
-        .from(virtual.content.querySelectorAll('[html-for],[html-if],[html-inner],[html-class]'))
-        .forEach((node) => {
-        if (node.getAttribute('html-inner')) {
-            innerHTML(node);
-        }
-        if (node.getAttribute('html-for')) {
-            forLoop(node);
-        }
-        if (node.getAttribute('html-if')) {
-            ifClause(node);
-        }
-        if (node.getAttribute('html-class')) {
-            classAttr(node);
-        }
-    });
-    const html = virtual.innerHTML
-        // Booleans
-        // https://meiert.com/en/blog/boolean-attributes-of-html/
-        .replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, '${$2?"$1":""}')
-        .replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
-        if (key == 'scope' || key == 'model')
-            return all;
-        if (value) {
-            value = value.replace(/^{|}$/g, '');
-            return '${ (' + value + ') ? `' + key + '="${' + value + '}"`:""}';
-        }
-        else {
-            return all;
-        }
-    });
-    return new Function('$_data_$', 'var $key, $index, $scope;' +
-        `function sanitize(valueStr){
-			try{
-				Object.assign($_data_$, $scope);
-				return new Function("data", " with(data) { return "+valueStr+ "} ")($_data_$)
-			}catch(e) {
-				return ''
-			}
-		}` +
-        'with($_data_$){ return `' + decodeHtmlEntities(html) + '`}');
+    //
+    element.initialState = getInitialState(element);
+    const html = (0, Transpile_1.default)(element.outerHTML, exports.templateConfig);
+    textarea.innerHTML = html;
+    return new Function(`
+		var Model = this;
+		function safe(execute){
+			try{return execute()}catch(err){return ''}
+		}
+		with( Model ){
+			var output = '${textarea.value
+        .replace(/<%=(.+?)%>/g, `'+safe(function(){return $1;})+'`)
+        .replace(/<%(.+?)%>/g, `';$1\noutput+='`)}'
+
+			return output
+		}
+	`);
 }
 exports["default"] = Template;
 const buildtemplates = (target, components, templates) => {
@@ -1104,42 +1148,6 @@ const buildtemplates = (target, components, templates) => {
     });
 };
 exports.buildtemplates = buildtemplates;
-const forLoop = (tag) => {
-    const expression = tag.getAttribute('html-for').split(/\sin\s/);
-    const varname = expression[0].trim();
-    const objectname = expression[1].trim();
-    const open = '${ Object.entries(' + objectname + ').map(function( args ){ var ' + varname + ' = args[1]; var $index = args[0]; var $key = args[0]; $scope = {}; $scope["' + varname + '"]=args[1]; $scope.$index = $index; $scope.$key= $key; return `';
-    const close = '`}).join("")}';
-    tag.removeAttribute('html-for');
-    tag.setAttribute('html-scope', '${JSON.stringify($scope).replace(/"/g, "\'")}');
-    wrap(open, tag, close);
-};
-const ifClause = (tag) => {
-    const expression = tag.getAttribute('html-if');
-    tag.removeAttribute('html-if');
-    const newtag = '${' + expression + '?`' + tag.outerHTML + '`:"" }';
-    tag.outerHTML = newtag;
-};
-const innerHTML = (tag) => {
-    const instruction = tag.getAttribute('html-inner');
-    tag.removeAttribute('html-inner');
-    tag.innerHTML = '${' + instruction + '}';
-};
-const classAttr = (tag) => {
-    const instruction = tag.getAttribute('html-class').replace(/^{|}$/g, '');
-    tag.removeAttribute('html-class');
-    tag.className += ' ${' + instruction + '}';
-};
-const modelAttr = (tag) => {
-    const initialState = tag.getAttribute('html-model');
-    tag.initialState = initialState ? JSON.stringify(new Function(`return ${initialState}`)()) : null;
-    tag.removeAttribute('html-model');
-};
-const wrap = (open, node, close) => {
-    var _a, _b;
-    (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.insertBefore(document.createTextNode(open), node);
-    (_b = node.parentNode) === null || _b === void 0 ? void 0 : _b.insertBefore(document.createTextNode(close), node.nextSibling);
-};
 const createTemplateId = (element, templates) => {
     const tplid = element.getAttribute('tplid');
     if (!tplid) {
@@ -1148,9 +1156,12 @@ const createTemplateId = (element, templates) => {
         templates[id] = Template(element);
     }
 };
-const decodeHtmlEntities = (str) => {
-    textarea.innerHTML = str;
-    return textarea.value;
+const getInitialState = (element) => {
+    const initialState = element.getAttribute('html-model');
+    if (!initialState)
+        return null;
+    element.removeAttribute('html-model');
+    return JSON.stringify((new Function(`return ${initialState}`))());
 };
 
 

@@ -85,7 +85,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			state.data = Object.assign(state.data, data)
 
 			const newdata = dup(state.data)
-			const newhtml = base.template(options.view(newdata))
+			const newhtml = base.template.call(options.view(newdata))
 
 			morphdom(elm, newhtml, morphdomOptions(elm, options))
 
@@ -137,7 +137,7 @@ const onUpdates = (_parent, options) => (node) => {
 	if (node.nodeType === 1) {
 
 		if (node.getAttribute && node.getAttribute('html-scope')) {
-			const json = node.getAttribute('html-scope')
+			const json = node.getAttribute('html-scope').replace(/\"/, "'")
 			const scope = (new Function(`return ${json}`))()
 			rAF(_ => {
 				Array.from(node.querySelectorAll('[tplid]'))
