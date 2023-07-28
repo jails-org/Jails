@@ -808,9 +808,9 @@ function Transpile(html, config) {
             const varname = split[1];
             const object = split[2];
             element.removeAttribute('html-for');
-            const open = document.createTextNode(`<% for(var $index in ${object}){ var $key = $index; var ${varname} = ${object}[$index]; var scope = {}; scope.$index = $index; scope.$key = $key; scope.${varname} = ${object}[$index];  %>`);
+            const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} })){ var $key = $index; var ${varname} = ${object}[$index]; var scope = { $key: $key, $index:$key, ${varname}:${object}[$index]}; %>`);
             const close = document.createTextNode(`<%}%>`);
-            element.setAttribute('html-scope', `<%=JSON.stringify(scope).replace(/\"/g, "'")%>`);
+            element.setAttribute('html-scope', `<%=JSON.stringify(scope).replace(/\"/g, "'") %>`);
             wrap(open, element, close);
         }
         if (htmlIf) {
@@ -938,7 +938,7 @@ function Component(elm, { module, dependencies, templates, components }) {
             }
             state.data = Object.assign(state.data, data);
             const newdata = (0, utils_1.dup)(state.data);
-            const newhtml = base.template.call(options.view(newdata));
+            const newhtml = base.template.call(options.view(newdata), elm);
             (0, morphdom_1.default)(elm, newhtml, morphdomOptions(elm, options));
             (0, utils_1.rAF)(_ => {
                 Array
@@ -961,8 +961,8 @@ const getOptions = (module) => ({
     view: module.view ? module.view : (a) => a
 });
 const morphdomOptions = (_parent, options) => ({
-    onNodeAdded: onUpdates(_parent, options),
-    onElUpdated: onUpdates(_parent, options),
+    onNodeAdded: checkStatic,
+    onElUpdated: checkStatic,
     onBeforeElChildrenUpdated: checkStatic,
     onBeforeElUpdated: checkStatic,
     getNodeKey(node) {
@@ -973,25 +973,9 @@ const morphdomOptions = (_parent, options) => ({
     }
 });
 const checkStatic = (node) => {
-    if ('html-static' in node.attributes) {
-        return false;
-    }
-};
-const onUpdates = (_parent, options) => (node) => {
-    if (node.nodeType === 1) {
-        if (node.getAttribute && node.getAttribute('html-scope')) {
-            const json = node.getAttribute('html-scope').replace(/\"/, "'");
-            const scope = (new Function(`return ${json}`))();
-            (0, utils_1.rAF)(_ => {
-                Array.from(node.querySelectorAll('[tplid]'))
-                    .map((el) => {
-                    const data = Object.assign({}, _parent.base.state.getRaw(), scope);
-                    options.onupdate(data);
-                    el.base.render(data);
-                });
-            });
-            // Commenting to avoid unecessary dom updates
-            // node.removeAttribute('scope')
+    if (node.nodeType == 1) {
+        if (('html-static' in node.attributes) || node.getAttribute('tplid')) {
+            return false;
         }
     }
     return node;
@@ -1041,9 +1025,9 @@ function Element(module, dependencies, templates, components) {
             this.options.unmount(this.base);
             (0, utils_1.rAF)(() => {
                 if (!document.body.contains(this)) {
-                    this.__events = null;
-                    this.base.elm = null;
-                    this.base = null;
+                    this.__events ? this.__events = null : null;
+                    this.base ? this.base.elm = null : null;
+                    this.base ? this.base = null : null;
                     (0, utils_1.purge)(this);
                 }
             });
@@ -1116,20 +1100,18 @@ exports.templateConfig = {
     tags: ['${', '}']
 };
 function Template(element) {
-    //
     element.initialState = getInitialState(element);
     const html = (0, Transpile_1.default)(element.outerHTML, exports.templateConfig);
     textarea.innerHTML = html;
-    return new Function(`
-		var Model = this;
-		function safe(execute){
-			try{return execute()}catch(err){return ''}
+    return new Function('$element', `
+		var $data = this;
+		function safe(execute, val){
+			try{return execute()}catch(err){return val || ''}
 		}
-		with( Model ){
+		with( $data ){
 			var output = '${textarea.value
         .replace(/<%=(.+?)%>/g, `'+safe(function(){return $1;})+'`)
         .replace(/<%(.+?)%>/g, `';$1\noutput+='`)}'
-
 			return output
 		}
 	`);

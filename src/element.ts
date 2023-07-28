@@ -22,7 +22,6 @@ export default function Element(module, dependencies, templates, components) {
 		}
 
 		connectedCallback() {
-
 			this.base.render()
 
 			if( this.returns && this.returns.constructor === Promise ) {
@@ -40,9 +39,9 @@ export default function Element(module, dependencies, templates, components) {
 			this.options.unmount(this.base)
 			rAF(() => {
 				if(!document.body.contains(this) ) {
-					this.__events = null
-					this.base.elm = null
-					this.base = null
+					this.__events? this.__events = null : null
+					this.base? this.base.elm = null : null
+					this.base? this.base = null : null
 					purge(this)
 				}
 			})

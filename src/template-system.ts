@@ -8,23 +8,21 @@ export const templateConfig = {
 }
 
 export default function Template(element) {
-	//
 
 	element.initialState = getInitialState( element )
 
 	const html = Transpile(element.outerHTML, templateConfig)
 	textarea.innerHTML = html
 
-	return new Function(`
-		var Model = this;
-		function safe(execute){
-			try{return execute()}catch(err){return ''}
+	return new Function('$element',`
+		var $data = this;
+		function safe(execute, val){
+			try{return execute()}catch(err){return val || ''}
 		}
-		with( Model ){
+		with( $data ){
 			var output = '${textarea.value
 				.replace(/<%=(.+?)%>/g, `'+safe(function(){return $1;})+'`)
 				.replace(/<%(.+?)%>/g, `';$1\noutput+='`)}'
-
 			return output
 		}
 	`)

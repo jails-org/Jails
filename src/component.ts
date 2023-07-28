@@ -85,7 +85,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			state.data = Object.assign(state.data, data)
 
 			const newdata = dup(state.data)
-			const newhtml = base.template.call(options.view(newdata))
+			const newhtml = base.template.call(options.view(newdata), elm)
 
 			morphdom(elm, newhtml, morphdomOptions(elm, options))
 
@@ -113,8 +113,8 @@ const getOptions = (module) => ({
 
 const morphdomOptions = (_parent, options ) => ({
 
-	onNodeAdded: onUpdates(_parent, options),
-	onElUpdated: onUpdates(_parent, options),
+	onNodeAdded: checkStatic,
+	onElUpdated: checkStatic,
 	onBeforeElChildrenUpdated: checkStatic,
 	onBeforeElUpdated: checkStatic,
 
@@ -127,31 +127,10 @@ const morphdomOptions = (_parent, options ) => ({
 })
 
 const checkStatic = (node) => {
-	if ('html-static' in node.attributes) {
-		return false
-	}
-}
-
-const onUpdates = (_parent, options) => (node) => {
-
-	if (node.nodeType === 1) {
-
-		if (node.getAttribute && node.getAttribute('html-scope')) {
-			const json = node.getAttribute('html-scope').replace(/\"/, "'")
-			const scope = (new Function(`return ${json}`))()
-			rAF(_ => {
-				Array.from(node.querySelectorAll('[tplid]'))
-					.map((el) => {
-						const data = Object.assign({}, _parent.base.state.getRaw(), scope)
-						options.onupdate(data)
-						el.base.render(data)
-					})
-			})
-
-			// Commenting to avoid unecessary dom updates
-			// node.removeAttribute('scope')
+	if( node.nodeType == 1 ) {
+		if (('html-static' in node.attributes) || node.getAttribute('tplid')) {
+			return false
 		}
 	}
-
 	return node
 }

@@ -18,9 +18,9 @@ export default function Transpile(html, config) {
 			const varname = split[1]
 			const object = split[2]
 			element.removeAttribute('html-for')
-			const open = document.createTextNode(`<% for(var $index in ${object}){ var $key = $index; var ${varname} = ${object}[$index]; var scope = {}; scope.$index = $index; scope.$key = $key; scope.${varname} = ${object}[$index];  %>`)
+			const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} })){ var $key = $index; var ${varname} = ${object}[$index]; var scope = { $key: $key, $index:$key, ${varname}:${object}[$index]}; %>`)
 			const close = document.createTextNode(`<%}%>`)
-			element.setAttribute('html-scope', `<%=JSON.stringify(scope).replace(/\"/g, "'")%>`)
+			element.setAttribute('html-scope', `<%=JSON.stringify(scope).replace(/\"/g, "'") %>`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {
