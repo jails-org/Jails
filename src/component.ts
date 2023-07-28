@@ -113,8 +113,8 @@ const getOptions = (module) => ({
 
 const morphdomOptions = (_parent, options ) => ({
 
-	onNodeAdded: checkStatic,
-	onElUpdated: checkStatic,
+	onNodeAdded: onUpdates,
+	onElUpdated: onUpdates,
 	onBeforeElChildrenUpdated: checkStatic,
 	onBeforeElUpdated: checkStatic,
 
@@ -127,10 +127,19 @@ const morphdomOptions = (_parent, options ) => ({
 })
 
 const checkStatic = (node) => {
-	if( node.nodeType == 1 ) {
-		if (('html-static' in node.attributes) || node.getAttribute('tplid')) {
+	if ('html-static' in node.attributes) {
+		return false
+	}
+}
+
+const onUpdates = (node) => {
+
+	if (node.nodeType === 1) {
+
+		if ( node.getAttribute('tplid') ) {
 			return false
 		}
 	}
+
 	return node
 }

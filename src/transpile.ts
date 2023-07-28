@@ -1,15 +1,16 @@
+const parser = new DOMParser()
 
 export default function Transpile(html, config) {
 
 	const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
-	const virtual = document.createElement('template')
+	const virtual = parser.parseFromString(html.replace(/<\/?template[^>]*>/g, ''), 'text/html')
 
-	virtual.innerHTML = html.replace(/<\/?template[^>]*>/g, '')
+	virtual.documentElement.innerHTML = html.replace(/<\/?template[^>]*>/g, '')
 
-	Array.from(virtual.content.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]')).forEach((element) => {
+	Array.from(virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]')).forEach((element) => {
 
-		const htmlFor = element.getAttribute('html-for')
-		const htmlIf = element.getAttribute('html-if')
+		const htmlFor 	= element.getAttribute('html-for')
+		const htmlIf 	= element.getAttribute('html-if')
 		const htmlInner = element.getAttribute('html-inner')
 		const htmlClass = element.getAttribute('html-class')
 
@@ -20,7 +21,6 @@ export default function Transpile(html, config) {
 			element.removeAttribute('html-for')
 			const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} })){ var $key = $index; var ${varname} = ${object}[$index]; var scope = { $key: $key, $index:$key, ${varname}:${object}[$index]}; %>`)
 			const close = document.createTextNode(`<%}%>`)
-			element.setAttribute('html-scope', `<%=JSON.stringify(scope).replace(/\"/g, "'") %>`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {
@@ -38,8 +38,9 @@ export default function Transpile(html, config) {
 			element.className += ` <%=${htmlClass}%>`
 		}
 	})
+
 	return (
-		virtual.innerHTML
+		virtual.documentElement.innerHTML
 			.replace(regexTags, '<%=$1%>')
 			// Booleans
 			// https://meiert.com/en/blog/boolean-attributes-of-html/

@@ -794,11 +794,12 @@ var morphdom = morphdomFactory(morphAttrs);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const parser = new DOMParser();
 function Transpile(html, config) {
     const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g');
-    const virtual = document.createElement('template');
-    virtual.innerHTML = html.replace(/<\/?template[^>]*>/g, '');
-    Array.from(virtual.content.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]')).forEach((element) => {
+    const virtual = parser.parseFromString(html.replace(/<\/?template[^>]*>/g, ''), 'text/html');
+    virtual.documentElement.innerHTML = html.replace(/<\/?template[^>]*>/g, '');
+    Array.from(virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]')).forEach((element) => {
         const htmlFor = element.getAttribute('html-for');
         const htmlIf = element.getAttribute('html-if');
         const htmlInner = element.getAttribute('html-inner');
@@ -828,7 +829,7 @@ function Transpile(html, config) {
             element.className += ` <%=${htmlClass}%>`;
         }
     });
-    return (virtual.innerHTML
+    return (virtual.documentElement.innerHTML
         .replace(regexTags, '<%=$1%>')
         // Booleans
         // https://meiert.com/en/blog/boolean-attributes-of-html/
@@ -961,8 +962,8 @@ const getOptions = (module) => ({
     view: module.view ? module.view : (a) => a
 });
 const morphdomOptions = (_parent, options) => ({
-    onNodeAdded: checkStatic,
-    onElUpdated: checkStatic,
+    onNodeAdded: onUpdates,
+    onElUpdated: onUpdates,
     onBeforeElChildrenUpdated: checkStatic,
     onBeforeElUpdated: checkStatic,
     getNodeKey(node) {
@@ -973,8 +974,13 @@ const morphdomOptions = (_parent, options) => ({
     }
 });
 const checkStatic = (node) => {
-    if (node.nodeType == 1) {
-        if (('html-static' in node.attributes) || node.getAttribute('tplid')) {
+    if ('html-static' in node.attributes) {
+        return false;
+    }
+};
+const onUpdates = (node) => {
+    if (node.nodeType === 1) {
+        if (node.getAttribute('tplid')) {
             return false;
         }
     }
