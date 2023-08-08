@@ -7,25 +7,12 @@ import { publish, subscribe } from './utils/pubsub'
 
 export default function Component( elm, { module, dependencies, templates, components }) {
 
-	let scope = {}
 	const options = getOptions( module )
 	buildtemplates( elm, components, templates )
 	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
-
-	// Ugly, but's important...
-	if( $scopes[tplid] ) {
-		if( $scopes[tplid].length ) {
-			scope = $scopes[tplid].shift();
-			if( !$scopes[tplid].length ) {
-				delete $scopes[tplid]
-			}
-		}else {
-			delete $scopes[tplid]
-		}
-	}
-
+	const scope = $scopes[tplid] && $scopes[tplid].length? $scopes[tplid].shift() : {}
 	state.data = Object.assign(scope, state.data, elm.initialState? JSON.parse(elm.initialState) : null)
 
 	const base = {
@@ -131,10 +118,10 @@ const morphdomOptions = (_parent ) => ({
 	onBeforeElUpdated: checkStatic,
 
 	getNodeKey(node) {
-		if (node.nodeType === 1 && node.getAttribute('tplid')){
-			return 'key' in node.attributes? node.attributes.key.value : node.getAttribute('tplid')
-		}
-		return false
+		// if (node.nodeType === 1 && node.getAttribute('tplid')){
+		// 	return 'key' in node.attributes? node.attributes.key.value : node.getAttribute('tplid')
+		// }
+		// return false
 	}
 })
 

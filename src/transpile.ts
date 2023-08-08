@@ -1,3 +1,5 @@
+import { uuid } from "./utils"
+
 const parser = new DOMParser()
 
 export default function Transpile(html, config, $scopes) {
@@ -24,7 +26,7 @@ export default function Transpile(html, config, $scopes) {
 			const ids = Array.from(element.querySelectorAll('[tplid]:not([html-for] [tplid])')).map((cp) => {
 				const tplid = cp.getAttribute('tplid')
 				$scopes[tplid] = []
-				return tplid.toString()
+				return tplid
 			})
 
 			const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} }) ){ ${JSON.stringify(ids)}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$index], $index: +$index, $key: $index } } }); %>`)
