@@ -7,12 +7,25 @@ import { publish, subscribe } from './utils/pubsub'
 
 export default function Component( elm, { module, dependencies, templates, components }) {
 
+	let scope = {}
 	const options = getOptions( module )
 	buildtemplates( elm, components, templates )
 	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
-	const scope = $scopes[tplid] && $scopes[tplid].length? $scopes[tplid].shift() : {}
+
+	// Ugly, but's important...
+	if( $scopes[tplid] ) {
+		if( $scopes[tplid].length ) {
+			scope = $scopes[tplid].shift();
+			if( !$scopes[tplid].length ) {
+				delete $scopes[tplid]
+			}
+		}else {
+			delete $scopes[tplid]
+		}
+	}
+
 	state.data = Object.assign(scope, state.data, elm.initialState? JSON.parse(elm.initialState) : null)
 
 	const base = {
