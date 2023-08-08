@@ -3,6 +3,8 @@ import { uuid } from './utils'
 
 const textarea = document.createElement('textarea')
 
+export const $scopes = {}
+
 export const templateConfig = {
 	tags: ['${', '}']
 }
@@ -10,15 +12,16 @@ export const templateConfig = {
 export default function Template(element) {
 
 	element.initialState = getInitialState( element )
-
-	const html = Transpile(element.outerHTML, templateConfig)
+	const html = Transpile(element.outerHTML, templateConfig, $scopes)
 	textarea.innerHTML = html
 
-	return new Function('$element',`
+	return new Function('$element', '$scopes',`
 		var $data = this;
+
 		function safe(execute, val){
 			try{return execute()}catch(err){return val || ''}
 		}
+
 		with( $data ){
 			var output = '${textarea.value
 				.replace(/<%=(.+?)%>/g, `'+safe(function(){return $1;})+'`)

@@ -1,13 +1,13 @@
 const parser = new DOMParser()
 
-export default function Transpile(html, config) {
+export default function Transpile(html, config, $scopes) {
 
 	const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
 	const virtual = parser.parseFromString(html.replace(/<\/?template[^>]*>/g, ''), 'text/html')
 
 	virtual.documentElement.innerHTML = html.replace(/<\/?template[^>]*>/g, '')
 
-	Array.from(virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]')).forEach((element) => {
+	virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]').forEach((element) => {
 
 		const htmlFor 	= element.getAttribute('html-for')
 		const htmlIf 	= element.getAttribute('html-if')
@@ -18,9 +18,17 @@ export default function Transpile(html, config) {
 			const split = htmlFor.match(/(.*)\sin\s(.*)/) || ''
 			const varname = split[1]
 			const object = split[2]
+
 			element.removeAttribute('html-for')
-			const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} })){ var $key = $index; var ${varname} = ${object}[$index]; var scope = { $key: $key, $index:$key, ${varname}:${object}[$index]}; %>`)
-			const close = document.createTextNode(`<%}%>`)
+
+			const ids = Array.from(element.querySelectorAll('[tplid]:not([html-for] [tplid])')).map((cp) => {
+				const tplid = cp.getAttribute('tplid')
+				$scopes[tplid] = []
+				return tplid.toString()
+			})
+
+			const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} }) ){ ${JSON.stringify(ids)}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$index], $index: +$index, $key: $index } } }); %>`)
+			const close = document.createTextNode(`<% }; %>`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {
@@ -40,7 +48,7 @@ export default function Transpile(html, config) {
 	})
 
 	return (
-		virtual.documentElement.innerHTML
+		virtual.body.innerHTML
 			.replace(regexTags, '<%=$1%>')
 			// Booleans
 			// https://meiert.com/en/blog/boolean-attributes-of-html/
