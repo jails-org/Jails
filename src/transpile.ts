@@ -29,13 +29,13 @@ export default function Transpile(html, config, $scopes) {
 				return tplid
 			})
 
-			const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} }) ){ ${JSON.stringify(ids)}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$index], $index: +$index, $key: $index } } }); %>`)
+			const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} }) ){ var $key = $index; var ${varname} = ${object}[$index]; ${JSON.stringify(ids)}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$index], $index: +$index, $key: $index } } }); %>`)
 			const close = document.createTextNode(`<% }; %>`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {
 			element.removeAttribute('html-if')
-			const open = document.createTextNode(`<% if ( safe(function(){return ${htmlIf};}) ){ %>`)
+			const open = document.createTextNode(`<% if ( ${htmlIf} ){ %>`)
 			const close = document.createTextNode(`<% } %>`)
 			wrap(open, element, close)
 		}
@@ -54,7 +54,7 @@ export default function Transpile(html, config, $scopes) {
 			.replace(regexTags, '<%=$1%>')
 			// Booleans
 			// https://meiert.com/en/blog/boolean-attributes-of-html/
-			.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `<%if(safe(function(){ return $2})){%>$1<%}%>`)
+			.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `<%if($2){%>$1<%}%>`)
 			// The rest
 			.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
 				if (key === 'key' || key === 'model' || key == 'scope') {
@@ -62,7 +62,7 @@ export default function Transpile(html, config, $scopes) {
 				}
 				if (value) {
 					value = value.replace(/^{|}$/g, '')
-					return `<%if ( safe(function(){ return ${value}} ) ) {%> ${key}="<%=${value}%>" <%}%>`
+					return `<%if ( ${value} ) {%> ${key}="<%=${value}%>" <%}%>`
 				} else {
 					return all
 				}
