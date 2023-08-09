@@ -1,5 +1,3 @@
-import { uuid } from "./utils"
-
 const parser = new DOMParser()
 
 export default function Transpile(html, config, $scopes) {
@@ -29,8 +27,8 @@ export default function Transpile(html, config, $scopes) {
 				return tplid
 			})
 
-			const open = document.createTextNode(`<% for(var $index in safe(function(){ return ${object} }) ){ var $key = $index; var ${varname} = ${object}[$index]; ${JSON.stringify(ids)}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$index], $index: +$index, $key: $index } } }); %>`)
-			const close = document.createTextNode(`<% }; %>`)
+			const open = document.createTextNode(`<%(function(){ var idx = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids)}.map(function(id){ if($scopes[id]) { $scopes[id][idx] = { ${varname}: ${object}[$key], $index: idx, $key: $key } } }); %>`)
+			const close = document.createTextNode(`<% idx++}})() %>`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {

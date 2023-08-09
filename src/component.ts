@@ -8,7 +8,9 @@ import { publish, subscribe } from './utils/pubsub'
 export default function Component( elm, { module, dependencies, templates, components }) {
 
 	const options = getOptions( module )
+
 	buildtemplates( elm, components, templates )
+
 	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
@@ -111,18 +113,10 @@ const getOptions = (module) => ({
 })
 
 const morphdomOptions = (_parent ) => ({
-
 	onNodeAdded: onUpdates,
 	onElUpdated: onUpdates,
 	onBeforeElChildrenUpdated: checkStatic,
-	onBeforeElUpdated: checkStatic,
-
-	getNodeKey(node) {
-		// if (node.nodeType === 1 && node.getAttribute('tplid')){
-		// 	return 'key' in node.attributes? node.attributes.key.value : node.getAttribute('tplid')
-		// }
-		// return false
-	}
+	onBeforeElUpdated: checkStatic
 })
 
 const checkStatic = (node) => {
