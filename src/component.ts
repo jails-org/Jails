@@ -1,15 +1,15 @@
 import morphdom from 'morphdom'
 
 import { rAF, dup } from './utils'
-import { buildtemplates, $scopes } from './template-system'
+import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe } from './utils/pubsub'
 
-export default function Component( elm, { module, dependencies, templates, components }) {
+export default function Component( elm, { module, dependencies, templates, components, $scopes }) {
 
 	const options = getOptions( module )
 
-	buildtemplates( elm, components, templates )
+	buildtemplates( elm, components, templates, $scopes )
 
 	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null

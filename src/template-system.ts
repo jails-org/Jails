@@ -3,13 +3,11 @@ import { uuid } from './utils'
 
 const textarea = document.createElement('textarea')
 
-export const $scopes = {}
-
 export const templateConfig = {
 	tags: ['${', '}']
 }
 
-export default function Template(element) {
+export default function Template(element, $scopes) {
 
 	element.initialState = getInitialState( element )
 	const html = Transpile(element.outerHTML, templateConfig, $scopes)
@@ -31,25 +29,25 @@ export default function Template(element) {
 	`)
 }
 
-export const buildtemplates = ( target, components, templates ) => {
+export const buildtemplates = ( target, components, templates, $scopes ) => {
 	return Array
 		.from(target.querySelectorAll('*'))
 		.filter((node) => node.tagName.toLowerCase() in components)
 		.reverse()
 		.map((node) => {
 			Array.from(node.querySelectorAll('template'))
-				.map((template) => buildtemplates(template.content, components, templates))
-			createTemplateId(node, templates)
+				.map((template) => buildtemplates(template.content, components, templates, $scopes))
+			createTemplateId(node, templates, $scopes)
 			return node
 		})
 }
 
-const createTemplateId = (element, templates ) => {
+const createTemplateId = (element, templates, $scopes ) => {
 	const tplid = element.getAttribute('tplid')
 	if (!tplid) {
 		const id = uuid()
 		element.setAttribute('tplid', id)
-		templates[id] = Template(element)
+		templates[id] = Template(element, $scopes)
 	}
 }
 

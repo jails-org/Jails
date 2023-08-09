@@ -9,19 +9,22 @@ export default function Transpile(html, config, $scopes) {
 
 	virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]').forEach((element) => {
 
+		const htmlForeach = element.getAttribute('html-foreach')
 		const htmlFor 	= element.getAttribute('html-for')
 		const htmlIf 	= element.getAttribute('html-if')
 		const htmlInner = element.getAttribute('html-inner')
 		const htmlClass = element.getAttribute('html-class')
+		const forEachInstruction = htmlFor || htmlForeach
 
-		if (htmlFor) {
-			const split = htmlFor.match(/(.*)\sin\s(.*)/) || ''
+		if ( forEachInstruction ) {
+			const selector = htmlFor? 'html-for': 'html-foreach'
+			const split = forEachInstruction.match(/(.*)\sin\s(.*)/) || ''
 			const varname = split[1]
 			const object = split[2]
 
-			element.removeAttribute('html-for')
+			element.removeAttribute(selector)
 
-			const ids = Array.from(element.querySelectorAll('[tplid]:not([html-for] [tplid])')).map((cp) => {
+			const ids = Array.from(element.querySelectorAll(`[tplid]:not([${selector}] [tplid])`)).map((cp) => {
 				const tplid = cp.getAttribute('tplid')
 				$scopes[tplid] = []
 				return tplid
