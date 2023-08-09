@@ -3,14 +3,18 @@ import { uuid } from './utils'
 
 const textarea = document.createElement('textarea')
 
-export const templateConfig = {
+const config = {
 	tags: ['${', '}']
+}
+
+export const templateConfig = (newconfig) => {
+	Object.assign(config, newconfig)
 }
 
 export default function Template(element, $scopes) {
 
 	element.initialState = getInitialState( element )
-	const html = Transpile(element.outerHTML, templateConfig, $scopes)
+	const html = Transpile(element.outerHTML, config, $scopes)
 	textarea.innerHTML = html
 
 	return new Function('$element', '$scopes',`
