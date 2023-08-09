@@ -23,7 +23,7 @@ export default function Template(element) {
 		}
 
 		with( $data ){
-			var output = '${textarea.value
+			var output = '${textarea.value.replace(/\n/g, '')
 				.replace(/<%=(.+?)%>/g, `'+safe(function(){return $1;})+'`)
 				.replace(/<%(.+?)%>/g, `';$1\noutput+='`)}'
 			return output
