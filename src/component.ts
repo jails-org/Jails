@@ -1,19 +1,21 @@
 import morphdom from 'morphdom'
 
-import { rAF, dup, buildtemplates } from './utils'
+import { rAF, dup } from './utils'
+import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe } from './utils/pubsub'
 
-export default function Component( elm, { module, dependencies, templates, components }) {
+export default function Component( elm, { module, dependencies, templates, components, $scopes }) {
 
 	const options = getOptions( module )
-	buildtemplates( elm, components, templates )
+
+	buildtemplates( elm, components, templates, $scopes )
 
 	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
-
-	state.data = Object.assign( state.data, elm.initialState? JSON.parse(elm.initialState) : null)
+	const scope = $scopes[tplid] && $scopes[tplid].length? $scopes[tplid].shift() : {}
+	state.data = Object.assign(scope, state.data, elm.initialState? JSON.parse(elm.initialState) : null)
 
 	const base = {
 		template,
@@ -69,6 +71,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			get() {
 				return dup(state.data)
 			},
+
 			getRaw(){
 				return state.data
 			}
@@ -83,15 +86,18 @@ export default function Component( elm, { module, dependencies, templates, compo
 			state.data = Object.assign(state.data, data)
 
 			const newdata = dup(state.data)
-			const newhtml = base.template(options.view(newdata))
+			const newhtml = base.template.call(options.view(newdata), elm, $scopes)
 
 			morphdom(elm, newhtml, morphdomOptions(elm, options))
 
 			rAF(_ => {
-				Array.from(elm.querySelectorAll('[tplid]')).forEach((child: any) => {
-					child.options.onupdate(newdata)
-					child.base.render(newdata)
-				})
+				Array
+					.from(elm.querySelectorAll('[tplid]'))
+					.forEach((child: any) => {
+						const data = Object.assign( child.base.state.getRaw(), newdata)
+						child.options.onupdate(data)
+						child.base.render(data)
+					})
 			})
 		}
 	}
@@ -106,21 +112,11 @@ const getOptions = (module) => ({
 	view: module.view ? module.view : (a) => a
 })
 
-const morphdomOptions = (_parent, options ) => ({
-
-	onNodeAdded: onUpdates(_parent, options),
-	onElUpdated: onUpdates(_parent, options),
+const morphdomOptions = (_parent ) => ({
+	onNodeAdded: onUpdates,
+	onElUpdated: onUpdates,
 	onBeforeElChildrenUpdated: checkStatic,
-	onBeforeElUpdated: checkStatic,
-
-	getNodeKey(node) {
-		if( node.nodeType === 1 ){
-			if( node.id ) return node.id
-			else if( node.getAttribute('tplid') ) return node.getAttribute('tplid')
-			else if( node.getAttribute('html-key') ) return node.getAttribute('html-key')
-		}
-		return false
-	}
+	onBeforeElUpdated: checkStatic
 })
 
 const checkStatic = (node) => {
@@ -130,25 +126,11 @@ const checkStatic = (node) => {
 	}
 }
 
-const onUpdates = (_parent, options) => (node) => {
-
+const onUpdates = (node) => {
 	if (node.nodeType === 1) {
-
-		if (node.getAttribute && node.getAttribute('scope')) {
-			const json = node.getAttribute('scope')
-			const scope = (new Function(`return ${json}`))()
-			rAF(_ => {
-				Array.from(node.querySelectorAll('[tplid]'))
-					.map((el) => {
-						const data = Object.assign({}, _parent.base.state.getRaw(), scope)
-						options.onupdate(data)
-						el.base.render(data)
-					})
-			})
-			// Commenting to avoid unecessary dom updates
-			// node.removeAttribute('scope')
+		if ( node.getAttribute('tplid') ) {
+			return false
 		}
 	}
-
 	return node
 }

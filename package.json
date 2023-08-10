@@ -38,7 +38,6 @@
 		"webpack-cli": "^3.2.1"
 	},
 	"dependencies": {
-		"morphdom": "^2.7.0",
-		"squirrelly": "^9.0.0"
+		"morphdom": "^2.7.0"
 	}
 }
