@@ -1,6 +1,6 @@
 {
 	"name": "jails-js",
-	"version": "5.1.1",
+	"version": "5.1.2",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"main": "dist/index.js",
 	"types": "types/index.d.ts",

@@ -28,7 +28,7 @@ export default function Transpile(html, config, $scopes) {
 				return tplid
 			})
 
-			const open = document.createTextNode(`<%(function(){ var idx = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids)}.map(function(id){ if($scopes[id]) { $scopes[id][idx] = { ${varname}: ${object}[$key], $index: idx, $key: $key } } }); %>`)
+			const open = document.createTextNode(`<%(function(){ var idx = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids).replace(/\"/g, "'")}.map(function(id){ if($scopes[id]) { $scopes[id][idx] = { ${varname}: ${object}[$key], $index: idx, $key: $key } } }); %>`)
 			const close = document.createTextNode(`<% idx++}})() %>`)
 			wrap(open, element, close)
 		}
