@@ -7,7 +7,7 @@
 <p align="center"><em>Elegant and Minimalistic Javascript Application Library</em></p>
 
 <div align="center">
-    <img src="https://badge.fury.io/js/jails-js.svg?v5" alt="NPM Jails Version" />
+    <img src="https://badge.fury.io/js/jails-js.svg?v5.1" alt="NPM Jails Version" />
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
 <p align="center"><a href="https://jails-org.github.io/">Documentation</a></p>
