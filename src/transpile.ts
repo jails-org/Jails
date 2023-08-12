@@ -5,8 +5,6 @@ export default function Transpile(html, config, $scopes) {
 	const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
 	const virtual = parser.parseFromString(html.replace(/<\/?template[^>]*>/g, ''), 'text/html')
 
-	virtual.documentElement.innerHTML = html.replace(/<\/?template[^>]*>/g, '')
-
 	virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]').forEach((element) => {
 
 		const htmlForeach = element.getAttribute('html-foreach')

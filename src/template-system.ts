@@ -14,8 +14,8 @@ export const templateConfig = (newconfig) => {
 export default function Template(element, $scopes) {
 
 	element.initialState = getInitialState( element )
-	const html = Transpile(element.outerHTML, config, $scopes)
-	textarea.innerHTML = html
+	// The line below has potential bug, needs improvement.
+	textarea.innerHTML = Transpile(element.outerHTML.replace(/(?!".*)\'(?!.*")/g, "\\'"), config, $scopes)
 
 	return new Function('$element', '$scopes',`
 		var $data = this;
@@ -25,9 +25,11 @@ export default function Template(element, $scopes) {
 		}
 
 		with( $data ){
-			var output = '${textarea.value.replace(/\n/g, '')
+			var output = '${textarea.value
+				.replace(/\n/g, '')
 				.replace(/<%=(.+?)%>/g, `'+safe(function(){return $1;})+'`)
-				.replace(/<%(.+?)%>/g, `';$1\noutput+='`)}'
+				.replace(/<%(.+?)%>/g, `';$1\noutput+='`)
+			}'
 			return output
 		}
 	`)
