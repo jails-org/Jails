@@ -15,7 +15,7 @@ export default function Template(element, $scopes) {
 
 	element.initialState = getInitialState( element )
 	// The line below has potential bug, needs improvement.
-	textarea.innerHTML = Transpile(element.outerHTML.replace(/(?!".*)\'(?!.*")/g, "\\'"), config, $scopes)
+	textarea.innerHTML = Transpile(element.outerHTML.replace(/(?!.*["{])\'(?!.*["}])/g, "\\'"), config, $scopes)
 
 	return new Function('$element', '$scopes',`
 		var $data = this;
