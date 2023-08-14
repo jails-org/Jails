@@ -13,7 +13,6 @@ export const templateConfig = (newconfig) => {
 
 export default function Template(element, $scopes) {
 
-	element.initialState = getInitialState( element )
 	textarea.innerHTML = Transpile(element.outerHTML, config, $scopes)
 	const decodedHTML = JSON.stringify(textarea.value)
 
@@ -54,9 +53,3 @@ const createTemplateId = (element, templates, $scopes ) => {
 	}
 }
 
-const getInitialState = (element) => {
-	const initialState = element.getAttribute('html-model')
-	if( !initialState ) return null
-	element.removeAttribute('html-model')
-	return JSON.stringify((new Function(`return ${initialState}`))())
-}

@@ -11,11 +11,13 @@ export default function Component( elm, { module, dependencies, templates, compo
 
 	buildtemplates( elm, components, templates, $scopes )
 
+	const htmlModel = elm.getAttribute('html-model')
+	const initialState = htmlModel? (new Function(`return ${htmlModel}`))() : {}
 	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 	const scope = $scopes[tplid] && $scopes[tplid].length? $scopes[tplid].shift() : {}
-	state.data = Object.assign(scope, state.data, elm.initialState? JSON.parse(elm.initialState) : null)
+	state.data = Object.assign(scope, state.data, initialState)
 
 	const base = {
 		template,
@@ -120,7 +122,6 @@ const morphdomOptions = (_parent ) => ({
 })
 
 const checkStatic = (node) => {
-
 	if ('html-static' in node.attributes) {
 		return false
 	}
