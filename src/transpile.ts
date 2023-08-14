@@ -28,8 +28,8 @@ export default function Transpile(html, config, $scopes) {
 				return tplid
 			})
 
-			const open = document.createTextNode(`<%(function(){ var idx = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids).replace(/\"/g, "'")}.map(function(id){ if($scopes[id]) { $scopes[id][idx] = { ${varname}: ${object}[$key], $index: idx, $key: $key } } }); %>`)
-			const close = document.createTextNode(`<% idx++}})() %>`)
+			const open = document.createTextNode(`<%(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids).replace(/\"/g, "'")}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$key], $index: $index, $key: $key } } }); %>`)
+			const close = document.createTextNode(`<% $index++}})() %>`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {
