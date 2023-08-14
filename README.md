@@ -27,7 +27,7 @@ The Javascript ecossystem, browsers and tooling has evolved through these years 
 
 Jails was designed to be:
 - **Decoupled** - Back-end agnostic, can be used with any back-end framework or language, does not import styles and does not mix html in the code.
-- **Lightweight** - It's a very lightweight library (~9kb gzipped) and it makes your application progressively lite by keeping html away from your javascript code and therefore smaller bundles.
+- **Lightweight** - It's a very lightweight library (~5kb gzipped) and it makes your application progressively lite by keeping html away from your javascript code and therefore smaller bundles.
 - **Interoperable** - It can be integrated and work with any other vanilla ui or behavioral libraries, so you don't have to wait for a Jails chartjs library in order to use, just integrate it in your app without pain.
 
 <br clear="all" />
