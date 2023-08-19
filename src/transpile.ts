@@ -61,7 +61,7 @@ export default function Transpile(html, config, $scopes) {
 				}
 				if (value) {
 					value = value.replace(/^{|}$/g, '')
-					return `<%if ( safe(function(){ return ${value} }) ) {%> ${key}="<%=${value}%>" <%}%>`
+					return `${key}="<%=safe(function(){ return ${value} })%>"`
 				} else {
 					return all
 				}
