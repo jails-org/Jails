@@ -28,32 +28,32 @@ export default function Transpile(html, config, $scopes) {
 				return tplid
 			})
 
-			const open = document.createTextNode(`<%(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids).replace(/\"/g, "'")}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$key], $index: $index, $key: $key } } }); %>`)
-			const close = document.createTextNode(`<% $index++}})() %>`)
+			const open = document.createTextNode(`%%_(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids).replace(/\"/g, "'")}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$key], $index: $index, $key: $key } } }); _%%`)
+			const close = document.createTextNode(`%%_ $index++}})() _%%`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {
 			element.removeAttribute('html-if')
-			const open = document.createTextNode(`<% if ( safe(function(){ return ${htmlIf} }) ){ %>`)
-			const close = document.createTextNode(`<% } %>`)
+			const open = document.createTextNode(`%%_ if ( safe(function(){ return ${htmlIf} }) ){ _%%`)
+			const close = document.createTextNode(`%%_ } _%%`)
 			wrap(open, element, close)
 		}
 		if (htmlInner) {
 			element.removeAttribute('html-inner')
-			element.innerHTML = `<%=${htmlInner}%>`
+			element.innerHTML = `%%_=${htmlInner}_%%`
 		}
 		if (htmlClass) {
 			element.removeAttribute('html-class')
-			element.className += ` <%=${htmlClass}%>`
+			element.className += ` %%_=${htmlClass}_%%`
 		}
 	})
 
 	return (
 		virtual.body.innerHTML
-			.replace(regexTags, '<%=$1%>')
+			.replace(regexTags, '%%_=$1_%%')
 			// Booleans
 			// https://meiert.com/en/blog/boolean-attributes-of-html/
-			.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `<%if(safe(function(){ return $2 })){%>$1<%}%>`)
+			.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`)
 			// The rest
 			.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
 				if (key === 'key' || key === 'model' || key == 'scope') {
@@ -61,7 +61,7 @@ export default function Transpile(html, config, $scopes) {
 				}
 				if (value) {
 					value = value.replace(/^{|}$/g, '')
-					return `${key}="<%=safe(function(){ return ${value} })%>"`
+					return `${key}="%%_=safe(function(){ return ${value} })_%%"`
 				} else {
 					return all
 				}
