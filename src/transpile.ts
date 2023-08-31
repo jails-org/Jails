@@ -44,7 +44,7 @@ export default function Transpile(html, config, $scopes) {
 		}
 		if (htmlClass) {
 			element.removeAttribute('html-class')
-			element.className += ` %%_=${htmlClass}_%%`
+			element.className = (element.className + ` %%_=${htmlClass}_%%`).trim()
 		}
 	})
 
