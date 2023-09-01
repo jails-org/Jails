@@ -1,6 +1,8 @@
 import Transpile from './Transpile'
 import { uuid } from './utils'
 
+const textarea = document.createElement('textarea')
+
 const config = {
 	tags: ['${', '}']
 }
@@ -12,7 +14,8 @@ export const templateConfig = (newconfig) => {
 export default function Template(element, $scopes) {
 
 	const html = Transpile(element.outerHTML, config, $scopes)
-	const decodedHTML = JSON.stringify(html)
+	textarea.innerHTML = html
+	const decodedHTML  = JSON.stringify(textarea.value)
 
 	return new Function('$element', '$scopes',`
 		var $data = this;
