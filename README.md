@@ -33,6 +33,69 @@ Jails was designed to be:
 <br clear="all" />
 <br />
 
+## 👩🏻‍💻 Usage
+
+`index.html`
+```html
+....
+
+<app-counter>
+  <template>
+    <h1>${count}</h1>
+    <button data-add>Add</button>
+    <button data-subtract>Subtract</button>
+  </template>
+</app-counter>
+
+<!-- or alternate version ( Considering SSR on page load ) -->
+<app-counter>
+  <h1 html-inner="count">0</h1>
+  <button data-add>Add</button>
+  <button data-subtract>Subtract</button>
+</app-counter>
+```
+
+<br />
+
+`components/counter/index.ts`
+```ts
+export default function appCounter({ main, state ) {
+
+  main( _ => [
+    events
+  ])
+
+  const events = ({ on }) => {
+    on('click', '[data-add]', add)
+  }
+
+  const add = () => {
+    state.set( s => s.count+= 1 )
+  }
+
+  const subtract = () => {
+    state.set( s => s.count-= 1 )
+  }
+}
+```
+
+<br />
+
+`main.ts` 
+```ts
+import jails from 'jails-js'
+import * as appCounter from './components/counter'
+
+// Register all your components
+jails.register('app-counter', appCounter)
+
+// Execute Jails
+jails.start()
+```
+
+<br>
+<br>
+
 ## 🎥 Best Scenarios to use
 Jails is better suited for:
         
