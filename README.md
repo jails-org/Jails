@@ -4,7 +4,7 @@
 
 <h1 align="center">Jails</h1>
 
-<p align="center"><em>Elegant and Minimalistic Javascript Application Library</em></p>
+<h3 align="center"><em>Elegant and Minimalistic Javascript Application Library</em></h3>
 
 <div align="center">
     <img src="https://badge.fury.io/js/jails-js.svg?v5.1" alt="NPM Jails Version" />
@@ -49,6 +49,7 @@ Jails is better suited for:
 - Hugo
 - Astro
 - Jekill
+- 11ty
   ...etc
 
 ... Any site you can add a script tag on it =). So if you already have a engine that renders your html, Jails can be a good way to create an elegant event driven system.
