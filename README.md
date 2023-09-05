@@ -67,6 +67,7 @@ export default function appCounter({ main, state ) {
 
   const events = ({ on }) => {
     on('click', '[data-add]', add)
+    on('click', '[data-subtract]', subtract)
   }
 
   const add = () => {
