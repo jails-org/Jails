@@ -17,13 +17,8 @@ export default function Template(element, $scopes) {
 	textarea.innerHTML = html
 	const decodedHTML  = JSON.stringify(textarea.value)
 
-	return new Function('$element', '$scopes',`
+	return new Function('$element', 'safe', '$scopes',`
 		var $data = this;
-
-		function safe(execute, val){
-			try{return execute()}catch(err){return val || ''}
-		}
-
 		with( $data ){
 			var output=${decodedHTML
 				.replace(/%%_=(.+?)_%%/g, '"+safe(function(){return $1;})+"')

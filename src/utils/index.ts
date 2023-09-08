@@ -36,3 +36,7 @@ export const purge = (d) => {
 		}
 	}
 }
+
+export const safe = (execute, val) => {
+	try{return execute()}catch(err){return val || ''}
+}

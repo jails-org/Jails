@@ -1,6 +1,6 @@
 import morphdom from 'morphdom'
 
-import { rAF, dup } from './utils'
+import { rAF, dup, safe } from './utils'
 import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe } from './utils/pubsub'
@@ -88,7 +88,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			state.data = Object.assign(state.data, data)
 
 			const newdata = dup(state.data)
-			const newhtml = base.template.call(options.view(newdata), elm, $scopes)
+			const newhtml = base.template.call(options.view(newdata), elm, safe, $scopes)
 
 			morphdom(elm, newhtml, morphdomOptions(elm, options))
 
