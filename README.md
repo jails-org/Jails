@@ -4,7 +4,7 @@
 
 <h1 align="center">Jails</h1>
 
-<p align="center"><em>Elegant and Minimalistic Javascript Application Library</em></p>
+<h3 align="center"><em>Elegant and Minimalistic Javascript Application Library</em></h3>
 
 <div align="center">
     <img src="https://badge.fury.io/js/jails-js.svg?v5.1" alt="NPM Jails Version" />
@@ -33,6 +33,70 @@ Jails was designed to be:
 <br clear="all" />
 <br />
 
+## 👩🏻‍💻 Usage
+
+`index.html`
+```html
+....
+
+<app-counter>
+  <template>
+    <h1>${count}</h1>
+    <button data-add>Add</button>
+    <button data-subtract>Subtract</button>
+  </template>
+</app-counter>
+
+<!-- or alternate version ( Considering SSR on page load ) -->
+<app-counter>
+  <h1 html-inner="count">0</h1>
+  <button data-add>Add</button>
+  <button data-subtract>Subtract</button>
+</app-counter>
+```
+
+<br />
+
+`components/counter/index.ts`
+```ts
+export default function appCounter({ main, state ) {
+
+  main( _ => [
+    events
+  ])
+
+  const events = ({ on }) => {
+    on('click', '[data-add]', add)
+    on('click', '[data-subtract]', subtract)
+  }
+
+  const add = () => {
+    state.set( s => s.count+= 1 )
+  }
+
+  const subtract = () => {
+    state.set( s => s.count-= 1 )
+  }
+}
+```
+
+<br />
+
+`main.ts` 
+```ts
+import jails from 'jails-js'
+import * as appCounter from './components/counter'
+
+// Register all your components
+jails.register('app-counter', appCounter)
+
+// Execute Jails
+jails.start()
+```
+
+<br>
+<br>
+
 ## 🎥 Best Scenarios to use
 Jails is better suited for:
         
@@ -49,6 +113,7 @@ Jails is better suited for:
 - Hugo
 - Astro
 - Jekill
+- 11ty
   ...etc
 
 ... Any site you can add a script tag on it =). So if you already have a engine that renders your html, Jails can be a good way to create an elegant event driven system.
