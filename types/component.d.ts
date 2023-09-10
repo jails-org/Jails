@@ -1,8 +1,9 @@
-export default function Component(elm: any, { module, dependencies, templates, components }: {
+export default function Component(elm: any, { module, dependencies, templates, components, $scopes }: {
     module: any;
     dependencies: any;
     templates: any;
     components: any;
+    $scopes: any;
 }): {
     base: {
         template: any;
@@ -20,6 +21,7 @@ export default function Component(elm: any, { module, dependencies, templates, c
         state: {
             set(data: any): Promise<unknown>;
             get(): any;
+            getRaw(): any;
         };
         render(data?: any): void;
     };
