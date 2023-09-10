@@ -1,4 +1,4 @@
-import Transpile from './Transpile'
+import Transpile from './transpile'
 import { uuid } from './utils'
 
 const textarea = document.createElement('textarea')
@@ -30,9 +30,9 @@ export default function Template(element, $scopes) {
 export const buildtemplates = ( target, components, templates, $scopes ) => {
 	return Array
 		.from(target.querySelectorAll('*'))
-		.filter((node) => node.tagName.toLowerCase() in components)
+		.filter((node:HTMLElement) => node.tagName.toLowerCase() in components)
 		.reverse()
-		.map((node) => {
+		.map((node:HTMLElement) => {
 			Array.from(node.querySelectorAll('template'))
 				.map((template) => buildtemplates(template.content, components, templates, $scopes))
 			createTemplateId(node, templates, $scopes)

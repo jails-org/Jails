@@ -24,7 +24,7 @@ const registerComponents = () => {
 	Object
 		.values( components )
 		.forEach( (component) => {
-			const { name, module, dependencies } = component
+			const { name, module, dependencies } = component as any
 			const Base = Element(module, dependencies, templates, components, $scopes)
 			customElements.define(name, Base)
 		})

@@ -90,7 +90,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			const newdata = dup(state.data)
 			const newhtml = base.template.call(options.view(newdata), elm, safe, $scopes)
 
-			morphdom(elm, newhtml, morphdomOptions(elm, options))
+			morphdom(elm, newhtml, morphdomOptions(elm))
 
 			rAF(_ => {
 				Array
