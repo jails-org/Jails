@@ -4,7 +4,7 @@
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"type": "module",
 	"main": "dist/index.js",
-	"types": "types/index.d.ts",
+	"types": "index.d.ts",
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
@@ -30,7 +30,7 @@
 	"homepage": "https://github.com/jails-org/Jails",
 	"devDependencies": {
 		"@types/node": "^20.6.0",
-		"esbuild-minify-templates": "^0.11.0",
+		"terser": "^5.19.4",
 		"typescript": "^5.0.2",
 		"vite": "^4.4.5"
 	},

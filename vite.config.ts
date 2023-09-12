@@ -2,10 +2,10 @@ import { defineConfig } from 'vite'
 import path from 'path'
 
 export default defineConfig({
-	define: {},
 	build: {
-		sourcemap:true,
-		target:'es2015',
+		sourcemap: true,
+		target: 'es2015',
+		minify: 'terser',
 		lib: {
 			name: 'jails',
 			entry: path.resolve('src', 'index.ts'),
