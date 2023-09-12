@@ -3,7 +3,7 @@
 	"version": "5.1.7",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"main": "dist/index.js",
-	"types": "types/index.d.ts",
+	"types": "index.d.ts",
 	"scripts": {
 		"start": "webpack --watch --mode=development",
 		"build": "webpack --mode=production",

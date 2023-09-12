@@ -1,7 +1,22 @@
+
+declare const _default: {
+    register(name: string, module: Module, dependencies?: any): void
+    start(): void
+	templateConfig( options: any ): void
+}
+
+export default _default
+
+export type Module = {
+	default: ((component:Component) => Promise<void> | null )
+	Model?: Model
+	View?: View
+}
+
 export type Component = {
 
 	elm: HTMLElement
-	dependencies: object
+	dependencies: any
 
 	state : {
 		set( data: object ) : void
@@ -9,7 +24,7 @@ export type Component = {
 		get() : object
 	}
 
-	main( mainArgs: ( t: any ) => Array<Function> ): void
+	main( mainArgs: ( t: Component ) => Array<Function> ): void
 
 	publish( name: string, value: any ) : void
 

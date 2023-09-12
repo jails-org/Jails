@@ -1,3 +1,4 @@
+import { type Module } from '..'
 import { templateConfig, buildtemplates } from './template-system'
 import Element from './element'
 
@@ -9,7 +10,7 @@ export default {
 
 	templateConfig,
 
-	register( name:string, module:any, dependencies: object ) {
+	register( name:string, module: Module, dependencies: object ) {
 		components[name] = { name, module, dependencies }
 	},
 
@@ -24,7 +25,7 @@ const registerComponents = () => {
 	Object
 		.values( components )
 		.forEach( (component) => {
-			const { name, module, dependencies } = component
+			const { name, module, dependencies } = component as any
 			const Base = Element(module, dependencies, templates, components, $scopes)
 			customElements.define(name, Base)
 		})
