@@ -1,3 +1,4 @@
+import { type Component } from '..'
 import morphdom from 'morphdom'
 
 import { rAF, dup, safe } from './utils'
@@ -19,7 +20,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 	const scope = $scopes[tplid] && $scopes[tplid].length? $scopes[tplid].shift() : {}
 	state.data = Object.assign(scope, state.data, initialState)
 
-	const base = {
+	const base: Component = {
 		template,
 		elm,
 		dependencies,
