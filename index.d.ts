@@ -8,7 +8,7 @@ declare const _default: {
 export default _default
 
 export type Module = {
-	default: ((component:Component) => Promise<void> | null )
+	default: ((component:Component) => Promise<void> | void )
 	Model?: Model
 	View?: View
 }
