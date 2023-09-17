@@ -19,8 +19,8 @@ export type Component = {
 	dependencies: any
 
 	state : {
-		set( data: object ) : void
-		set( callback: ( state: object ) => any ) : void
+		set( data: object ) : Promise
+		set( callback: ( state: object ) => any ) : Promise
 		get() : object
 	}
 
