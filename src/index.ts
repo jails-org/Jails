@@ -14,9 +14,8 @@ export default {
 		components[name] = { name, module, dependencies }
 	},
 
-	start() {
-		const body = document.body
-		buildtemplates( body, components, templates, $scopes )
+	start( target = document.body ) {
+		buildtemplates( target, components, templates, $scopes )
 		registerComponents()
 	}
 }
