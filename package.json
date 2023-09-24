@@ -2,8 +2,8 @@
 	"name": "jails-js",
 	"version": "5.1.7",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
-	"type": "module",
-	"main": "dist/index.js",
+	"module":"./dist/index.js",
+	"main": "./dist/index.js",
 	"types": "index.d.ts",
 	"scripts": {
 		"dev": "vite",
