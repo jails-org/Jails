@@ -6,15 +6,15 @@ import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe } from './utils/pubsub'
 
-export default function Component( elm, { module, dependencies, templates, components, $scopes }) {
+export default function Component( elm, { module, dependencies, templates, components, $scopes, $initialStates }) {
 
+	const tplid = elm.getAttribute('tplid')
 	const options = getOptions( module )
 
-	buildtemplates( elm, components, templates, $scopes )
+	buildtemplates( elm, components, templates, $scopes, $initialStates )
 
-	const htmlModel = elm.getAttribute('html-model')
-	const initialState = htmlModel? (new Function(`return ${htmlModel}`))() : {}
-	const tplid = elm.getAttribute('tplid')
+	const initialState = $initialStates[tplid] || {}
+
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 	const scope = $scopes[tplid] && $scopes[tplid].length? $scopes[tplid].shift() : {}

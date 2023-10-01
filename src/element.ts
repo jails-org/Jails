@@ -1,7 +1,7 @@
 import Component from './component'
 import { purge, rAF } from './utils'
 
-export default function Element(module, dependencies, templates, components, $scopes) {
+export default function Element(module, dependencies, templates, components, $scopes, $initialStates) {
 
 	return class extends HTMLElement {
 
@@ -13,8 +13,7 @@ export default function Element(module, dependencies, templates, components, $sc
 		constructor() {
 
 			super()
-
-			const { base, options } = Component(this, { module, dependencies, templates, components, $scopes })
+			const { base, options } = Component(this, { module, dependencies, templates, components, $scopes, $initialStates })
 
 			this.base = base
 			this.options = options
@@ -22,6 +21,7 @@ export default function Element(module, dependencies, templates, components, $sc
 		}
 
 		connectedCallback() {
+
 			this.base.render()
 
 			if( this.returns && this.returns.constructor === Promise ) {

@@ -1,18 +1,26 @@
 const parser = new DOMParser()
 
-export default function Transpile(html, config, $scopes) {
+export default function Transpile(html, config, $scopes, $initialStates) {
 
 	const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
 	const virtual = parser.parseFromString(html.replace(/<\/?template[^>]*>/g, ''), 'text/html')
 
-	virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class]').forEach((element) => {
+	virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class], [html-model]').forEach((element) => {
 
 		const htmlForeach = element.getAttribute('html-foreach')
 		const htmlFor 	= element.getAttribute('html-for')
 		const htmlIf 	= element.getAttribute('html-if')
 		const htmlInner = element.getAttribute('html-inner')
 		const htmlClass = element.getAttribute('html-class')
+		const htmlModel = element.getAttribute('html-model')
 		const forEachInstruction = htmlFor || htmlForeach
+
+		if (htmlModel) {
+			const tplid = element.getAttribute('tplid')
+			element.removeAttribute('html-model')
+			const initialState = (new Function( `return ${htmlModel}`))()
+			$initialStates[tplid] = Object.assign($initialStates[tplid] || {}, initialState)
+		}
 
 		if ( forEachInstruction ) {
 			const selector = htmlFor? 'html-for': 'html-foreach'

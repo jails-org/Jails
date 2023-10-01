@@ -11,9 +11,9 @@ export const templateConfig = (newconfig) => {
 	Object.assign(config, newconfig)
 }
 
-export default function Template(element, $scopes) {
+export default function Template(element, $scopes, $initialStates) {
 
-	const html = Transpile(element.outerHTML, config, $scopes)
+	const html = Transpile(element.outerHTML, config, $scopes, $initialStates)
 	textarea.innerHTML = html
 	const decodedHTML  = JSON.stringify(textarea.value)
 
@@ -27,25 +27,25 @@ export default function Template(element, $scopes) {
 	`)
 }
 
-export const buildtemplates = ( target, components, templates, $scopes ) => {
+export const buildtemplates = ( target, components, templates, $scopes, $initialStates ) => {
 	return Array
 		.from(target.querySelectorAll('*'))
 		.filter((node:HTMLElement) => node.tagName.toLowerCase() in components)
 		.reverse()
 		.map((node:HTMLElement) => {
 			Array.from(node.querySelectorAll('template'))
-				.map((template) => buildtemplates(template.content, components, templates, $scopes))
-			createTemplateId(node, templates, $scopes)
+				.map((template) => buildtemplates(template.content, components, templates, $scopes, $initialStates))
+			createTemplateId(node, templates, $scopes, $initialStates)
 			return node
 		})
 }
 
-const createTemplateId = (element, templates, $scopes ) => {
+const createTemplateId = (element, templates, $scopes, $initialStates ) => {
 	const tplid = element.getAttribute('tplid')
 	if (!tplid) {
 		const id = uuid()
 		element.setAttribute('tplid', id)
-		templates[id] = Template(element, $scopes)
+		templates[id] = Template(element, $scopes, $initialStates)
 	}
 }
 
