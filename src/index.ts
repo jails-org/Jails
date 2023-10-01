@@ -1,5 +1,6 @@
 import { type Module } from '..'
 import { templateConfig, buildtemplates } from './template-system'
+import { publish, subscribe } from './utils/pubsub'
 import Element from './element'
 
 const templates = {}
@@ -9,6 +10,9 @@ const $scopes = {}
 export default {
 
 	templateConfig,
+
+	publish,
+	subscribe,
 
 	register( name:string, module: Module, dependencies: object ) {
 		components[name] = { name, module, dependencies }

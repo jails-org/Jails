@@ -1,5 +1,7 @@
 
 declare const _default: {
+	publish( subject: string, data :any )
+	subscribe( subject: string, callback: ((data: any ) => void) )
     register(name: string, module: Module, dependencies?: any): void
     start(): void
 	templateConfig( options: any ): void
