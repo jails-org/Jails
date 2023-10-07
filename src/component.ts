@@ -6,14 +6,13 @@ import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe } from './utils/pubsub'
 
-export default function Component( elm, { module, dependencies, templates, components, $scopes, $initialStates }) {
+export default function Component( elm, { module, dependencies, templates, components, $scopes }) {
 
 	const tplid = elm.getAttribute('tplid')
 	const options = getOptions( module )
+	const initialState = (new Function( `return ${elm.getAttribute('html-model') || '{}'}`))()
 
-	buildtemplates( elm, components, templates, $scopes, $initialStates )
-
-	const initialState = $initialStates[tplid] || {}
+	buildtemplates( elm, components, templates, $scopes )
 
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }

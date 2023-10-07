@@ -1,7 +1,7 @@
 import Component from './component'
 import { purge, rAF } from './utils'
 
-export default function Element(module, dependencies, templates, components, $scopes, $initialStates) {
+export default function Element(module, dependencies, templates, components, $scopes) {
 
 	return class extends HTMLElement {
 
@@ -13,7 +13,7 @@ export default function Element(module, dependencies, templates, components, $sc
 		constructor() {
 
 			super()
-			const { base, options } = Component(this, { module, dependencies, templates, components, $scopes, $initialStates })
+			const { base, options } = Component(this, { module, dependencies, templates, components, $scopes })
 
 			this.base = base
 			this.options = options
