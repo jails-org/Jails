@@ -11,8 +11,8 @@ export default function Component( elm, { module, dependencies, templates, compo
 	const tplid = elm.getAttribute('tplid')
 	const options = getOptions( module )
 	const initialState = (new Function( `return ${elm.getAttribute('html-model') || '{}'}`))()
-
-	buildtemplates( elm, components, templates, $scopes )
+	const selector = Object.keys(components).toString()
+	buildtemplates( elm, selector, templates, $scopes )
 
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }

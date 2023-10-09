@@ -27,16 +27,12 @@ export default function Template(element, $scopes) {
 	`)
 }
 
-export const buildtemplates = ( target, components, templates, $scopes ) => {
-	return Array
-		.from(target.querySelectorAll('*'))
-		.filter((node:HTMLElement) => node.tagName.toLowerCase() in components)
+export const buildtemplates = ( target, selector, templates, $scopes ) => {
+	Array.from(target.querySelectorAll( selector ))
 		.reverse()
-		.map((node:HTMLElement) => {
-			Array.from(node.querySelectorAll('template'))
-				.map((template) => buildtemplates(template.content, components, templates, $scopes))
+		.forEach( (node:HTMLElement) => {
+			node.querySelectorAll('template').forEach( template => buildtemplates(template.content, selector, templates, $scopes))
 			createTemplateId(node, templates, $scopes)
-			return node
 		})
 }
 

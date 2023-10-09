@@ -19,7 +19,8 @@ export default {
 	},
 
 	start( target = document.body ) {
-		buildtemplates( target, components, templates, $scopes )
+		const selector = Object.keys(components).toString()
+		buildtemplates( target, selector, templates, $scopes )
 		registerComponents()
 	}
 }
