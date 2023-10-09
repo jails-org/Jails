@@ -26,12 +26,20 @@ export default function Element(module, dependencies, templates, components, $sc
 
 			if( this.returns && this.returns.constructor === Promise ) {
 				this.returns.then( _ => {
-					if( this.base  ) {
-						this.options.main()?.forEach(f => f(this.base))
+					if( this.base && this.options.main) {
+						const array = this.options.main(this.base)
+						if( array && array.length ){
+							array.forEach(f => f(this.base))
+						}
 					}
 				})
 			}else {
-				this.options.main()?.forEach(f => f(this.base))
+				if( this.base && this.options.main ){
+					const array = this.options.main(this.base)
+					if( array && array.length ) {
+						array.forEach(f => f(this.base))
+					}
+				}
 			}
 		}
 

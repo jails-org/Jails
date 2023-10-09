@@ -1,3 +1,4 @@
+type EventCallback = ( Event: Event, data?:any ) => void
 
 declare const _default: {
 	publish( subject: string, data :any )
@@ -27,7 +28,7 @@ export type Component = {
 		getRaw() : object
 	}
 
-	main( mainArgs: ( t: Component ) => Array<Function> ): void
+	main( mainArgs: ( t: Component ) => Array<Function> | void ): void
 
 	publish( name: string, value: any ) : void
 
@@ -39,7 +40,7 @@ export type Component = {
 
 	onupdate( callback: () => void ) : void
 
-	on( eventName: string, selector: string, callback?: () => void ): void
+	on( eventName: string, selector: string | EventCallback, callback?: EventCallback ): void
 
 	emit( eventName: string, data: any ) : void
 
@@ -55,3 +56,5 @@ export type Model = {
 }
 
 export type View = ( state: object ) => object
+
+
