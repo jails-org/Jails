@@ -48,6 +48,7 @@ export default function Transpile(html, config, $scopes) {
 		}
 	})
 
+
 	return (
 		virtual.body.innerHTML
 			.replace(regexTags, '%%_=$1_%%')

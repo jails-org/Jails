@@ -1,11 +1,14 @@
 import { type Module } from '..'
 import { templateConfig, buildtemplates } from './template-system'
 import { publish, subscribe } from './utils/pubsub'
+import { html } from './utils'
 import Element from './element'
 
 const templates = {}
 const components = {}
 const $scopes = {}
+
+export { html }
 
 export default {
 

@@ -1,7 +1,5 @@
 import Transpile from './transpile'
-import { uuid } from './utils'
-
-const textarea = document.createElement('textarea')
+import { uuid, decodeHTML } from './utils'
 
 const config = {
 	tags: ['${', '}']
@@ -14,15 +12,18 @@ export const templateConfig = (newconfig) => {
 export default function Template(element, $scopes) {
 
 	const html = Transpile(element.outerHTML, config, $scopes)
-	textarea.innerHTML = html
-	const decodedHTML  = JSON.stringify(textarea.value)
+	const decodedHTML  = JSON.stringify(html)
 
 	return new Function('$element', 'safe', '$scopes',`
 		var $data = this;
 		with( $data ){
 			var output=${decodedHTML
-				.replace(/%%_=(.+?)_%%/g, '"+safe(function(){return $1;})+"')
-				.replace(/%%_(.+?)_%%/g, '";$1\noutput+="')};return output;
+				.replace(/%%_=(.+?)_%%/g, function(_, variable){
+					return '"+safe(function(){return '+decodeHTML(variable)+';})+"'
+				})
+				.replace(/%%_(.+?)_%%/g, function(_, variable){
+					return '";' + decodeHTML(variable) +'\noutput+="'
+				})};return output;
 		}
 	`)
 }

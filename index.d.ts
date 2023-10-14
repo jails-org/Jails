@@ -1,5 +1,7 @@
 type EventCallback = ( Event: Event, data?:any ) => void
 
+declare const html = ( value :string ) => string
+
 declare const _default: {
 	publish( subject: string, data :any )
 	subscribe( subject: string, callback: ((data: any ) => void) )
@@ -9,6 +11,7 @@ declare const _default: {
 }
 
 export default _default
+export const html
 
 export type Module = {
 	default: ((component:Component) => Promise<void> | void )
