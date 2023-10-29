@@ -11,6 +11,11 @@ export default defineConfig({
 			entry: path.resolve('src', 'index.ts'),
 			formats: ['umd'],
 			fileName: format => `index.js`
+		},
+		rollupOptions: {
+			output: {
+				exports:'named'
+			}
 		}
 	}
 })
