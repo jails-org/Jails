@@ -30,7 +30,7 @@
 
 ## ✍️ Abstract
 
-The Javascript ecossystem, browsers and tooling has evolved through these years and we believe that most of the complexities that frameworks bring to us today are not necessary for most of the Web Applications we have today. The actual state of modern apps are forcing the Javascript Developer to be an expert on frameworks instead of the language and locking us in the framework ecossystem.
+The Javascript ecossystem, browsers and tooling has evolved through these years and we believe that most of the complexities that frameworks bring to us today are not necessary for most of the Web Applications we have today. The current state of modern apps are forcing the Javascript Developer to be an expert on frameworks instead of the language and locking us in the framework ecossystem.
 
 Jails was designed to be:
 - **Decoupled** - Back-end agnostic, can be used with any back-end framework or language, does not import styles and does not mix html in the code.
