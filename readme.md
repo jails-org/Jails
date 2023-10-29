@@ -4,7 +4,7 @@
 
 <h1 align="center">Jails</h1>
 
-<h3 align="center"><em>Elegant and Minimalistic Javascript Application Library</em></h3>
+<h3 align="center">Elegant and Minimalistic<br /> Javascript Application Library</h3>
 <div align="center">
   <a href="https://jails-org.github.io/">Documentation</a>&nbsp; | &nbsp;
   Built for <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture 🏝</a>&nbsp; | &nbsp;
