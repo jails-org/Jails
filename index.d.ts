@@ -52,6 +52,8 @@ export type Component = {
 	trigger( eventName: string, selector :string, data: any ): void
 
 	render( data: object ) : void
+
+	innerHTML( html: string ) : void
 }
 
 export type Model = {

@@ -101,6 +101,13 @@ export default function Component( elm, { module, dependencies, templates, compo
 						child.base.render(data)
 					})
 			})
+		},
+
+		innerHTML( html ) {
+			const parser = new DOMParser()
+			const virtual = parser.parseFromString(elm.outerHTML, 'text/html')
+			virtual.body.firstElementChild.innerHTML = html
+			rAF( _ => morphdom(elm, virtual.body.innerHTML, morphdomOptions(elm)))
 		}
 	}
 
