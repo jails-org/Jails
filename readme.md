@@ -4,17 +4,24 @@
 
 <h1 align="center">Jails</h1>
 
-<h3 align="center"><em>Elegant and Minimalistic Javascript Application Library</em></h3>
+<h3 align="center">Elegant and Minimalistic<br /> Javascript Application Library</h3>
+<div align="center">
+  <a href="https://jails-org.github.io/">Documentation</a>&nbsp; | &nbsp;
+  Built for <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture 🏝</a>&nbsp; | &nbsp;
+  Inspired by <a href="https://guide.elm-lang.org/architecture/" target="_blank">Elm Architecture</a> ƛ
+</div>
+
+<p align="center">
+  
+</p>
 
 <div align="center">
+    <img src="https://github.com/jails-org/Jails/assets/567506/a2feaae9-ab6c-4cd3-a891-aced2c901b78" width="100" />
+    <br clear="all" />
     <img src="https://badge.fury.io/js/jails-js.svg?v5.1" alt="NPM Jails Version" />
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
-<p align="center"><a href="https://jails-org.github.io/">Documentation</a></p>
-<p align="center">
-  For <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture 🏝</a><br />
-  Inspired by <a href="https://guide.elm-lang.org/architecture/" target="_blank">Elm Architecture</a> ƛ
-</p>
+
 
 
 <br />
@@ -23,7 +30,7 @@
 
 ## ✍️ Abstract
 
-The Javascript ecossystem, browsers and tooling has evolved through these years and we believe that most of the complexities that frameworks bring to us today are not necessary for most of the Web Applications we have today. The actual state of modern apps are forcing the Javascript Developer to be an expert on frameworks instead of the language and locking us in the framework ecossystem.
+The Javascript ecossystem, browsers and tooling has evolved through these years and we believe that most of the complexities that frameworks bring to us today are not necessary for most of the Web Applications we have today. The current state of modern apps are forcing the Javascript Developer to be an expert on frameworks instead of the language and locking us in the framework ecossystem.
 
 Jails was designed to be:
 - **Decoupled** - Back-end agnostic, can be used with any back-end framework or language, does not import styles and does not mix html in the code.
