@@ -92,7 +92,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 
 			morphdom(elm, newhtml, morphdomOptions(elm))
 
-			rAF(_ => {
+			rAF(_ => rAF( _ => {
 				Array
 					.from(elm.querySelectorAll('[tplid]'))
 					.forEach((child: any) => {
@@ -100,7 +100,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 						child.options.onupdate(props)
 						child.base.render(props)
 					})
-			})
+			}))
 		},
 
 		innerHTML( html ) {
