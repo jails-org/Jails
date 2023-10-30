@@ -14,9 +14,8 @@ export default function Template(element) {
 	const html = Transpile(element.outerHTML, config)
 	const decodedHTML  = JSON.stringify(html)
 
-	return new Function('$element', 'uuid', 'safe', '$for',`
+	return new Function('$element', 'safe', '$for',`
 		var $data = this;
-		var $uuid = uuid();
 		with( $data ){
 			var output=${decodedHTML
 				.replace(/%%_=(.+?)_%%/g, function(_, variable){
@@ -43,7 +42,6 @@ const createTemplateId = (element, templates ) => {
 	if (!tplid) {
 		const id = uuid()
 		element.setAttribute('tplid', id)
-		element.setAttribute('uuid', '%%_=$uuid_%%')
 		templates[id] = Template(element)
 	}
 }

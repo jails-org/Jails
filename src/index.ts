@@ -6,7 +6,6 @@ import Element from './element'
 
 const templates = {}
 const components = {}
-const $for = { scopes: {} }
 
 export { html }
 

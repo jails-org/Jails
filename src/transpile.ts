@@ -1,3 +1,4 @@
+import { $for } from './utils'
 const parser = new DOMParser()
 
 export default function Transpile(html, config) {
@@ -22,7 +23,13 @@ export default function Transpile(html, config) {
 
 			element.removeAttribute(selector)
 
-			const open = document.createTextNode(`%%_(function(){ $uuid = uuid(); var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; $for.scopes[$uuid] = { ${varname}: ${object}[$key], $index: $index, $key: $key } ; _%%`)
+			const ids = Array.from(element.querySelectorAll(`[tplid]:not([${selector}] [tplid])`)).map((cp) => {
+				const tplid = cp.getAttribute('tplid')
+				$for.scopes[tplid] = []
+				return tplid
+			})
+
+			const open = document.createTextNode(`%%_(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids).replace(/\"/g, "'")}.map(function(id){ if($for.scopes[id]) { $for.scopes[id][$index] = { ${varname}: ${object}[$key], $index: $index, $key: $key } } }); _%%`)
 			const close = document.createTextNode(`%%_ $index++;}})() _%%`)
 			wrap(open, element, close)
 		}
