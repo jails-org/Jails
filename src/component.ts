@@ -17,7 +17,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 	const scope = $for.scopes[tplid] && $for.scopes[tplid].length? $for.scopes[tplid].shift() : {}
-	state.data = Object.assign(scope, state.data, initialState)
+	state.data = Object.assign(state.data, initialState)
 
 	const base: Component = {
 		template,
@@ -87,7 +87,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 
 			state.data = Object.assign(state.data, data)
 
-			const newdata = dup(state.data)
+			const newdata = Object.assign(dup(state.data), scope)
 			const newhtml = base.template.call(options.view(newdata), elm, safe, $for)
 
 			morphdom(elm, newhtml, morphdomOptions(elm))
@@ -96,9 +96,9 @@ export default function Component( elm, { module, dependencies, templates, compo
 				Array
 					.from(elm.querySelectorAll('[tplid]'))
 					.forEach((child: any) => {
-						const data = Object.assign( newdata, child.base.state.getRaw() )
-						child.options.onupdate(data)
-						child.base.render(data)
+						const props = Object.assign( child.base.state.getRaw(), data )
+						child.options.onupdate(props)
+						child.base.render(props)
 					})
 			})
 		},
