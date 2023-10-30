@@ -9,13 +9,14 @@ export const templateConfig = (newconfig) => {
 	Object.assign(config, newconfig)
 }
 
-export default function Template(element, $scopes) {
+export default function Template(element) {
 
-	const html = Transpile(element.outerHTML, config, $scopes)
+	const html = Transpile(element.outerHTML, config)
 	const decodedHTML  = JSON.stringify(html)
 
-	return new Function('$element', 'safe', '$scopes',`
+	return new Function('$element', 'uuid', 'safe', '$for',`
 		var $data = this;
+		var $uuid = uuid();
 		with( $data ){
 			var output=${decodedHTML
 				.replace(/%%_=(.+?)_%%/g, function(_, variable){
@@ -28,21 +29,22 @@ export default function Template(element, $scopes) {
 	`)
 }
 
-export const buildtemplates = ( target, selector, templates, $scopes ) => {
+export const buildtemplates = ( target, selector, templates ) => {
 	Array.from(target.querySelectorAll( selector ))
 		.reverse()
 		.forEach( (node:HTMLElement) => {
-			node.querySelectorAll('template').forEach( template => buildtemplates(template.content, selector, templates, $scopes))
-			createTemplateId(node, templates, $scopes)
+			node.querySelectorAll('template').forEach( template => buildtemplates(template.content, selector, templates ))
+			createTemplateId(node, templates)
 		})
 }
 
-const createTemplateId = (element, templates, $scopes ) => {
+const createTemplateId = (element, templates ) => {
 	const tplid = element.getAttribute('tplid')
 	if (!tplid) {
 		const id = uuid()
 		element.setAttribute('tplid', id)
-		templates[id] = Template(element, $scopes)
+		element.setAttribute('uuid', '%%_=$uuid_%%')
+		templates[id] = Template(element)
 	}
 }
 

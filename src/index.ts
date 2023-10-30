@@ -6,7 +6,7 @@ import Element from './element'
 
 const templates = {}
 const components = {}
-const $scopes = {}
+const $for = { scopes: {} }
 
 export { html }
 
@@ -23,7 +23,7 @@ export default {
 
 	start( target = document.body ) {
 		const selector = Object.keys(components).toString()
-		buildtemplates( target, selector, templates, $scopes )
+		buildtemplates( target, selector, templates )
 		registerComponents()
 	}
 }
@@ -33,7 +33,7 @@ const registerComponents = () => {
 		.values( components )
 		.forEach( (component) => {
 			const { name, module, dependencies } = component as any
-			const Base = Element(module, dependencies, templates, components, $scopes)
+			const Base = Element(module, dependencies, templates, components)
 			customElements.define(name, Base)
 		})
 }

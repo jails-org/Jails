@@ -1,6 +1,6 @@
 const parser = new DOMParser()
 
-export default function Transpile(html, config, $scopes) {
+export default function Transpile(html, config) {
 
 	const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
 	const virtual = parser.parseFromString(html.replace(/<\/?template[^>]*>/g, ''), 'text/html')
@@ -22,14 +22,8 @@ export default function Transpile(html, config, $scopes) {
 
 			element.removeAttribute(selector)
 
-			const ids = Array.from(element.querySelectorAll(`[tplid]:not([${selector}] [tplid])`)).map((cp) => {
-				const tplid = cp.getAttribute('tplid')
-				$scopes[tplid] = []
-				return tplid
-			})
-
-			const open = document.createTextNode(`%%_(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids).replace(/\"/g, "'")}.map(function(id){ if($scopes[id]) { $scopes[id][$index] = { ${varname}: ${object}[$key], $index: $index, $key: $key } } }); _%%`)
-			const close = document.createTextNode(`%%_ $index++}})() _%%`)
+			const open = document.createTextNode(`%%_(function(){ $uuid = uuid(); var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; $for.scopes[$uuid] = { ${varname}: ${object}[$key], $index: $index, $key: $key } ; _%%`)
+			const close = document.createTextNode(`%%_ $index++;}})() _%%`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {
