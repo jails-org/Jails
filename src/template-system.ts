@@ -11,8 +11,6 @@ export const templateConfig = (newconfig) => {
 
 export default function Template(element) {
 
-	element.querySelectorAll('[tplid]').forEach( child => child.textContent = '' )
-
 	const html = Transpile(element.outerHTML, config)
 	const decodedHTML  = JSON.stringify(html)
 
