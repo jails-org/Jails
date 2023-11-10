@@ -1,4 +1,3 @@
-import { $for } from './utils'
 const parser = new DOMParser()
 
 export default function Transpile(html, config) {
@@ -22,15 +21,16 @@ export default function Transpile(html, config) {
 			const object = split[2]
 
 			element.removeAttribute(selector)
+			const script = document.createElement('script')
 
-			const ids = Array.from(element.querySelectorAll(`[tplid]:not([${selector}] [tplid])`)).map((cp) => {
-				const tplid = cp.getAttribute('tplid')
-				$for.scopes[tplid] = []
-				return tplid
-			})
+			script.dataset.scope = ''
+			script.type = 'text/html'
+			script.text = `%%_= $scope _%%`
 
-			const open = document.createTextNode(`%%_(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; ${JSON.stringify(ids).replace(/\"/g, "'")}.map(function(id){ if($for.scopes[id]) { $for.scopes[id][$index] = { ${varname}: ${object}[$key], $index: $index, $key: $key } } }); _%%`)
-			const close = document.createTextNode(`%%_ $index++;}})() _%%`)
+			element.appendChild( script )
+
+			const open = document.createTextNode(`%%_(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; var $scope = JSON.stringify({ '${varname}':${varname}, $index: $index, $key:$key }); _%%`)
+			const close = document.createTextNode(`%%_ $index++; } })() _%%`)
 			wrap(open, element, close)
 		}
 		if (htmlIf) {

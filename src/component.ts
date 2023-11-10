@@ -1,7 +1,7 @@
 import { type Component } from '..'
 import morphdom from 'morphdom'
 
-import { rAF, dup, safe, uuid, $for } from './utils'
+import { rAF, dup, safe } from './utils'
 import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
 import { publish, subscribe } from './utils/pubsub'
@@ -12,11 +12,14 @@ export default function Component( elm, { module, dependencies, templates, compo
 	const options = getOptions( module )
 	const initialState = (new Function( `return ${elm.getAttribute('html-model') || '{}'}`))()
 	const selector = Object.keys(components).toString()
+
 	buildtemplates( elm, selector, templates )
+
+	const lastElement = elm.parentNode.lastElementChild
+	const scope = 'scope' in lastElement.dataset? (new Function(`return ${lastElement.text}`))() : {}
 
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
-	const scope = $for.scopes[tplid] && $for.scopes[tplid].length? $for.scopes[tplid].shift() : {}
 	state.data = Object.assign(state.data, initialState)
 
 	const base: Component = {
@@ -87,12 +90,12 @@ export default function Component( elm, { module, dependencies, templates, compo
 
 			state.data = Object.assign(state.data, data)
 
-			const newdata = Object.assign(dup(state.data), scope)
-			const newhtml = base.template.call(options.view(newdata), elm, safe, $for)
+			const newdata = dup(state.data)
+			const newhtml = base.template.call(Object.assign(options.view(newdata), scope), elm, safe)
 
 			morphdom(elm, newhtml, morphdomOptions(elm))
 
-			rAF(_ => rAF( _ => {
+			rAF(_ => {
 				Array
 					.from(elm.querySelectorAll('[tplid]'))
 					.forEach((child: any) => {
@@ -100,7 +103,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 						child.options.onupdate(props)
 						child.base.render(props)
 					})
-			}))
+			})
 		},
 
 		innerHTML( html ) {

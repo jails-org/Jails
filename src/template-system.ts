@@ -11,10 +11,12 @@ export const templateConfig = (newconfig) => {
 
 export default function Template(element) {
 
+	element.querySelectorAll('[tplid]').forEach( child => child.textContent = '' )
+
 	const html = Transpile(element.outerHTML, config)
 	const decodedHTML  = JSON.stringify(html)
 
-	return new Function('$element', 'safe', '$for',`
+	return new Function('$element', 'safe',`
 		var $data = this;
 		with( $data ){
 			var output=${decodedHTML
@@ -38,7 +40,9 @@ export const buildtemplates = ( target, selector, templates ) => {
 }
 
 const createTemplateId = (element, templates ) => {
+
 	const tplid = element.getAttribute('tplid')
+
 	if (!tplid) {
 		const id = uuid()
 		element.setAttribute('tplid', id)
