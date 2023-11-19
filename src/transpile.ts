@@ -21,6 +21,7 @@ export default function Transpile(html, config) {
 			const object = split[2]
 
 			element.removeAttribute(selector)
+			element.setAttribute('scope', '')
 			const script = document.createElement('script')
 
 			script.dataset.scope = ''

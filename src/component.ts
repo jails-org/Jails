@@ -15,12 +15,9 @@ export default function Component( elm, { module, dependencies, templates, compo
 
 	buildtemplates( elm, selector, templates )
 
-	const lastElement = elm.parentNode.lastElementChild
-	const scope = 'scope' in lastElement.dataset? (new Function(`return ${lastElement.text}`))() : {}
-
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
-	state.data = Object.assign(state.data, initialState)
+	state.data = Object.assign( state.data, initialState)
 
 	const base: Component = {
 		template,
@@ -91,7 +88,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			state.data = Object.assign(state.data, data)
 
 			const newdata = dup(state.data)
-			const newhtml = base.template.call(Object.assign(options.view(newdata), scope), elm, safe)
+			const newhtml = base.template.call(Object.assign(options.view(newdata), elm.___scope___), elm, safe)
 
 			morphdom(elm, newhtml, morphdomOptions(elm))
 
@@ -139,6 +136,14 @@ const checkStatic = (node) => {
 
 const onUpdates = (node) => {
 	if (node.nodeType === 1) {
+		if( 'scope' in node.attributes ) {
+			node.querySelectorAll('[tplid]').forEach( cp => {
+				if( !cp.___scope___ ) {
+					const script = node.lastElementChild
+					cp.___scope___ = 'scope' in script.dataset? (new Function(`return ${script.text}`))() : {}
+				}
+			})
+		}
 		if ( node.getAttribute('tplid') ) {
 			return false
 		}
