@@ -16,12 +16,11 @@
 </p>
 
 <div align="center">
-    <img src="https://github.com/jails-org/Jails/assets/567506/a2feaae9-ab6c-4cd3-a891-aced2c901b78" width="100" />
+    <img src="https://github.com/jails-org/Jails/assets/567506/e9222352-312d-4b75-91a8-a23c32251b87" width="100" />
     <br clear="all" />
     <img src="https://badge.fury.io/js/jails-js.svg?v5.1" alt="NPM Jails Version" />
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
-
 
 
 <br />
