@@ -21,7 +21,6 @@
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
 
-
 <br />
 <br />
 <br />
@@ -78,6 +77,10 @@ export default function appCounter({ main, on, state ) {
   const subtract = () => {
     state.set( s => s.count-= 1 )
   }
+}
+
+export const model = {
+  count: 0
 }
 ```
 
