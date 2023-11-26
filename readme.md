@@ -5,21 +5,21 @@
 <h1 align="center">Jails</h1>
 
 <h3 align="center">Elegant and Minimalistic<br /> Javascript Application Library</h3>
+
 <div align="center">
-  <a href="https://jails-org.github.io/">Documentation</a>&nbsp; | &nbsp;
-  Built for <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture 🏝</a>&nbsp; | &nbsp;
-  Inspired by <a href="https://guide.elm-lang.org/architecture/" target="_blank">Elm Architecture</a> ƛ
+  <table align="center" border="0">
+    <tr><td>🏝 Built for <a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture</a></td</tr>
+    <td>ƛ Inspired by <a href="https://guide.elm-lang.org/architecture/" target="_blank">Elm Architecture</a></td>
+    <td>🔗 Compatible with <a href="https://htmx.org/essays/hypermedia-driven-applications" target="_blank">hypermedia applications</a></td></tr>
+  </table>
 </div>
 
-<p align="center">
-  
-</p>
-
 <div align="center">
-    <img src="https://github.com/jails-org/Jails/assets/567506/e9222352-312d-4b75-91a8-a23c32251b87" width="100" />
-    <br clear="all" />
+    <img src="https://github.com/jails-org/Jails/assets/567506/e9222352-312d-4b75-91a8-a23c32251b87" width="100" /><br />
+    <sup style="font-size:10px">Release Name: <strong>Athena</strong></sup><br />
     <img src="https://badge.fury.io/js/jails-js.svg?v5.1" alt="NPM Jails Version" />
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
+    
 </div>
 
 
