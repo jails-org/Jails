@@ -1,5 +1,5 @@
 <p align="center">
-  <img  src="./logo.svg" width="120" />
+  <img src="./logo.svg" width="120" />
 </p>
 
 <h1 align="center">Jails</h1>
