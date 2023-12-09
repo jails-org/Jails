@@ -29,7 +29,9 @@ export default function Template(element) {
 }
 
 export const buildtemplates = ( target, selector, templates ) => {
-	Array.from(target.querySelectorAll( selector ))
+	[]
+		.concat( target.matches? (target.matches(selector)? target : []) : [] )
+		.concat( Array.from(target.querySelectorAll( selector )) )
 		.reverse()
 		.forEach( (node:HTMLElement) => {
 			node.querySelectorAll('template').forEach( template => buildtemplates(template.content, selector, templates ))

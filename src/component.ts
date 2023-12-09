@@ -8,13 +8,13 @@ import { publish, subscribe } from './utils/pubsub'
 
 export default function Component( elm, { module, dependencies, templates, components }) {
 
-	const tplid = elm.getAttribute('tplid')
 	const options = getOptions( module )
 	const initialState = (new Function( `return ${elm.getAttribute('html-model') || '{}'}`))()
 	const selector = Object.keys(components).toString()
 
 	buildtemplates( elm, selector, templates )
 
+	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null
 	const state = { data: module.model ? dup(module.model) : {} }
 	state.data = Object.assign( state.data, initialState)
