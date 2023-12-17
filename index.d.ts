@@ -53,7 +53,7 @@ export type Component = {
 
 	render( data: object ) : void
 
-	innerHTML( html: string ) : void
+	innerHTML( target: HTMLElement | string, html: string? ) : void
 }
 
 export type Model = {
