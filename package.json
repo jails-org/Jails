@@ -2,7 +2,7 @@
 	"name": "jails-js",
 	"version": "5.5.3",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
-	"module":"./dist/index.js",
+	"module": "./dist/index.js",
 	"main": "./dist/index.js",
 	"types": "index.d.ts",
 	"scripts": {
@@ -14,7 +14,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/jails-org/Jails.git"
+		"url": "git+https://github.com/jails-org/Jails.git"
 	},
 	"keywords": [
 		"Jails",
