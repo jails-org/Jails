@@ -21,9 +21,12 @@ export default {
 	},
 
 	start( target = document.body ) {
-		const selector = Object.keys(components).toString()
-		buildtemplates( target, selector, templates )
-		registerComponents()
+		const keys = Object.keys(components) 
+		const selector = keys.toString()
+		if( keys.length ) {
+			buildtemplates( target, selector, templates )
+			registerComponents()
+		}
 	}
 }
 
