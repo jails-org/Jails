@@ -1,4 +1,3 @@
-import { type Module } from '..'
 import { templateConfig, buildtemplates } from './template-system'
 import { publish, subscribe } from './utils/pubsub'
 import { html } from './utils'
@@ -16,7 +15,7 @@ export default {
 	publish,
 	subscribe,
 
-	register( name:string, module: Module, dependencies: object ) {
+	register( name, module, dependencies = {} ) {
 		components[name] = { name, module, dependencies }
 	},
 
