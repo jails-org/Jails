@@ -12,7 +12,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 	const initialState = (new Function( `return ${elm.getAttribute('html-model') || '{}'}`))()
 	const selector = Object.keys(components).toString()
 
-	buildtemplates( elm, selector, templates )
+	buildtemplates( elm, selector, templates, components )
 
 	const tplid = elm.getAttribute('tplid')
 	const template = tplid ? templates[tplid] : null
@@ -88,7 +88,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			state.data = Object.assign(state.data, data)
 
 			const newdata = dup(state.data)
-			const newhtml = base.template.call(Object.assign(options.view(newdata), elm.___scope___), elm, safe)
+			const newhtml = templates[tplid].call(Object.assign(options.view(newdata), elm.___scope___), elm, safe)
 
 			morphdom(elm, newhtml, morphdomOptions(elm))
 

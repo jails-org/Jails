@@ -20,10 +20,10 @@ export default {
 	},
 
 	start( target = document.body ) {
-		const keys = Object.keys(components) 
+		const keys = Object.keys(components)
 		const selector = keys.toString()
 		if( keys.length ) {
-			buildtemplates( target, selector, templates )
+			buildtemplates( target, selector, templates, components )
 			registerComponents()
 		}
 	}

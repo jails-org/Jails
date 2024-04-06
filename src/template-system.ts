@@ -28,24 +28,37 @@ export default function Template(element) {
 	`)
 }
 
-export const buildtemplates = ( target, selector, templates ) => {
+export const buildtemplates = ( target, selector, templates, components ) => {
 	[]
 		.concat( target.matches? (target.matches(selector)? target : []) : [] )
 		.concat( Array.from(target.querySelectorAll( selector )) )
 		.reverse()
 		.forEach( (node:HTMLElement) => {
-			node.querySelectorAll('template').forEach( template => buildtemplates(template.content, selector, templates ))
-			createTemplateId(node, templates)
+			node.querySelectorAll('template').forEach( template => buildtemplates(template.content, selector, templates, components ))
+			createTemplateId(node, templates, components)
 		})
 }
 
-const createTemplateId = (element, templates ) => {
+const createTemplateId = (element, templates, components ) => {
 
 	const tplid = element.getAttribute('tplid')
 
 	if (!tplid) {
 		const id = uuid()
 		element.setAttribute('tplid', id)
+		const name = element.localName
+
+		if( name in components && components[name].module.template ) {
+			const html = components[name].module.template()
+			if( html.constructor === Promise ) {
+				html.then( htmlstring => {
+					element.innerHTML = htmlstring
+					templates[id] = Template(element)
+				})
+			}else {
+				element.innerHTML = html
+			}
+		}
 		templates[id] = Template(element)
 	}
 }
