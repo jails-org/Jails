@@ -63,7 +63,7 @@ Jails was designed to be:
 
 `components/counter/index.ts`
 ```ts
-export default function appCounter({ main, on, state ) {
+export default function appCounter({ main, on, state }) {
 
   main( _ => {
     on('click', '[data-add]', add)
