@@ -51,6 +51,7 @@ const createTemplateId = (element, templates, components ) => {
 		if( name in components && components[name].module.template ) {
 			const html = components[name].module.template()
 			if( html.constructor === Promise ) {
+				element.__template = html
 				html.then( htmlstring => {
 					element.innerHTML = htmlstring
 					templates[id] = Template(element)

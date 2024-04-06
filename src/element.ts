@@ -23,6 +23,18 @@ export default function Element(module, dependencies, templates, components) {
 
 			this.base.render()
 
+			if( this.__template && this.__template.constructor === Promise ) {
+				this.__template.then( _ => {
+					if( this.base && this.options.main) {
+						const array = this.options.main(this.base)
+						if( array && array.length ){
+							array.forEach(f => f(this.base))
+						}
+					}
+				})
+				return
+			}
+
 			if( this.returns && this.returns.constructor === Promise ) {
 				this.returns.then( _ => {
 					if( this.base && this.options.main) {
