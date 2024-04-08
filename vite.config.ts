@@ -10,7 +10,7 @@ export default defineConfig({
 			name: 'jails',
 			entry: path.resolve('src', 'index.ts'),
 			formats: ['umd'],
-			fileName: format => `index.js`
+			fileName: format => `jails.js`
 		},
 		rollupOptions: {
 			output: {
