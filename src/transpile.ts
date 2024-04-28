@@ -1,17 +1,9 @@
 const parser = new DOMParser()
 
-export default function Transpile(html, config, components, element) {
+export default function Transpile(html, config) {
 
 	const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
 	const virtual = parser.parseFromString(html.replace(/<\/?template[^>]*>/g, ''), 'text/html')
-
-	const root = virtual.querySelector(element.localName)
-	const childNodes = Object.keys(components).toString()
-
-	root.querySelectorAll(childNodes).forEach( node => {
-		const clone = node.cloneNode()
-		node.replaceWith(clone)
-	})
 
 	virtual.querySelectorAll('[html-for], [html-if], [html-inner], [html-class], [html-model]').forEach((element) => {
 

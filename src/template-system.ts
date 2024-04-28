@@ -9,9 +9,9 @@ export const templateConfig = (newconfig) => {
 	Object.assign(config, newconfig)
 }
 
-export default function Template(element, components) {
+export default function Template(element) {
 
-	const html = Transpile(element.outerHTML, config, components, element)
+	const html = Transpile(element.outerHTML, config)
 	const decodedHTML  = JSON.stringify(html)
 
 	return new Function('$element', 'safe',`
@@ -54,13 +54,13 @@ const createTemplateId = (element, templates, components ) => {
 				element.__template = html
 				html.then( htmlstring => {
 					element.innerHTML = htmlstring
-					templates[id] = Template(element, components)
+					templates[id] = Template(element)
 				})
 			}else {
 				element.innerHTML = html
 			}
 		}
-		templates[id] = Template(element, components)
+		templates[id] = Template(element)
 	}
 }
 
