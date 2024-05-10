@@ -1,6 +1,6 @@
 {
 	"name": "jails-js",
-	"version": "5.7.1",
+	"version": "5.8.0",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"module": "./dist/jails.js",
 	"main": "./dist/jails.js",
@@ -34,8 +34,5 @@
 		"typescript": "^5.0.2",
 		"vite": "^4.4.5"
 	},
-	"dependencies": {
-		"idiomorph": "^0.3.0",
-		"morphdom": "^2.7.2"
-	}
+	"dependencies": {}
 }
