@@ -1,6 +1,5 @@
 import { type Component } from '..'
-import morphdom from 'morphdom'
-
+import { Idiomorph } from './utils/idiomorph'
 import { rAF, dup, safe } from './utils'
 import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
@@ -90,7 +89,25 @@ export default function Component( elm, { module, dependencies, templates, compo
 			const newdata = dup(state.data)
 			const newhtml = templates[tplid].call(Object.assign(options.view(newdata), elm.___scope___), elm, safe)
 
-			morphdom(elm, newhtml, morphdomOptions(elm))
+			Idiomorph.morph(elm, newhtml, {
+				callbacks:{
+					beforeNodeMorphed(node) {
+						if( node.nodeType === 1 ) {
+							if('html-static' in node.attributes) {
+								return false
+							}
+							if( 'scope' in node.attributes ) {
+								node.querySelectorAll('[tplid]').forEach( cp => {
+									if( !cp.___scope___ ) {
+										const script = node.lastElementChild
+										cp.___scope___ = 'scope' in script.dataset? (new Function(`return ${script.text}`))() : {}
+									}
+								})
+							}
+						}
+					}
+				}
+			})
 
 			rAF(_ => {
 				Array
@@ -124,33 +141,3 @@ const getOptions = (module) => ({
 	onupdate: (a) => a,
 	view: module.view ? module.view : (a) => a
 })
-
-const morphdomOptions = (_parent ) => ({
-	onNodeAdded: onUpdates,
-	onElUpdated: onUpdates,
-	onBeforeElChildrenUpdated: checkStatic,
-	onBeforeElUpdated: checkStatic
-})
-
-const checkStatic = (node) => {
-	if ('html-static' in node.attributes) {
-		return false
-	}
-}
-
-const onUpdates = (node) => {
-	if (node.nodeType === 1) {
-		if( 'scope' in node.attributes ) {
-			node.querySelectorAll('[tplid]').forEach( cp => {
-				if( !cp.___scope___ ) {
-					const script = node.lastElementChild
-					cp.___scope___ = 'scope' in script.dataset? (new Function(`return ${script.text}`))() : {}
-				}
-			})
-		}
-		if ( node.getAttribute('tplid') ) {
-			return false
-		}
-	}
-	return node
-}
