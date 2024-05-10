@@ -89,7 +89,8 @@ export default function Component( elm, { module, dependencies, templates, compo
 			const newdata = dup(state.data)
 			const newhtml = templates[tplid].call(Object.assign(options.view(newdata), elm.___scope___), elm, safe)
 
-			Idiomorph.morph(elm, newhtml, onupdates)
+			Idiomorph.morph(elm, newhtml, IdiomorphOptions)
+			updateScope( elm )
 
 			rAF(_ => {
 				Array
@@ -110,7 +111,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			const html = html_? html_ : target
 
 			virtual.body.firstElementChild.innerHTML = html as string
-			rAF( _ => Idiomorph.morph(element, virtual.body.innerHTML, onupdates) )
+			rAF( _ => Idiomorph.morph(element, virtual.body.innerHTML, IdiomorphOptions) )
 		}
 	}
 
@@ -124,20 +125,26 @@ const getOptions = (module) => ({
 	view: module.view ? module.view : (a) => a
 })
 
-const onupdates = {
-	callbacks:{
-		beforeNodeMorphed(node) {
+const updateScope = (node) => {
+	node.querySelectorAll('[scope]').forEach( scopeElement => {
+		scopeElement.querySelectorAll('[tplid]').forEach( cp => {
+			if( !cp.___scope___ ) {
+				const script = scopeElement.lastElementChild
+				cp.___scope___ = 'scope' in script.dataset? (new Function(`return ${script.text}`))() : {}
+			}
+		})
+	})
+}
+
+
+const IdiomorphOptions = {
+
+	callbacks: {
+
+		beforeNodeMorphed( node ) {
 			if( node.nodeType === 1 ) {
-				if('html-static' in node.attributes) {
+				if( 'html-static' in node.attributes ) {
 					return false
-				}
-				if( 'scope' in node.attributes ) {
-					node.querySelectorAll('[tplid]').forEach( cp => {
-						if( !cp.___scope___ ) {
-							const script = node.lastElementChild
-							cp.___scope___ = 'scope' in script.dataset? (new Function(`return ${script.text}`))() : {}
-						}
-					})
 				}
 			}
 		}
