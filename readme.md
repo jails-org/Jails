@@ -15,8 +15,6 @@
 </div>
 
 <div align="center">
-    <img src="https://github.com/jails-org/Jails/assets/567506/e9222352-312d-4b75-91a8-a23c32251b87" width="100" /><br />
-    <sup style="font-size:10px">Release Name: <strong>Athena</strong></sup><br />
     <img src="https://badge.fury.io/js/jails-js.svg?id=2" alt="NPM Jails Version" />
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
@@ -141,3 +139,11 @@ Join to the forum and be part of the project by asking, answering or discuss som
 ## 🎖 License
 
 [MIT](http://opensource.org/licenses/MIT)
+
+
+<div align="center">
+  
+  <img src="https://github.com/jails-org/Jails/assets/567506/e9222352-312d-4b75-91a8-a23c32251b87" width="100" />
+  <br />
+  Release: <strong>Athena</strong>
+</div>
