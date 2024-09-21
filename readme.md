@@ -15,9 +15,7 @@
 </div>
 
 <div align="center">
-    <img src="https://github.com/jails-org/Jails/assets/567506/e9222352-312d-4b75-91a8-a23c32251b87" width="100" /><br />
-    <sup style="font-size:10px">Release Name: <strong>Athena</strong></sup><br />
-    <img src="https://badge.fury.io/js/jails-js.svg?id=1" alt="NPM Jails Version" />
+    <img src="https://badge.fury.io/js/jails-js.svg?id=2" alt="NPM Jails Version" />
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
 </div>
 
@@ -27,12 +25,12 @@
 
 ## ✍️ Abstract
 
-The Javascript ecossystem, browsers and tooling has evolved through these years and we believe that most of the complexities that frameworks bring to us today are not necessary for most of the Web Applications we have today. The current state of modern apps are forcing the Javascript Developer to be an expert on frameworks instead of the language and locking us in the framework ecossystem.
+The JavaScript ecosystem, including browsers and tools, has undergone significant evolution over the years. However, it's evident that many of the complexities introduced by frameworks today may not be essential for the majority of web applications. The prevailing trend in modern app development seems to prioritize expertise in frameworks over mastery of the language itself, often leading to a sense of being confined within the framework ecosystem.
 
 Jails was designed to be:
-- **Decoupled** - Back-end agnostic, can be used with any back-end framework or language, does not import styles and does not mix html in the code.
-- **Lightweight** - It's a very lightweight library (~5kb gzipped) and it makes your application progressively lite by keeping html away from your javascript code and therefore smaller bundles.
-- **Interoperable** - It can be integrated and work with any other vanilla ui or behavioral libraries, so you don't have to wait for a Jails chartjs library in order to use, just integrate it in your app without pain.
+- **Decoupled** - Backend-agnostic, our solution seamlessly integrates with any backend framework or programming language. It refrains from importing styles and ensures a clean demarcation by avoiding mixing HTML within the codebase.
+- **Lightweight** - Lightweight, weighing in at just around 5kb when gzipped. It enhances your application's performance by progressively lightening the load, separating HTML from your JavaScript code. This practice results in smaller bundles and a more streamlined application.
+- **Interoperable** - It seamlessly integrates and functions alongside any other vanilla UI or behavioral libraries. You no longer need to wait for a specific Jails Chart.js library to be available; simply integrate it into your application hassle-free.
 
 <br clear="all" />
 <br />
@@ -141,3 +139,11 @@ Join to the forum and be part of the project by asking, answering or discuss som
 ## 🎖 License
 
 [MIT](http://opensource.org/licenses/MIT)
+
+
+<div align="center">
+  
+  <img src="https://github.com/jails-org/Jails/assets/567506/e9222352-312d-4b75-91a8-a23c32251b87" width="100" />
+  <br />
+  Release: <strong>Athena</strong>
+</div>
