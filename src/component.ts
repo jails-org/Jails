@@ -89,7 +89,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 			const newdata = dup(state.data)
 			const newhtml = templates[tplid].call(Object.assign(options.view(newdata), elm.___scope___), elm, safe)
 
-			Idiomorph.morph(elm, newhtml, IdiomorphOptions)
+			Idiomorph.morph(elm, newhtml, IdiomorphOptions(elm))
 			updateScope( elm )
 
 			rAF(_ => {
@@ -137,7 +137,7 @@ const updateScope = (node) => {
 }
 
 
-const IdiomorphOptions = {
+const IdiomorphOptions = (parent) => ({
 
 	callbacks: {
 
@@ -146,7 +146,10 @@ const IdiomorphOptions = {
 				if( 'html-static' in node.attributes ) {
 					return false
 				}
+				if( node.base && node !== parent ) {
+					return false
+				}
 			}
 		}
 	}
-}
+})
