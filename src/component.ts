@@ -106,12 +106,11 @@ export default function Component( elm, { module, dependencies, templates, compo
 		innerHTML( target, html_ ) {
 
 			const element = html_? target : elm
-			const parser = new DOMParser()
-			const virtual = parser.parseFromString(element.outerHTML, 'text/html')
+			const clone = element.cloneNode()
 			const html = html_? html_ : target
+			clone.innerHTML = html
 
-			virtual.body.firstElementChild.innerHTML = html as string
-			rAF( _ => Idiomorph.morph(element, virtual.body.innerHTML, IdiomorphOptions) )
+			rAF( _ => Idiomorph.morph(element, clone, IdiomorphOptions) )
 		}
 	}
 
