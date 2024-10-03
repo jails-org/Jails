@@ -1,5 +1,5 @@
 import { type Component } from '..'
-import { Idiomorph } from './utils/idiomorph'
+import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { rAF, dup, safe } from './utils'
 import { buildtemplates } from './template-system'
 import { on, off, trigger } from './utils/events'
