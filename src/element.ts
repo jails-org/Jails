@@ -2,6 +2,7 @@ import Component from './component'
 import { purge, rAF } from './utils'
 
 export default function Element(module, dependencies, templates, components) {
+
 	return class extends HTMLElement {
 
 		base: any
@@ -16,12 +17,11 @@ export default function Element(module, dependencies, templates, components) {
 
 			this.base = base
 			this.options = options
+			this.base.render()
 			this.returns = module.default(base)
 		}
 
 		connectedCallback() {
-
-			this.base.render()
 
 			if( this.__template && this.__template.constructor === Promise ) {
 				this.__template.then( _ => {
@@ -44,7 +44,8 @@ export default function Element(module, dependencies, templates, components) {
 						}
 					}
 				})
-			}else {
+
+			} else {
 				if( this.base && this.options.main ){
 					const array = this.options.main(this.base)
 					if( array && array.length ) {
@@ -64,7 +65,6 @@ export default function Element(module, dependencies, templates, components) {
 					purge(this)
 				}
 			})
-
 		}
 
 		attributeChangedCallback() {
