@@ -1,6 +1,6 @@
 import { templateConfig, buildtemplates } from './template-system'
 import { publish, subscribe } from './utils/pubsub'
-import { html } from './utils'
+import html from '../html'
 import Element from './element'
 
 const templates = {}
