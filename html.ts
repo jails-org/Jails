@@ -1,6 +1,19 @@
+
+export const attributes = ( attrs ) => {
+	const result = Object.entries(attrs)
+		.map(([key, value]) => {
+			if( value === '' ) {
+				return key
+			}
+			return `${key}="${value}"`
+		})
+		.join(' ')
+	return result
+}
+
 // From
 // https://2ality.com/2015/01/template-strings-html.html#comment-2078932192
-export default function Html (literalSections, ...substs) {
+export const html = (literalSections, ...substs) => {
 
 	// Use raw literal sections: we don’t want
 	// backslashes (\n etc.) to be interpreted

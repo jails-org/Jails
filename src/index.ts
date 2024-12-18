@@ -1,12 +1,12 @@
 import { templateConfig, buildtemplates } from './template-system'
 import { publish, subscribe } from './utils/pubsub'
-import html from '../html'
+import { html, attributes } from '../html'
 import Element from './element'
 
 const templates = {}
 const components = {}
 
-export { html }
+export { html, attributes }
 
 export default {
 
