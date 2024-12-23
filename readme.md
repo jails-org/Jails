@@ -4,7 +4,7 @@
 
 <h1 align="center">Jails</h1>
 
-<h3 align="center">Elegant and Minimalistic<br /> Javascript Application Library</h3>
+<h3 align="center">Elegant and Minimalistic<br /> Web Components Library</h3>
 
 <div align="center">
   <table align="center" border="0">
