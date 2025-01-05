@@ -11,17 +11,17 @@ export default function Element(module, dependencies, templates, components) {
 		__events: any
 
 		constructor() {
-
 			super()
+		}
+
+		connectedCallback() {
+
 			const { base, options } = Component(this, { module, dependencies, templates, components })
 
 			this.base = base
 			this.options = options
 			this.base.render()
 			this.returns = module.default(base)
-		}
-
-		connectedCallback() {
 
 			if( this.__template && this.__template.constructor === Promise ) {
 				this.__template.then( _ => {

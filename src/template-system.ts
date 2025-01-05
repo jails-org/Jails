@@ -11,6 +11,7 @@ export const templateConfig = (newconfig) => {
 
 export default function Template(element) {
 
+	fixDIffIf(element)
 	const html = Transpile(element.outerHTML, config)
 	const decodedHTML  = JSON.stringify(html)
 
@@ -65,3 +66,11 @@ const createTemplateId = (element, templates, components ) => {
 	}
 }
 
+// Sometimes we don't know why something works, especially when using third party code like Idiomorph.
+// So just letting anyone knows that this part has to be improved some time.
+const fixDIffIf = (node) => {
+	const _if = node.querySelector( '[html-if]')
+	if( _if ) {
+		_if.parentNode.insertBefore(document.createComment('[html-if]'), _if.nextSibling)
+	}
+}
