@@ -2,7 +2,7 @@ import Transpile from './transpile'
 import { uuid, decodeHTML } from './utils'
 
 const config = {
-	tags: ['${', '}']
+	tags: ['{{', '}}']
 }
 
 export const templateConfig = (newconfig) => {
