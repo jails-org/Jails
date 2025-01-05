@@ -69,8 +69,8 @@ const createTemplateId = (element, templates, components ) => {
 // Sometimes we don't know why something works, especially when using third party code like Idiomorph.
 // So just letting anyone knows that this part has to be improved some time.
 const fixDIffIf = (node) => {
-	const _if = node.querySelector( '[html-if]')
-	if( _if ) {
-		_if.parentNode.insertBefore(document.createComment('[html-if]'), _if.nextSibling)
-	}
+	const _if = node.querySelectorAll('[html-if]')
+	_if.forEach( el => {
+		el.parentNode.insertBefore(document.createComment('[html-if]'), el.nextSibling)
+	})
 }
