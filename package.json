@@ -1,6 +1,6 @@
 {
 	"name": "jails-js",
-	"version": "5.8.5",
+	"version": "5.8.6",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"module": "./dist/jails.js",
 	"main": "./dist/jails.js",
@@ -35,6 +35,6 @@
 		"vite": "^4.4.5"
 	},
 	"dependencies": {
-		"idiomorph": "^0.3.0"
+		"idiomorph": "^0.4.0"
 	}
 }

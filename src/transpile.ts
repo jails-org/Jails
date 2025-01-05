@@ -1,3 +1,5 @@
+import { uuid } from './utils'
+
 const parser = new DOMParser()
 
 export default function Transpile(html, config) {
@@ -39,6 +41,9 @@ export default function Transpile(html, config) {
 			const open = document.createTextNode(`%%_ if ( safe(function(){ return ${htmlIf} }) ){ _%%`)
 			const close = document.createTextNode(`%%_ } _%%`)
 			wrap(open, element, close)
+			if(!element.id) {
+				element.setAttribute('id', `tplifid-${uuid()}`)
+			}
 		}
 		if (htmlInner) {
 			element.removeAttribute('html-inner')
@@ -49,7 +54,6 @@ export default function Transpile(html, config) {
 			element.className = (element.className + ` %%_=${htmlClass}_%%`).trim()
 		}
 	})
-
 
 	return (
 		virtual.body.innerHTML
