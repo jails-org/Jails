@@ -2,7 +2,7 @@ import Transpile from './transpile'
 import { uuid, decodeHTML } from './utils'
 
 const config = {
-	tags: ['{{', '}}']
+	tags: ['${', '}']
 }
 
 export const templateConfig = (newconfig) => {
@@ -71,6 +71,6 @@ const createTemplateId = (element, templates, components ) => {
 const fixDIffIf = (node) => {
 	const _if = node.querySelectorAll('[html-if]')
 	_if.forEach( el => {
-		el.parentNode.insertBefore(document.createComment('[html-if]'), el.nextSibling)
+		el.parentNode.insertBefore(document.createComment(''), el.nextSibling)
 	})
 }
