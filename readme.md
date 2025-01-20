@@ -43,7 +43,7 @@ Jails was designed to be:
 
 <app-counter>
   <template>
-    <h1>${count}</h1>
+    <h1>{{count}}</h1>
     <button data-add>Add</button>
     <button data-subtract>Subtract</button>
   </template>
