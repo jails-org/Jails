@@ -9,6 +9,7 @@ export default function Element(module, dependencies, templates, components) {
 		options: any
 		returns : any
 		__events: any
+		abortController = new AbortController()
 
 		constructor() {
 			super()
@@ -59,6 +60,7 @@ export default function Element(module, dependencies, templates, components) {
 			this.options.unmount(this.base)
 			rAF(() => {
 				if(!document.body.contains(this) ) {
+					this.abortController.abort()
 					this.__events? this.__events = null : null
 					this.base? this.base.elm = null : null
 					this.base? this.base = null : null

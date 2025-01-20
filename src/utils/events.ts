@@ -47,7 +47,7 @@ const delegate = (node, selector, callback) => {
 	}
 }
 
-export const on = (node, ev, selectorOrCallback, callback) => {
+export const on = (node, ev, selectorOrCallback, callback, signal) => {
 
 	node.__events = node.__events || {}
 	node.__events[ev] = (node.__events[ev] || [])
@@ -57,7 +57,11 @@ export const on = (node, ev, selectorOrCallback, callback) => {
 		node.addEventListener(
 			ev,
 			fn,
-			(ev == 'focus' || ev == 'blur' || ev == 'mouseenter' || ev == 'mouseleave'))
+			{
+				useCapture: (ev == 'focus' || ev == 'blur' || ev == 'mouseenter' || ev == 'mouseleave'),
+				signal //https://kettanaito.com/blog/dont-sleep-on-abort-controller
+			}
+		)
 		node.__events[ev].listener = fn
 	}
 

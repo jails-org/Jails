@@ -38,7 +38,7 @@ export default function Component( elm, { module, dependencies, templates, compo
 		},
 
 		on(eventName, selectorOrCallback, callback) {
-			on(elm, eventName, selectorOrCallback, callback)
+			on(elm, eventName, selectorOrCallback, callback, elm.abortController.signal)
 		},
 
 		off(eventName, callback) {
