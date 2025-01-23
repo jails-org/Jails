@@ -1,42 +1,51 @@
-import { templateConfig, buildtemplates } from './template-system'
-import { publish, subscribe } from './utils/pubsub'
-import { html, attributes } from '../html'
-import Element from './element'
+import { Element } from './element'
+import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 
-const templates = {}
+const textarea = document.createElement('textarea')
 const components = {}
+const templates = {}
 
-export { html, attributes }
+export const register = ( name, module, dependencies ) => {
+	components[ name ] = { name, module, dependencies }
+}
 
-export default {
+export const start = ( target = document.body ) => {
+	scan( target )
+}
 
-	templateConfig,
+const scan = ( target ) => {
 
-	publish,
-	subscribe,
+}
 
-	register( name, module, dependencies = {} ) {
-		components[name] = { name, module, dependencies }
+const decodeHTML = ( text ) => {
+	textarea.innerHTML = text
+	return textarea.value
+}
+
+const directives = {
+
+	htmlIf( node ) {
+		const expression = node.getAttribute('html-if')
+		if( expression ) {
+			node.removeAttribute('html-if')
+			wrap(
+				document.createTextNode(`{{ if(${expression}) { }}`),
+				node,
+				document.createTextNode(`{{ } }}`)
+			)
+		}
 	},
 
-	start( target = document.body ) {
-		const keys = Object.keys(components)
-		const selector = keys.toString()
-		if( keys.length ) {
-			buildtemplates( target, selector, templates, components )
-			registerComponents()
+	htmlInner( node ) {
+		const expression = node.getAttribute('html-inner')
+		if( expression ) {
+			node.removeAttribute('html-inner')
+			node.innerHTML = `{{= ${expression} }}`
 		}
 	}
 }
 
-const registerComponents = () => {
-	Object
-		.values( components )
-		.forEach( (component) => {
-			const { name, module, dependencies } = component as any
-			if( !customElements.get(name) ){
-				const Base = Element(module, dependencies, templates, components)
-				customElements.define(name, Base)
-			}
-		})
+const wrap = (open, node, close) => {
+	node.parentNode?.insertBefore(open, node)
+	node.parentNode?.insertBefore(close, node.nextSibling)
 }
