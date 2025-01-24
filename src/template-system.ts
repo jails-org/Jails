@@ -1,5 +1,14 @@
 import { uuid, decodeHTML } from './utils'
+
 const templates  = {}
+
+const config = {
+	tags: ['{{', '}}']
+}
+
+export const templateConfig = (newconfig) => {
+	Object.assign(config, newconfig)
+}
 
 export const template = ( target, { components }) => {
 
@@ -18,22 +27,18 @@ export const compile = ( html ) => {
 
 	const parsedHtml  = JSON.stringify(html)
 
-	return new Function('$element', 'safe',`
+	return new Function('$element', 'safe', '$scope',`
 		var $data = this;
 		with( $data ){
 			var output=${parsedHtml
 				.replace(/%%_=(.+?)_%%/g, function(_, variable){
-					return '"+safe(function(){return '+decodeHTML(variable)+';})+"'
+					return '"+safe(function(){return '+variable+';})+"'
 				})
 				.replace(/%%_(.+?)_%%/g, function(_, variable){
-					return '";' + decodeHTML(variable) +'\noutput+="'
+					return '";' + variable +'\noutput+="'
 				})};return output;
 		}
 	`)
-}
-
-export const templateConfig = (newconfig) => {
-	Object.assign(config, newconfig)
 }
 
 const tagElements = ( target, keys ) => {
@@ -75,31 +80,21 @@ const transformTemplate = ( clone ) => {
 	clone.querySelectorAll('template, [html-for], [html-if], [html-inner], [html-class], [html-model]')
 		.forEach(( element ) => {
 
-			const htmlForeach = element.getAttribute('html-foreach')
 			const htmlFor 	= element.getAttribute('html-for')
 			const htmlIf 	= element.getAttribute('html-if')
 			const htmlInner = element.getAttribute('html-inner')
 			const htmlClass = element.getAttribute('html-class')
-			const forEachInstruction = htmlFor || htmlForeach
 
-			if ( forEachInstruction ) {
-				const selector = htmlFor? 'html-for': 'html-foreach'
-				const split = forEachInstruction.match(/(.*)\sin\s(.*)/) || ''
-				const varname = split[1]
-				const object = split[2]
+			if ( htmlFor ) {
 
-				element.removeAttribute(selector)
-				element.setAttribute('scope', '')
-				const script = document.createElement('script')
+				element.removeAttribute('html-for')
 
-				script.dataset.scope = ''
-				script.type = 'text/html'
-				script.text = `%%_= $scope _%%`
+				const split 	= htmlFor.match(/(.*)\sin\s(.*)/) || ''
+				const varname 	= split[1]
+				const object 	= split[2]
+				const open 		= document.createTextNode(`%%_  ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object} }; _%%`)
+				const close 	= document.createTextNode(`%%_ $index++; } })() _%%`)
 
-				element.appendChild( script )
-
-				const open = document.createTextNode(`%%_(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var ${varname} = ${object}[$key]; var $scope = JSON.stringify({ '${varname}':${varname}, $index: $index, $key:$key }); _%%`)
-				const close = document.createTextNode(`%%_ $index++; } })() _%%`)
 				wrap(open, element, close)
 			}
 
@@ -123,16 +118,20 @@ const transformTemplate = ( clone ) => {
 			if( element.localName === 'template' ) {
 				transformTemplate(element.content)
 			}
+
 		})
 }
 
 const setTemplates = ( clone ) => {
-	clone.querySelectorAll('[tplid]')
+	Array.from(clone.querySelectorAll('[tplid]'))
+		.reverse()
 		.forEach((node) => {
 			const tplid = node.getAttribute('tplid')
+			node.setAttribute('html-scope-id', '%%_=$scopeid_%%')
+			const html = decodeHTML(node.outerHTML)
 			templates[tplid] = {
-				template: node.outerHTML,
-				render: compile(node.outerHTML)
+				template: html,
+				render: compile(html)
 			}
 		})
 }
@@ -169,8 +168,4 @@ const removeTemplateTagsRecursively = (node) => {
 const wrap = (open, node, close) => {
 	node.parentNode?.insertBefore(open, node)
 	node.parentNode?.insertBefore(close, node.nextSibling)
-}
-
-const config = {
-	tags: ['{{', '}}']
 }

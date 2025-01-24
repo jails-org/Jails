@@ -1,11 +1,15 @@
 import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { safe } from './utils'
 
+const scope = {}
+
 export const Component = ({ name, module, dependencies, node, templates }) => {
 
-	const state 	= Object.assign({})
 	const tplid 	= node.getAttribute('tplid')
+	const scopeid 	= node.getAttribute('html-scope-id')
 	const tpl 		= templates[tplid]
+	const data 		= scope[scopeid]
+	const state 	= Object.assign({}, data)
 
 	module.default({
 
@@ -30,7 +34,7 @@ export const Component = ({ name, module, dependencies, node, templates }) => {
 					Object.assign(dupdata, data)
 				}
 
-				const html = tpl.render.call( dupdata, node, safe )
+				const html = tpl.render.call( dupdata, node, safe, scope )
 				Idiomorph.morph( node, html, IdiomorphOptions(node) )
 			},
 
