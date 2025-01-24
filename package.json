@@ -35,6 +35,7 @@
 		"vite": "^4.4.5"
 	},
 	"dependencies": {
+		"eta": "^3.5.0",
 		"idiomorph": "^0.4.0"
 	}
 }

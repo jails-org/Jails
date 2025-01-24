@@ -1,6 +1,6 @@
 import { Component } from './component'
 
-export const Element = ({ component }) => {
+export const Element = ({ component, templates }) => {
 
 	const { name, module, dependencies } = component
 
@@ -12,7 +12,7 @@ export const Element = ({ component }) => {
 
 		connectedCallback() {
 
-			Component({ name, module, dependencies, node:this })
+			Component({ name, module, dependencies, node:this, templates })
 
 			requestAnimationFrame(() => {
 				this.dispatchEvent(new CustomEvent('ready'))

@@ -1,12 +1,17 @@
-export const Component = ({ name, module, dependencies, node }) => {
+import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
+import { safe } from './utils'
 
-	const state = {}
-	const tplid = node.getAttribute('tplid')
+export const Component = ({ name, module, dependencies, node, templates }) => {
+
+	const state 	= Object.assign({})
+	const tplid 	= node.getAttribute('tplid')
+	const tpl 		= templates[tplid]
 
 	module.default({
 
 		elm: node,
 		dependencies,
+		template: tpl.template,
 
 		main(fn) {
 			node.addEventListener('ready', fn)
@@ -24,6 +29,9 @@ export const Component = ({ name, module, dependencies, node }) => {
 				} else {
 					Object.assign(dupdata, data)
 				}
+
+				const html = tpl.render.call( dupdata, node, safe )
+				Idiomorph.morph( node, html, IdiomorphOptions(node) )
 			},
 
 			get() {
