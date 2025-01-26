@@ -1,4 +1,4 @@
-import { uuid, decodeHTML } from './utils'
+import { uuid } from './utils'
 
 const templates  = {}
 
@@ -18,7 +18,7 @@ export const template = ( target, { components }) => {
 	transformTemplate( clone )
 	removeTemplateTagsRecursively( clone )
 	transformAttributes( clone )
-	setTemplates( clone )
+	setTemplates( clone, components )
 
 	return templates
 }
@@ -121,16 +121,39 @@ const transformTemplate = ( clone ) => {
 		})
 }
 
-const setTemplates = ( clone ) => {
+const setTemplates = ( clone, components ) => {
+
 	Array.from(clone.querySelectorAll('[tplid]'))
 		.reverse()
 		.forEach((node) => {
+
 			const tplid = node.getAttribute('tplid')
+			const name  = node.localName
 			node.setAttribute('html-scope-id', '%%_=$scopeid_%%')
+
+			if( name in components && components[name].module.template ) {
+				const children = node.innerHTML
+				const html = components[name].module.template({ elm:node, children })
+
+				if( html.constructor === Promise ) {
+					html.then( htmlstring => {
+						node.innerHTML = htmlstring
+						const html = node.outerHTML
+						templates[tplid] = {
+							template: html,
+							render: compile(html)
+						}
+					})
+				} else {
+					node.innerHTML = html
+				}
+			}
+
 			const html = node.outerHTML
-			templates[tplid] = {
+
+			templates[ tplid ] = {
 				template: html,
-				render: compile(html)
+				render	: compile(html)
 			}
 		})
 }

@@ -30,6 +30,7 @@ export const Element = ({ component, templates }) => {
 		disconnectedCallback() {
 			this.dispatchEvent( new CustomEvent(':unmount') )
 			abortController.abort()
+			delete this.base
 		}
 	}
 }

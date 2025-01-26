@@ -4,19 +4,20 @@ import { publish, subscribe } from './utils/pubsub'
 
 export const Component = ({ name, module, dependencies, node, templates, signal }) => {
 
-	const initialState = (new Function( `return ${node.getAttribute('html-model') || '{}'}`))()
-	const tplid 	= node.getAttribute('tplid')
-	const scopeid 	= node.getAttribute('html-scope-id')
-	const tpl 		= templates[ tplid ]
-	const data 		= g.scope[ scopeid ]
-	const model  	= module?.model?.apply ? module.model({ elm:node, initialState }) : module.model
-	const state 	= Object.assign({}, data, model, initialState)
+	const view 			= module.view? module.view : (data) => data
+	const initialState 	= (new Function( `return ${node.getAttribute('html-model') || '{}'}`))()
+	const tplid 		= node.getAttribute('tplid')
+	const scopeid 		= node.getAttribute('html-scope-id')
+	const tpl 			= templates[ tplid ]
+	const data 			= g.scope[ scopeid ]
+	const model  		= module?.model?.apply ? module.model({ elm:node, initialState }) : module.model
+	const state 		= Object.assign({}, data, model, initialState)
 
 	const base = {
-
+		model,
 		elm: node,
-		dependencies,
 		template: tpl.template,
+		dependencies,
 		publish,
 		subscribe,
 
@@ -39,26 +40,38 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 
 			set( data ) {
 
-				Object.assign(state, data)
-				const dupdata = Object.assign({}, state)
-
-				if( data.constructor === Function ) {
-					data( dupdata )
-				} else {
-					Object.assign(dupdata, data)
+				if (!document.body.contains(node)) {
+					return
 				}
 
-				const html = tpl.render.call( dupdata, node, safe, g )
+				Object.assign(state, data)
+
+				if( data.constructor === Function ) {
+					data( state )
+				}
+
+				const dupdata = Object.assign({}, state)
+				const html = tpl.render.call( view(dupdata), node, safe, g )
+				Idiomorph.morph( node, html, IdiomorphOptions(node) )
 
 				rAF(() => {
-					Idiomorph.morph( node, html, IdiomorphOptions(node) )
-
 					node.querySelectorAll('[tplid]').forEach((element) => {
-						element.base.state.set(dupdata)
+						const base = element.base
+						const props = Object.keys(base.model).reduce((acc, key) => {
+							if( key in dupdata ) {
+								if( !acc ) acc = {}
+								acc[key] = dupdata[key]
+							}
+							return acc
+						}, null)
+						if( props ) {
+							base.state.set( props )
+						}
 					})
-
 					rAF(() => g.scope = {})
 				})
+
+				return new Promise((resolve) => rAF(_ => rAF(() => resolve(dupdata))))
 			},
 
 			get() {
