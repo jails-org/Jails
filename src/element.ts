@@ -1,6 +1,6 @@
 import { Component } from './component'
 
-export const Element = ({ component, templates }) => {
+export const Element = ({ component, templates, start }) => {
 
 	const { name, module, dependencies } = component
 	const abortController = new AbortController()
@@ -12,6 +12,10 @@ export const Element = ({ component, templates }) => {
 		}
 
 		connectedCallback() {
+
+			if( !this.getAttribute('tplid') ) {
+				start( this.parentNode )
+			}
 
 			Component({
 				node:this,

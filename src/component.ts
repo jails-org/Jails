@@ -3,15 +3,15 @@ import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { publish, subscribe } from './utils/pubsub'
 
 export const Component = ({ name, module, dependencies, node, templates, signal }) => {
-
-	const view 			= module.view? module.view : (data) => data
+	const _model 		= module.model || {}
 	const initialState 	= (new Function( `return ${node.getAttribute('html-model') || '{}'}`))()
 	const tplid 		= node.getAttribute('tplid')
 	const scopeid 		= node.getAttribute('html-scope-id')
 	const tpl 			= templates[ tplid ]
 	const data 			= g.scope[ scopeid ]
-	const model  		= module?.model?.apply ? module.model({ elm:node, initialState }) : module.model
+	const model  		= module?.model?.apply ? _model({ elm:node, initialState }) : _model
 	const state 		= Object.assign({}, data, model, initialState)
+	const view 			= module.view? module.view : (data) => data
 
 	const base = {
 		model,
@@ -56,6 +56,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 
 				rAF(() => {
 					node.querySelectorAll('[tplid]').forEach((element) => {
+						if(!element.base) return
 						const base = element.base
 						const props = Object.keys(base.model).reduce((acc, key) => {
 							if( key in dupdata ) {

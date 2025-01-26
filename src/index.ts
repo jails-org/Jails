@@ -21,7 +21,7 @@ export const start = ( target = document.body ) => {
 		.values( components )
 		.forEach(({ name, module, dependencies }) => {
 			if( !customElements.get(name) ) {
-				customElements.define( name, Element({ component: { name, module, dependencies }, templates }) )
+				customElements.define( name, Element({ component: { name, module, dependencies }, templates, start }) )
 			}
 	})
 }
