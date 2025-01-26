@@ -7,7 +7,7 @@ const config = {
 }
 
 export const templateConfig = (newconfig) => {
-	Object.assign(config, newconfig)
+	Object.assign( config, newconfig )
 }
 
 export const template = ( target, { components }) => {
@@ -24,10 +24,9 @@ export const template = ( target, { components }) => {
 }
 
 export const compile = ( html ) => {
+	const parsedHtml = JSON.stringify(html)
 
-	const parsedHtml  = JSON.stringify(html)
-
-	return new Function('$element', 'safe', '$scope',`
+	return new Function('$element', 'safe', '$g',`
 		var $data = this;
 		with( $data ){
 			var output=${parsedHtml
@@ -63,7 +62,7 @@ const transformAttributes = ( clone ) => {
 		.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`)
 		// The rest
 		.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
-			if (key === 'key' || key === 'model' || key == 'scope') {
+			if (key === 'key' || key === 'model') {
 				return all
 			}
 			if (value) {
@@ -77,7 +76,7 @@ const transformAttributes = ( clone ) => {
 
 const transformTemplate = ( clone ) => {
 
-	clone.querySelectorAll('template, [html-for], [html-if], [html-inner], [html-class], [html-model]')
+	clone.querySelectorAll('template, [html-for], [html-if], [html-inner], [html-class]')
 		.forEach(( element ) => {
 
 			const htmlFor 	= element.getAttribute('html-for')
@@ -92,7 +91,7 @@ const transformTemplate = ( clone ) => {
 				const split 	= htmlFor.match(/(.*)\sin\s(.*)/) || ''
 				const varname 	= split[1]
 				const object 	= split[2]
-				const open 		= document.createTextNode(`%%_  ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object} }; _%%`)
+				const open 		= document.createTextNode(`%%_  ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object}, $index: $index, $key: $key }; _%%`)
 				const close 	= document.createTextNode(`%%_ $index++; } })() _%%`)
 
 				wrap(open, element, close)
@@ -128,7 +127,7 @@ const setTemplates = ( clone ) => {
 		.forEach((node) => {
 			const tplid = node.getAttribute('tplid')
 			node.setAttribute('html-scope-id', '%%_=$scopeid_%%')
-			const html = decodeHTML(node.outerHTML)
+			const html = node.outerHTML
 			templates[tplid] = {
 				template: html,
 				render: compile(html)

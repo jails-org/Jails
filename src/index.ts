@@ -1,7 +1,13 @@
 import { Element } from './element'
-import { template } from './template-system'
+import { template, templateConfig as config } from './template-system'
 
 const components = {}
+
+export { publish, subscribe } from './utils/pubsub'
+
+export const templateConfig = (options) => {
+	config( options )
+}
 
 export const register = ( name, module, dependencies ) => {
 	components[ name ] = { name, module, dependencies }

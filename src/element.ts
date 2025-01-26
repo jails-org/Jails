@@ -3,6 +3,7 @@ import { Component } from './component'
 export const Element = ({ component, templates }) => {
 
 	const { name, module, dependencies } = component
+	const abortController = new AbortController()
 
 	return class extends HTMLElement {
 
@@ -12,15 +13,23 @@ export const Element = ({ component, templates }) => {
 
 		connectedCallback() {
 
-			Component({ name, module, dependencies, node:this, templates })
+			Component({
+				node:this,
+				name,
+				module,
+				dependencies,
+				templates,
+				signal: abortController.signal
+			})
 
 			requestAnimationFrame(() => {
-				this.dispatchEvent(new CustomEvent('ready'))
+				this.dispatchEvent( new CustomEvent(':mount') )
 			})
 		}
 
 		disconnectedCallback() {
-
+			this.dispatchEvent( new CustomEvent(':unmount') )
+			abortController.abort()
 		}
 	}
 }

@@ -1,6 +1,10 @@
 
 const textarea = document.createElement('textarea')
 
+export const g = {
+	scope: {}
+}
+
 export const decodeHTML = (text) => {
 	textarea.innerHTML = text
 	return textarea.value
