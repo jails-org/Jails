@@ -13,7 +13,10 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 	const state 		= Object.assign({}, data, model, initialState)
 	const view 			= module.view? module.view : (data) => data
 
+	let updates 		= []
+
 	const base = {
+		name,
 		model,
 		elm: node,
 		template: tpl.template,
@@ -44,35 +47,23 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 					return
 				}
 
-				Object.assign(state, data)
-
 				if( data.constructor === Function ) {
 					data( state )
 				}
 
-				const dupdata = Object.assign({}, state)
-				const html = tpl.render.call( view(dupdata), node, safe, g )
-				Idiomorph.morph( node, html, IdiomorphOptions(node) )
+				updates.push(data)
 
-				rAF(() => {
-					node.querySelectorAll('[tplid]').forEach((element) => {
-						if(!element.base) return
-						const base = element.base
-						const props = Object.keys(base.model).reduce((acc, key) => {
-							if( key in dupdata ) {
-								if( !acc ) acc = {}
-								acc[key] = dupdata[key]
-							}
-							return acc
-						}, null)
-						if( props ) {
-							base.state.set( props )
+				return new Promise((resolve) => {
+					rAF(() => rAF(() => {
+						Object.assign.apply(null, [state, ...updates ])
+						if( updates.length ){
+							const newstate = Object.assign({}, state)
+							render(newstate)
+							resolve(newstate)
+							updates = []
 						}
-					})
-					rAF(() => g.scope = {})
+					}))
 				})
-
-				return new Promise((resolve) => rAF(_ => rAF(() => resolve(dupdata))))
 			},
 
 			get() {
@@ -145,6 +136,30 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 
 			rAF( _ => Idiomorph.morph(element, clone, IdiomorphOptions) )
 		}
+	}
+
+	const render = ( data ) => {
+
+		const html = tpl.render.call( view(data), node, safe, g )
+		Idiomorph.morph( node, html, IdiomorphOptions(node) )
+
+		rAF(() => {
+			node.querySelectorAll('[tplid]').forEach((element) => {
+				if(!element.base) return
+				const base = element.base
+				const props = Object.keys(base.model).reduce((acc, key) => {
+					if( key in data ) {
+						if( !acc ) acc = {}
+						acc[key] = data[key]
+					}
+					return acc
+				}, null)
+				if( props ) {
+					base.state.set( props )
+				}
+			})
+			rAF(() => g.scope = {})
+		})
 	}
 
 	node.base = base

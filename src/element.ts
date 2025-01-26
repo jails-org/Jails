@@ -26,9 +26,9 @@ export const Element = ({ component, templates, start }) => {
 				signal: abortController.signal
 			})
 
-			requestAnimationFrame(() => {
-				this.dispatchEvent( new CustomEvent(':mount') )
-			})
+			this.dispatchEvent( new CustomEvent(':mount') )
+			this.base.state.set({})
+
 		}
 
 		disconnectedCallback() {
