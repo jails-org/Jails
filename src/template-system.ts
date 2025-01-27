@@ -93,7 +93,7 @@ const transformTemplate = ( clone ) => {
 				const split 	= htmlFor.match(/(.*)\sin\s(.*)/) || ''
 				const varname 	= split[1]
 				const object 	= split[2]
-				const open 		= document.createTextNode(`%%_  ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object}, $index: $index, $key: $key }; _%%`)
+				const open 		= document.createTextNode(`%%_ ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object}, $index: $index, $key: $key }; _%%`)
 				const close 	= document.createTextNode(`%%_ $index++; } })() _%%`)
 
 				wrap(open, element, close)

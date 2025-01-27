@@ -47,24 +47,21 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 					return
 				}
 
-				if( data.constructor === Function ) {
-					data( state )
-				}
-				const newstate = Object.assign({}, state)
-				render( newstate )
+				const newstate = data.constructor === Function
+					? Object.assign( {}, data(state) )
+					: Object.assign( state, data )
 
 				updates.push(data)
 
 				return new Promise((resolve) => {
-					rAF(() => rAF(() => {
-						Object.assign.apply(null, [state, ...updates ])
+					rAF(() => {
+						Object.assign.apply(null, [newstate, ...updates ])
 						if( updates.length ){
-							const newstate = Object.assign({}, state)
 							render(newstate)
 							resolve(newstate)
 							updates = []
 						}
-					}))
+					})
 				})
 			},
 
@@ -145,20 +142,21 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 		const html = tpl.render.call( view(data), node, safe, g )
 		Idiomorph.morph( node, html, IdiomorphOptions(node) )
 
-		node.querySelectorAll('[tplid]').forEach((element) => {
-			if(!element.base) return
-			const base = element.base
-			const props = Object.keys(base.model).reduce((acc, key) => {
-				if( key in data ) {
-					if( !acc ) acc = {}
-					acc[key] = data[key]
+		node.querySelectorAll('[tplid]')
+			.forEach((element) => {
+				if(!element.base) return
+				const base = element.base
+				const props = Object.keys(base.model).reduce((acc, key) => {
+					if( key in data ) {
+						if( !acc ) acc = {}
+						acc[key] = data[key]
+					}
+					return acc
+				}, null)
+				if( props ) {
+					base.state.set( props )
 				}
-				return acc
-			}, null)
-			if( props ) {
-				base.state.set( props )
-			}
-		})
+			})
 		rAF(() => g.scope = {})
 	}
 

@@ -821,22 +821,17 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         if (!document.body.contains(node)) {
           return;
         }
-        if (data2.constructor === Function) {
-          data2(state);
-        }
-        const newstate = Object.assign({}, state);
-        render(newstate);
+        const newstate = data2.constructor === Function ? Object.assign({}, data2(state)) : Object.assign(state, data2);
         updates.push(data2);
         return new Promise((resolve) => {
-          rAF(() => rAF(() => {
-            Object.assign.apply(null, [state, ...updates]);
+          rAF(() => {
+            Object.assign.apply(null, [newstate, ...updates]);
             if (updates.length) {
-              const newstate2 = Object.assign({}, state);
-              render(newstate2);
-              resolve(newstate2);
+              render(newstate);
+              resolve(newstate);
               updates = [];
             }
-          }));
+          });
         });
       },
       get() {
@@ -1027,7 +1022,7 @@ const transformTemplate = (clone) => {
       const split = htmlFor.match(/(.*)\sin\s(.*)/) || "";
       const varname = split[1];
       const object = split[2];
-      const open = document.createTextNode(`%%_  ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object}, $index: $index, $key: $key }; _%%`);
+      const open = document.createTextNode(`%%_ ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object}, $index: $index, $key: $key }; _%%`);
       const close = document.createTextNode(`%%_ $index++; } })() _%%`);
       wrap(open, element, close);
     }
