@@ -1,4 +1,4 @@
-import { uuid, decodeHTML } from './utils'
+import { uuid } from './utils'
 
 const templates  = {}
 
