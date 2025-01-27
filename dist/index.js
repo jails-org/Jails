@@ -824,14 +824,16 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         if (data2.constructor === Function) {
           data2(state);
         }
+        const newstate = Object.assign({}, state);
+        render(newstate);
         updates.push(data2);
         return new Promise((resolve) => {
           rAF(() => rAF(() => {
             Object.assign.apply(null, [state, ...updates]);
             if (updates.length) {
-              const newstate = Object.assign({}, state);
-              render(newstate);
-              resolve(newstate);
+              const newstate2 = Object.assign({}, state);
+              render(newstate2);
+              resolve(newstate2);
               updates = [];
             }
           }));
@@ -901,23 +903,21 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   const render = (data2) => {
     const html = tpl.render.call(view(data2), node, safe, g);
     Idiomorph.morph(node, html, IdiomorphOptions(node));
-    rAF(() => {
-      node.querySelectorAll("[tplid]").forEach((element) => {
-        if (!element.base) return;
-        const base2 = element.base;
-        const props = Object.keys(base2.model).reduce((acc, key) => {
-          if (key in data2) {
-            if (!acc) acc = {};
-            acc[key] = data2[key];
-          }
-          return acc;
-        }, null);
-        if (props) {
-          base2.state.set(props);
+    node.querySelectorAll("[tplid]").forEach((element) => {
+      if (!element.base) return;
+      const base2 = element.base;
+      const props = Object.keys(base2.model).reduce((acc, key) => {
+        if (key in data2) {
+          if (!acc) acc = {};
+          acc[key] = data2[key];
         }
-      });
-      rAF(() => g.scope = {});
+        return acc;
+      }, null);
+      if (props) {
+        base2.state.set(props);
+      }
     });
+    rAF(() => g.scope = {});
   };
   node.base = base;
   module.default(base);
@@ -977,11 +977,11 @@ const template = (target, { components: components2 }) => {
   const clone = target.cloneNode(true);
   transformTemplate(clone);
   removeTemplateTagsRecursively(clone);
-  transformAttributes(clone);
   setTemplates(clone, components2);
   return templates;
 };
-const compile = (html) => {
+const compile = (outerHTML) => {
+  const html = transformAttributes(outerHTML);
   const parsedHtml = JSON.stringify(html);
   return new Function("$element", "safe", "$g", `
 		var $data = this;
@@ -1002,10 +1002,10 @@ const tagElements = (target, keys) => {
     node.setAttribute("tplid", uuid());
   });
 };
-const transformAttributes = (clone) => {
+const transformAttributes = (html) => {
   const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, "g");
-  clone.innerHTML = clone.innerHTML.replace(regexTags, "%%_=$1_%%").replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`).replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
-    if (key === "key" || key === "model") {
+  return html.replace(/jails___scope-id/g, "%%_=$scopeid_%%").replace(regexTags, "%%_=$1_%%").replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`).replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
+    if (key === "key" || key === "model" || key === "scope-id") {
       return all;
     }
     if (value) {
@@ -1054,7 +1054,7 @@ const setTemplates = (clone, components2) => {
   Array.from(clone.querySelectorAll("[tplid]")).reverse().forEach((node) => {
     const tplid = node.getAttribute("tplid");
     const name = node.localName;
-    node.setAttribute("html-scope-id", "%%_=$scopeid_%%");
+    node.setAttribute("html-scope-id", "jails___scope-id");
     if (name in components2 && components2[name].module.template) {
       const children = node.innerHTML;
       const html2 = components2[name].module.template({ elm: node, children });

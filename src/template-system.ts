@@ -1,4 +1,4 @@
-import { uuid } from './utils'
+import { uuid, decodeHTML } from './utils'
 
 const templates  = {}
 
@@ -17,21 +17,22 @@ export const template = ( target, { components }) => {
 
 	transformTemplate( clone )
 	removeTemplateTagsRecursively( clone )
-	transformAttributes( clone )
 	setTemplates( clone, components )
 
 	return templates
 }
 
-export const compile = ( html ) => {
-	const parsedHtml = JSON.stringify(html)
+export const compile = ( outerHTML ) => {
+
+	const html = transformAttributes( outerHTML )
+	const parsedHtml = JSON.stringify( html )
 
 	return new Function('$element', 'safe', '$g',`
 		var $data = this;
 		with( $data ){
 			var output=${parsedHtml
 				.replace(/%%_=(.+?)_%%/g, function(_, variable){
-					return '"+safe(function(){return '+variable+';})+"'
+					return '"+safe(function(){return '+ variable +';})+"'
 				})
 				.replace(/%%_(.+?)_%%/g, function(_, variable){
 					return '";' + variable +'\noutput+="'
@@ -51,18 +52,19 @@ const tagElements = ( target, keys ) => {
 		})
 }
 
-const transformAttributes = ( clone ) => {
+const transformAttributes = ( html ) => {
 
 	const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
 
-	clone.innerHTML = clone.innerHTML
+	return html
+		.replace(/jails___scope-id/g, '%%_=$scopeid_%%')
 		.replace(regexTags, '%%_=$1_%%')
 		// Booleans
 		// https://meiert.com/en/blog/boolean-attributes-of-html/
 		.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`)
 		// The rest
 		.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
-			if (key === 'key' || key === 'model') {
+			if (key === 'key' || key === 'model' || key === 'scope-id' ) {
 				return all
 			}
 			if (value) {
@@ -117,7 +119,6 @@ const transformTemplate = ( clone ) => {
 			if( element.localName === 'template' ) {
 				transformTemplate(element.content)
 			}
-
 		})
 }
 
@@ -129,7 +130,7 @@ const setTemplates = ( clone, components ) => {
 
 			const tplid = node.getAttribute('tplid')
 			const name  = node.localName
-			node.setAttribute('html-scope-id', '%%_=$scopeid_%%')
+			node.setAttribute('html-scope-id', 'jails___scope-id')
 
 			if( name in components && components[name].module.template ) {
 				const children = node.innerHTML

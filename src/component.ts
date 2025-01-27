@@ -50,6 +50,8 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 				if( data.constructor === Function ) {
 					data( state )
 				}
+				const newstate = Object.assign({}, state)
+				render( newstate )
 
 				updates.push(data)
 
@@ -143,23 +145,21 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 		const html = tpl.render.call( view(data), node, safe, g )
 		Idiomorph.morph( node, html, IdiomorphOptions(node) )
 
-		rAF(() => {
-			node.querySelectorAll('[tplid]').forEach((element) => {
-				if(!element.base) return
-				const base = element.base
-				const props = Object.keys(base.model).reduce((acc, key) => {
-					if( key in data ) {
-						if( !acc ) acc = {}
-						acc[key] = data[key]
-					}
-					return acc
-				}, null)
-				if( props ) {
-					base.state.set( props )
+		node.querySelectorAll('[tplid]').forEach((element) => {
+			if(!element.base) return
+			const base = element.base
+			const props = Object.keys(base.model).reduce((acc, key) => {
+				if( key in data ) {
+					if( !acc ) acc = {}
+					acc[key] = data[key]
 				}
-			})
-			rAF(() => g.scope = {})
+				return acc
+			}, null)
+			if( props ) {
+				base.state.set( props )
+			}
 		})
+		rAF(() => g.scope = {})
 	}
 
 	node.base = base
