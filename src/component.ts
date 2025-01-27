@@ -1,4 +1,4 @@
-import { safe, rAF, g } from './utils'
+import { safe, rAF, g, dup } from './utils'
 import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { publish, subscribe } from './utils/pubsub'
 
@@ -7,14 +7,13 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 	const _model 		= module.model || {}
 	const initialState 	= (new Function( `return ${node.getAttribute('html-model') || '{}'}`))()
 	const tplid 		= node.getAttribute('tplid')
-	const scopeid 		= node.getAttribute('html-scope-id')
+	const scopeid 		= node.getAttribute('html-scopeid')
 	const tpl 			= templates[ tplid ]
-	const data 			= g.scope[ scopeid ]
-	const model  		= module?.model?.apply ? _model({ elm:node, initialState }) : _model
-	const state 		= Object.assign({}, data, model, initialState)
+	const scope 		= g.scope[ scopeid ]
+	const model  		= dup(module?.model?.apply ? _model({ elm:node, initialState }) : _model)
+	const state 		= Object.assign({}, scope, model, initialState)
 	const view 			= module.view? module.view : (data) => data
-
-	let updates 		= []
+	let preserve		= []
 
 	const base = {
 		name,
@@ -33,6 +32,14 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 		 * @State
 		 */
 		state : {
+
+			protected( list ) {
+				if( list ) {
+					preserve = list
+				} else {
+					return preserve
+				}
+			},
 
 			save(data) {
 				if( data.constructor === Function ) {
@@ -53,20 +60,11 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 					Object.assign(state, data)
 				}
 
-				const newstate = Object.assign({}, state)
+				const newstate = Object.assign({}, state, scope)
 
-				updates.push(data)
+				render(newstate)
 
-				return new Promise((resolve) => {
-					rAF(() => {
-						Object.assign.apply(null, [newstate, ...updates ])
-						if( updates.length ){
-							render(newstate)
-							resolve(newstate)
-							updates = []
-						}
-					})
-				})
+				return Promise.resolve(newstate)
 			},
 
 			get() {
@@ -148,20 +146,11 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 
 		rAF(() => {
 			node.querySelectorAll('[tplid]')
-			.forEach((element) => {
-				if(!element.base) return
-				const base = element.base
-				const props = Object.keys(base.model).reduce((acc, key) => {
-					if( key in data ) {
-						if( !acc ) acc = {}
-						acc[key] = data[key]
-					}
-					return acc
-				}, null)
-				if( props ) {
-					base.state.set( props )
-				}
-			})
+				.forEach((element) => {
+					if(!element.base) return
+					element.base.state.protected().forEach( key => delete data[key] )
+					element.base.state.set(data)
+				})
 			rAF(() => g.scope = {})
 		})
 

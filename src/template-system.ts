@@ -22,9 +22,8 @@ export const template = ( target, { components }) => {
 	return templates
 }
 
-export const compile = ( outerHTML ) => {
+export const compile = ( html ) => {
 
-	const html = transformAttributes( outerHTML )
 	const parsedHtml = JSON.stringify( html )
 
 	return new Function('$element', 'safe', '$g',`
@@ -64,7 +63,7 @@ const transformAttributes = ( html ) => {
 		.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`)
 		// The rest
 		.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
-			if (key === 'key' || key === 'model' || key === 'scope-id' ) {
+			if (key === 'key' || key === 'model' || key === 'scopeid' ) {
 				return all
 			}
 			if (value) {
@@ -90,11 +89,12 @@ const transformTemplate = ( clone ) => {
 
 				element.removeAttribute('html-for')
 
-				const split 	= htmlFor.match(/(.*)\sin\s(.*)/) || ''
-				const varname 	= split[1]
-				const object 	= split[2]
-				const open 		= document.createTextNode(`%%_ ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object}, $index: $index, $key: $key }; _%%`)
-				const close 	= document.createTextNode(`%%_ $index++; } })() _%%`)
+				const split 	 = htmlFor.match(/(.*)\sin\s(.*)/) || ''
+				const varname 	 = split[1]
+				const object 	 = split[2]
+				const objectname = object.split(/\./).shift()
+				const open 		 = document.createTextNode(`%%_ ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = Object.assign({}, { ${objectname}: ${objectname} }, { ${varname} :${varname}, $index: $index, $key: $key }); _%%`)
+				const close 	 = document.createTextNode(`%%_ $index++; } })() _%%`)
 
 				wrap(open, element, close)
 			}
@@ -130,27 +130,15 @@ const setTemplates = ( clone, components ) => {
 
 			const tplid = node.getAttribute('tplid')
 			const name  = node.localName
-			node.setAttribute('html-scope-id', 'jails___scope-id')
+			node.setAttribute('html-scopeid', 'jails___scope-id')
 
 			if( name in components && components[name].module.template ) {
 				const children = node.innerHTML
 				const html = components[name].module.template({ elm:node, children })
-
-				if( html.constructor === Promise ) {
-					html.then( htmlstring => {
-						node.innerHTML = htmlstring
-						const html = node.outerHTML
-						templates[tplid] = {
-							template: html,
-							render: compile(html)
-						}
-					})
-				} else {
-					node.innerHTML = html
-				}
+				node.innerHTML = html
 			}
 
-			const html = node.outerHTML
+			const html = transformAttributes(node.outerHTML)
 
 			templates[ tplid ] = {
 				template: html,

@@ -10,6 +10,9 @@ const rAF = (fn) => {
 const uuid = () => {
   return Math.random().toString(36).substring(2, 9);
 };
+const dup = (o) => {
+  return JSON.parse(JSON.stringify(o));
+};
 const safe = (execute, val) => {
   try {
     return execute();
@@ -787,13 +790,13 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   const _model = module.model || {};
   const initialState = new Function(`return ${node.getAttribute("html-model") || "{}"}`)();
   const tplid = node.getAttribute("tplid");
-  const scopeid = node.getAttribute("html-scope-id");
+  const scopeid = node.getAttribute("html-scopeid");
   const tpl = templates2[tplid];
-  const data = g.scope[scopeid];
-  const model = ((_a = module == null ? void 0 : module.model) == null ? void 0 : _a.apply) ? _model({ elm: node, initialState }) : _model;
-  const state = Object.assign({}, data, model, initialState);
-  const view = module.view ? module.view : (data2) => data2;
-  let updates = [];
+  const scope = g.scope[scopeid];
+  const model = dup(((_a = module == null ? void 0 : module.model) == null ? void 0 : _a.apply) ? _model({ elm: node, initialState }) : _model);
+  const state = Object.assign({}, scope, model, initialState);
+  const view = module.view ? module.view : (data) => data;
+  let preserve = [];
   const base = {
     name,
     model,
@@ -809,34 +812,32 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
      * @State
      */
     state: {
-      save(data2) {
-        if (data2.constructor === Function) {
-          data2(state);
+      protected(list) {
+        if (list) {
+          preserve = list;
         } else {
-          Object.assign(state, data2);
+          return preserve;
         }
       },
-      set(data2) {
+      save(data) {
+        if (data.constructor === Function) {
+          data(state);
+        } else {
+          Object.assign(state, data);
+        }
+      },
+      set(data) {
         if (!document.body.contains(node)) {
           return;
         }
-        if (data2.constructor === Function) {
-          data2(state);
+        if (data.constructor === Function) {
+          data(state);
         } else {
-          Object.assign(state, data2);
+          Object.assign(state, data);
         }
-        const newstate = Object.assign({}, state);
-        updates.push(data2);
-        return new Promise((resolve) => {
-          rAF(() => {
-            Object.assign.apply(null, [newstate, ...updates]);
-            if (updates.length) {
-              render(newstate);
-              resolve(newstate);
-              updates = [];
-            }
-          });
-        });
+        const newstate = Object.assign({}, state, scope);
+        render(newstate);
+        return Promise.resolve(newstate);
       },
       get() {
         return Object.assign({}, state);
@@ -876,17 +877,17 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         node.removeEventListener(ev, callback.handler);
       }
     },
-    trigger(ev, selectorOrCallback, data2) {
+    trigger(ev, selectorOrCallback, data) {
       if (selectorOrCallback.constructor === String) {
         Array.from(node.querySelectorAll(selectorOrCallback)).forEach((children) => {
-          children.dispatchEvent(new CustomEvent(ev, { bubbles: true, detail: { args: data2 } }));
+          children.dispatchEvent(new CustomEvent(ev, { bubbles: true, detail: { args: data } }));
         });
       } else {
-        node.dispatchEvent(new CustomEvent(ev, { bubbles: true, detail: { args: data2 } }));
+        node.dispatchEvent(new CustomEvent(ev, { bubbles: true, detail: { args: data } }));
       }
     },
-    emit(ev, data2) {
-      node.dispatchEvent(new CustomEvent(ev, { bubbles: true, detail: { args: data2 } }));
+    emit(ev, data) {
+      node.dispatchEvent(new CustomEvent(ev, { bubbles: true, detail: { args: data } }));
     },
     unmount(fn) {
       node.addEventListener(":unmount", fn);
@@ -899,23 +900,14 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       rAF((_) => Idiomorph.morph(element, clone, IdiomorphOptions));
     }
   };
-  const render = (data2) => {
-    const html = tpl.render.call(view(data2), node, safe, g);
+  const render = (data) => {
+    const html = tpl.render.call(view(data), node, safe, g);
     Idiomorph.morph(node, html, IdiomorphOptions(node));
     rAF(() => {
       node.querySelectorAll("[tplid]").forEach((element) => {
         if (!element.base) return;
-        const base2 = element.base;
-        const props = Object.keys(base2.model).reduce((acc, key) => {
-          if (key in data2) {
-            if (!acc) acc = {};
-            acc[key] = data2[key];
-          }
-          return acc;
-        }, null);
-        if (props) {
-          base2.state.set(props);
-        }
+        element.base.state.protected().forEach((key) => delete data[key]);
+        element.base.state.set(data);
       });
       rAF(() => g.scope = {});
     });
@@ -985,8 +977,7 @@ const template = (target, { components: components2 }) => {
   setTemplates(clone, components2);
   return templates;
 };
-const compile = (outerHTML) => {
-  const html = transformAttributes(outerHTML);
+const compile = (html) => {
   const parsedHtml = JSON.stringify(html);
   return new Function("$element", "safe", "$g", `
 		var $data = this;
@@ -1010,7 +1001,7 @@ const tagElements = (target, keys) => {
 const transformAttributes = (html) => {
   const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, "g");
   return html.replace(/jails___scope-id/g, "%%_=$scopeid_%%").replace(regexTags, "%%_=$1_%%").replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`).replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
-    if (key === "key" || key === "model" || key === "scope-id") {
+    if (key === "key" || key === "model" || key === "scopeid") {
       return all;
     }
     if (value) {
@@ -1032,7 +1023,8 @@ const transformTemplate = (clone) => {
       const split = htmlFor.match(/(.*)\sin\s(.*)/) || "";
       const varname = split[1];
       const object = split[2];
-      const open = document.createTextNode(`%%_ ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = { ${varname} :${varname}, ${object}: ${object}, $index: $index, $key: $key }; _%%`);
+      const objectname = object.split(/\./).shift();
+      const open = document.createTextNode(`%%_ ;(function(){ var $index = 0; for(var $key in safe(function(){ return ${object} }) ){ var $scopeid = Math.random().toString(36).substring(2, 9); var ${varname} = ${object}[$key]; $g.scope[$scopeid] = Object.assign({}, { ${objectname}: ${objectname} }, { ${varname} :${varname}, $index: $index, $key: $key }); _%%`);
       const close = document.createTextNode(`%%_ $index++; } })() _%%`);
       wrap(open, element, close);
     }
@@ -1059,24 +1051,13 @@ const setTemplates = (clone, components2) => {
   Array.from(clone.querySelectorAll("[tplid]")).reverse().forEach((node) => {
     const tplid = node.getAttribute("tplid");
     const name = node.localName;
-    node.setAttribute("html-scope-id", "jails___scope-id");
+    node.setAttribute("html-scopeid", "jails___scope-id");
     if (name in components2 && components2[name].module.template) {
       const children = node.innerHTML;
       const html2 = components2[name].module.template({ elm: node, children });
-      if (html2.constructor === Promise) {
-        html2.then((htmlstring) => {
-          node.innerHTML = htmlstring;
-          const html3 = node.outerHTML;
-          templates[tplid] = {
-            template: html3,
-            render: compile(html3)
-          };
-        });
-      } else {
-        node.innerHTML = html2;
-      }
+      node.innerHTML = html2;
     }
-    const html = node.outerHTML;
+    const html = transformAttributes(node.outerHTML);
     templates[tplid] = {
       template: html,
       render: compile(html)
