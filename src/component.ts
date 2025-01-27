@@ -47,10 +47,13 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 				if (!document.body.contains(node)) {
 					return
 				}
+				if( data.constructor === Function ) {
+					data(state)
+				} else {
+					Object.assign(state, data)
+				}
 
-				const newstate = data.constructor === Function
-					? Object.assign( {}, data(state) )
-					: Object.assign( state, data )
+				const newstate = Object.assign({}, state)
 
 				updates.push(data)
 
@@ -143,7 +146,8 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 		const html = tpl.render.call( view(data), node, safe, g )
 		Idiomorph.morph( node, html, IdiomorphOptions(node) )
 
-		node.querySelectorAll('[tplid]')
+		rAF(() => {
+			node.querySelectorAll('[tplid]')
 			.forEach((element) => {
 				if(!element.base) return
 				const base = element.base
@@ -158,7 +162,9 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 					base.state.set( props )
 				}
 			})
-		rAF(() => g.scope = {})
+			rAF(() => g.scope = {})
+		})
+
 	}
 
 	node.base = base

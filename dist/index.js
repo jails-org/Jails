@@ -1,4 +1,3 @@
-document.createElement("textarea");
 const g = {
   scope: {}
 };
@@ -821,7 +820,12 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         if (!document.body.contains(node)) {
           return;
         }
-        const newstate = data2.constructor === Function ? Object.assign({}, data2(state)) : Object.assign(state, data2);
+        if (data2.constructor === Function) {
+          data2(state);
+        } else {
+          Object.assign(state, data2);
+        }
+        const newstate = Object.assign({}, state);
         updates.push(data2);
         return new Promise((resolve) => {
           rAF(() => {
@@ -898,21 +902,23 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   const render = (data2) => {
     const html = tpl.render.call(view(data2), node, safe, g);
     Idiomorph.morph(node, html, IdiomorphOptions(node));
-    node.querySelectorAll("[tplid]").forEach((element) => {
-      if (!element.base) return;
-      const base2 = element.base;
-      const props = Object.keys(base2.model).reduce((acc, key) => {
-        if (key in data2) {
-          if (!acc) acc = {};
-          acc[key] = data2[key];
+    rAF(() => {
+      node.querySelectorAll("[tplid]").forEach((element) => {
+        if (!element.base) return;
+        const base2 = element.base;
+        const props = Object.keys(base2.model).reduce((acc, key) => {
+          if (key in data2) {
+            if (!acc) acc = {};
+            acc[key] = data2[key];
+          }
+          return acc;
+        }, null);
+        if (props) {
+          base2.state.set(props);
         }
-        return acc;
-      }, null);
-      if (props) {
-        base2.state.set(props);
-      }
+      });
+      rAF(() => g.scope = {});
     });
-    rAF(() => g.scope = {});
   };
   node.base = base;
   return module.default(base);
