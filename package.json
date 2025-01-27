@@ -1,6 +1,6 @@
 {
 	"name": "jails-js",
-	"version": "6.0.1-beta.0",
+	"version": "6.0.1-beta.1",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"module": "./dist/index.js",
 	"main": "./dist/jails.js",
