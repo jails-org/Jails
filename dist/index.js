@@ -1,5 +1,10 @@
+const textarea = document.createElement("textarea");
 const g = {
   scope: {}
+};
+const decodeHTML = (text) => {
+  textarea.innerHTML = text;
+  return textarea.value;
 };
 const rAF = (fn) => {
   if (requestAnimationFrame)
@@ -893,7 +898,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       node.addEventListener(":unmount", fn);
     },
     innerHTML(target, html_) {
-      const element = html_ ? target : elm;
+      const element = html_ ? target : node;
       const clone = element.cloneNode();
       const html = html_ ? html_ : target;
       clone.innerHTML = html;
@@ -983,9 +988,9 @@ const compile = (html) => {
 		var $data = this;
 		with( $data ){
 			var output=${parsedHtml.replace(/%%_=(.+?)_%%/g, function(_, variable) {
-    return '"+safe(function(){return ' + variable + ';})+"';
+    return '"+safe(function(){return ' + decodeHTML(variable) + ';})+"';
   }).replace(/%%_(.+?)_%%/g, function(_, variable) {
-    return '";' + variable + '\noutput+="';
+    return '";' + decodeHTML(variable) + '\noutput+="';
   })};return output;
 		}
 	`);

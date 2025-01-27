@@ -130,7 +130,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 		},
 
 		innerHTML ( target, html_ ) {
-			const element = html_? target : elm
+			const element = html_? target : node
 			const clone = element.cloneNode()
 			const html = html_? html_ : target
 			clone.innerHTML = html

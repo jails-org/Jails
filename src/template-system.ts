@@ -1,4 +1,4 @@
-import { uuid } from './utils'
+import { uuid, decodeHTML } from './utils'
 
 const templates  = {}
 
@@ -31,10 +31,10 @@ export const compile = ( html ) => {
 		with( $data ){
 			var output=${parsedHtml
 				.replace(/%%_=(.+?)_%%/g, function(_, variable){
-					return '"+safe(function(){return '+ variable +';})+"'
+					return '"+safe(function(){return '+ decodeHTML(variable) +';})+"'
 				})
 				.replace(/%%_(.+?)_%%/g, function(_, variable){
-					return '";' + variable +'\noutput+="'
+					return '";' + decodeHTML(variable) +'\noutput+="'
 				})};return output;
 		}
 	`)
