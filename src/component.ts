@@ -3,6 +3,7 @@ import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { publish, subscribe } from './utils/pubsub'
 
 export const Component = ({ name, module, dependencies, node, templates, signal }) => {
+
 	const _model 		= module.model || {}
 	const initialState 	= (new Function( `return ${node.getAttribute('html-model') || '{}'}`))()
 	const tplid 		= node.getAttribute('tplid')
@@ -161,7 +162,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 	}
 
 	node.base = base
-	module.default( base )
+	return module.default( base )
 }
 
 const IdiomorphOptions = ( parent ) => ({

@@ -915,7 +915,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
     rAF(() => g.scope = {});
   };
   node.base = base;
-  module.default(base);
+  return module.default(base);
 };
 const IdiomorphOptions = (parent) => ({
   callbacks: {
@@ -942,7 +942,7 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
       if (!this.getAttribute("tplid")) {
         start2(this.parentNode);
       }
-      Component({
+      const rtrn = Component({
         node: this,
         name,
         module,
@@ -950,7 +950,11 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
         templates: templates2,
         signal: abortController.signal
       });
-      this.dispatchEvent(new CustomEvent(":mount"));
+      if (rtrn && rtrn.constructor === Promise) {
+        rtrn.then(() => this.dispatchEvent(new CustomEvent(":mount")));
+      } else {
+        this.dispatchEvent(new CustomEvent(":mount"));
+      }
       this.base.state.set({});
     }
     disconnectedCallback() {
