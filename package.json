@@ -2,7 +2,7 @@
 	"name": "jails-js",
 	"version": "6.0.0",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
-	"module": "./dist/jails.js",
+	"module": "./dist/index.js",
 	"main": "./dist/jails.js",
 	"types": "index.d.ts",
 	"scripts": {
@@ -29,13 +29,12 @@
 	},
 	"homepage": "https://github.com/jails-org/Jails",
 	"devDependencies": {
-		"@types/node": "^20.6.0",
-		"terser": "^5.19.4",
-		"typescript": "^5.0.2",
-		"vite": "^4.4.5"
+		"@types/node": "^22.10.10",
+		"terser": "^5.37.0",
+		"typescript": "^5.7.3",
+		"vite": "^6.0.11"
 	},
 	"dependencies": {
-		"eta": "^3.5.0",
 		"idiomorph": "^0.4.0"
 	}
 }

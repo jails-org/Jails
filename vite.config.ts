@@ -9,8 +9,10 @@ export default defineConfig({
 		lib: {
 			name: 'jails',
 			entry: path.resolve('src', 'index.ts'),
-			formats: ['umd'],
-			fileName: format => `jails.js`
+			formats: ['umd', 'es'],
+			fileName: (format) => {
+				return format == 'umd'? 'jails.js': 'index.js'
+			}
 		},
 		rollupOptions: {
 			output: {
