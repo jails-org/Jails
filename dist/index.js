@@ -917,6 +917,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       rAF(() => g.scope = {});
     });
   };
+  render(state);
   node.base = base;
   return module.default(base);
 };
@@ -953,9 +954,6 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
         templates: templates2,
         signal: abortController.signal
       });
-      if (this.base) {
-        this.base.state.set({});
-      }
       if (rtrn && rtrn.constructor === Promise) {
         rtrn.then(() => this.dispatchEvent(new CustomEvent(":mount")));
       } else {

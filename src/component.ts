@@ -155,7 +155,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 		})
 
 	}
-
+	render( state )
 	node.base = base
 	return module.default( base )
 }
