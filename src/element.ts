@@ -26,13 +26,16 @@ export const Element = ({ component, templates, start }) => {
 				signal: abortController.signal
 			})
 
+			if(this.base) {
+				this.base.state.set({})
+			}
+
 			if ( rtrn && rtrn.constructor === Promise ) {
 				rtrn.then(() => this.dispatchEvent( new CustomEvent(':mount') ))
 			} else {
 				this.dispatchEvent( new CustomEvent(':mount') )
 			}
 
-			this.base.state.set({})
 		}
 
 		disconnectedCallback() {

@@ -953,12 +953,14 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
         templates: templates2,
         signal: abortController.signal
       });
+      if (this.base) {
+        this.base.state.set({});
+      }
       if (rtrn && rtrn.constructor === Promise) {
         rtrn.then(() => this.dispatchEvent(new CustomEvent(":mount")));
       } else {
         this.dispatchEvent(new CustomEvent(":mount"));
       }
-      this.base.state.set({});
     }
     disconnectedCallback() {
       this.dispatchEvent(new CustomEvent(":unmount"));
