@@ -12,7 +12,7 @@ export const templateConfig = (newconfig) => {
 
 export const template = ( target, { components }) => {
 
-	tagElements( target, [...Object.keys( components ), 'template'] )
+	tagElements( target, [...Object.keys( components ), '[html-if]', 'template'] )
 	const clone = target.cloneNode( true )
 
 	transformTemplate( clone )
@@ -48,6 +48,9 @@ const tagElements = ( target, keys ) => {
 				return tagElements( node.content, keys )
 			}
 			node.setAttribute('tplid', uuid())
+			if( node.getAttribute('html-if') && !node.id ) {
+				node.id = uuid()
+			}
 		})
 }
 
@@ -101,9 +104,6 @@ const transformTemplate = ( clone ) => {
 
 			if (htmlIf) {
 				element.removeAttribute('html-if')
-				if( !element.getAttribute('id') ) {
-					element.setAttribute('id', uuid())
-				}
 				const open = document.createTextNode(`%%_ if ( safe(function(){ return ${htmlIf} }) ){ _%%`)
 				const close = document.createTextNode(`%%_ }  _%%`)
 				wrap(open, element, close)

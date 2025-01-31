@@ -935,18 +935,14 @@ const IdiomorphOptions = (parent) => ({
 });
 const Element$1 = ({ component, templates: templates2, start: start2 }) => {
   const { name, module, dependencies } = component;
-  const abortController = new AbortController();
-  let ismounted = false;
   return class extends HTMLElement {
     constructor() {
       super();
     }
     connectedCallback() {
+      this.abortController = new AbortController();
       if (!this.getAttribute("tplid")) {
         start2(this.parentNode);
-      }
-      if (ismounted) {
-        return;
       }
       const rtrn = Component({
         node: this,
@@ -954,18 +950,19 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
         module,
         dependencies,
         templates: templates2,
-        signal: abortController.signal
+        signal: this.abortController.signal
       });
       if (rtrn && rtrn.constructor === Promise) {
-        rtrn.then(() => this.dispatchEvent(new CustomEvent(":mount")));
+        rtrn.then(() => {
+          this.dispatchEvent(new CustomEvent(":mount"));
+        });
       } else {
         this.dispatchEvent(new CustomEvent(":mount"));
       }
-      ismounted = true;
     }
     disconnectedCallback() {
       this.dispatchEvent(new CustomEvent(":unmount"));
-      abortController.abort();
+      this.abortController.abort();
       delete this.base;
     }
   };
@@ -978,7 +975,7 @@ const templateConfig$1 = (newconfig) => {
   Object.assign(config, newconfig);
 };
 const template = (target, { components: components2 }) => {
-  tagElements(target, [...Object.keys(components2), "template"]);
+  tagElements(target, [...Object.keys(components2), "[html-if]", "template"]);
   const clone = target.cloneNode(true);
   transformTemplate(clone);
   removeTemplateTagsRecursively(clone);
@@ -1004,6 +1001,9 @@ const tagElements = (target, keys) => {
       return tagElements(node.content, keys);
     }
     node.setAttribute("tplid", uuid());
+    if (node.getAttribute("html-if") && !node.id) {
+      node.id = uuid();
+    }
   });
 };
 const transformAttributes = (html) => {
@@ -1038,9 +1038,6 @@ const transformTemplate = (clone) => {
     }
     if (htmlIf) {
       element.removeAttribute("html-if");
-      if (!element.getAttribute("id")) {
-        element.setAttribute("id", uuid());
-      }
       const open = document.createTextNode(`%%_ if ( safe(function(){ return ${htmlIf} }) ){ _%%`);
       const close = document.createTextNode(`%%_ }  _%%`);
       wrap(open, element, close);

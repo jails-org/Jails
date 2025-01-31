@@ -3,9 +3,6 @@ import { Component } from './component'
 export const Element = ({ component, templates, start }) => {
 
 	const { name, module, dependencies } = component
-	const abortController = new AbortController()
-
-	let ismounted = false
 
 	return class extends HTMLElement {
 
@@ -15,12 +12,10 @@ export const Element = ({ component, templates, start }) => {
 
 		connectedCallback() {
 
+			this.abortController = new AbortController()
+
 			if( !this.getAttribute('tplid') ) {
 				start( this.parentNode )
-			}
-
-			if( ismounted ) {
-				return
 			}
 
 			const rtrn = Component({
@@ -29,21 +24,21 @@ export const Element = ({ component, templates, start }) => {
 				module,
 				dependencies,
 				templates,
-				signal: abortController.signal
+				signal: this.abortController.signal
 			})
 
 			if ( rtrn && rtrn.constructor === Promise ) {
-				rtrn.then(() => this.dispatchEvent( new CustomEvent(':mount') ))
+				rtrn.then(() => {
+					this.dispatchEvent( new CustomEvent(':mount') )
+				})
 			} else {
 				this.dispatchEvent( new CustomEvent(':mount') )
 			}
-
-			ismounted = true
 		}
 
 		disconnectedCallback() {
 			this.dispatchEvent( new CustomEvent(':unmount') )
-			abortController.abort()
+			this.abortController.abort()
 			delete this.base
 		}
 	}
