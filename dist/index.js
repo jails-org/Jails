@@ -936,6 +936,7 @@ const IdiomorphOptions = (parent) => ({
 const Element$1 = ({ component, templates: templates2, start: start2 }) => {
   const { name, module, dependencies } = component;
   const abortController = new AbortController();
+  let ismounted = false;
   return class extends HTMLElement {
     constructor() {
       super();
@@ -943,6 +944,9 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
     connectedCallback() {
       if (!this.getAttribute("tplid")) {
         start2(this.parentNode);
+      }
+      if (ismounted) {
+        return;
       }
       const rtrn = Component({
         node: this,
@@ -957,6 +961,7 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
       } else {
         this.dispatchEvent(new CustomEvent(":mount"));
       }
+      ismounted = true;
     }
     disconnectedCallback() {
       this.dispatchEvent(new CustomEvent(":unmount"));

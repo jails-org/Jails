@@ -5,6 +5,8 @@ export const Element = ({ component, templates, start }) => {
 	const { name, module, dependencies } = component
 	const abortController = new AbortController()
 
+	let ismounted = false
+
 	return class extends HTMLElement {
 
 		constructor() {
@@ -15,6 +17,10 @@ export const Element = ({ component, templates, start }) => {
 
 			if( !this.getAttribute('tplid') ) {
 				start( this.parentNode )
+			}
+
+			if( ismounted ) {
+				return
 			}
 
 			const rtrn = Component({
@@ -31,6 +37,8 @@ export const Element = ({ component, templates, start }) => {
 			} else {
 				this.dispatchEvent( new CustomEvent(':mount') )
 			}
+
+			ismounted = true
 		}
 
 		disconnectedCallback() {
