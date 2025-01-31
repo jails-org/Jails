@@ -101,8 +101,11 @@ const transformTemplate = ( clone ) => {
 
 			if (htmlIf) {
 				element.removeAttribute('html-if')
+				if( !element.getAttribute('id') ) {
+					element.setAttribute('id', uuid())
+				}
 				const open = document.createTextNode(`%%_ if ( safe(function(){ return ${htmlIf} }) ){ _%%`)
-				const close = document.createTextNode(`%%_ } _%%`)
+				const close = document.createTextNode(`%%_ }  _%%`)
 				wrap(open, element, close)
 			}
 

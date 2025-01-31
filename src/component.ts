@@ -14,6 +14,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 	const state 		= Object.assign({}, scope, model, initialState)
 	const view 			= module.view? module.view : (data) => data
 	let preserve		= []
+	let tick
 
 	const base = {
 		name,
@@ -61,7 +62,6 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 				}
 
 				const newstate = Object.assign({}, state, scope)
-
 				render(newstate)
 
 				return Promise.resolve(newstate)
@@ -101,6 +101,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 				}
 				node.addEventListener(ev, selectorOrCallback.handler, { signal })
 			}
+
 		},
 
 		off( ev, callback ) {
@@ -134,27 +135,27 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 			const clone = element.cloneNode()
 			const html = html_? html_ : target
 			clone.innerHTML = html
-
-			rAF( _ => Idiomorph.morph(element, clone, IdiomorphOptions) )
+			Promise.resolve(() => Idiomorph.morph(element, clone, IdiomorphOptions))
 		}
 	}
 
 	const render = ( data ) => {
-
-		const html = tpl.render.call( view(data), node, safe, g )
-		Idiomorph.morph( node, html, IdiomorphOptions(node) )
-
-		rAF(() => {
-			node.querySelectorAll('[tplid]')
-				.forEach((element) => {
-					if(!element.base) return
-					element.base.state.protected().forEach( key => delete data[key] )
-					element.base.state.set(data)
-				})
-			rAF(() => g.scope = {})
+		clearTimeout( tick )
+		tick = setTimeout(() => {
+			const html = tpl.render.call( view(data), node, safe, g )
+			Idiomorph.morph( node, html, IdiomorphOptions(node) )
+			Promise.resolve().then(() => {
+				node.querySelectorAll('[tplid]')
+					.forEach((element) => {
+						if(!element.base) return
+						element.base.state.protected().forEach( key => delete data[key] )
+						element.base.state.set(data)
+					})
+				Promise.resolve().then(() => g.scope = {})
+			})
 		})
-
 	}
+
 	render( state )
 	node.base = base
 	return module.default( base )

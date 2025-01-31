@@ -31,7 +31,6 @@ export const Element = ({ component, templates, start }) => {
 			} else {
 				this.dispatchEvent( new CustomEvent(':mount') )
 			}
-
 		}
 
 		disconnectedCallback() {

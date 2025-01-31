@@ -6,12 +6,6 @@ const decodeHTML = (text) => {
   textarea.innerHTML = text;
   return textarea.value;
 };
-const rAF = (fn) => {
-  if (requestAnimationFrame)
-    return requestAnimationFrame(fn);
-  else
-    return setTimeout(fn, 1e3 / 60);
-};
 const uuid = () => {
   return Math.random().toString(36).substring(2, 9);
 };
@@ -802,6 +796,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   const state = Object.assign({}, scope, model, initialState);
   const view = module.view ? module.view : (data) => data;
   let preserve = [];
+  let tick;
   const base = {
     name,
     model,
@@ -902,19 +897,22 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       const clone = element.cloneNode();
       const html = html_ ? html_ : target;
       clone.innerHTML = html;
-      rAF((_) => Idiomorph.morph(element, clone, IdiomorphOptions));
+      Promise.resolve(() => Idiomorph.morph(element, clone, IdiomorphOptions));
     }
   };
   const render = (data) => {
-    const html = tpl.render.call(view(data), node, safe, g);
-    Idiomorph.morph(node, html, IdiomorphOptions(node));
-    rAF(() => {
-      node.querySelectorAll("[tplid]").forEach((element) => {
-        if (!element.base) return;
-        element.base.state.protected().forEach((key) => delete data[key]);
-        element.base.state.set(data);
+    clearTimeout(tick);
+    tick = setTimeout(() => {
+      const html = tpl.render.call(view(data), node, safe, g);
+      Idiomorph.morph(node, html, IdiomorphOptions(node));
+      Promise.resolve().then(() => {
+        node.querySelectorAll("[tplid]").forEach((element) => {
+          if (!element.base) return;
+          element.base.state.protected().forEach((key) => delete data[key]);
+          element.base.state.set(data);
+        });
+        Promise.resolve().then(() => g.scope = {});
       });
-      rAF(() => g.scope = {});
     });
   };
   render(state);
@@ -1035,8 +1033,11 @@ const transformTemplate = (clone) => {
     }
     if (htmlIf) {
       element.removeAttribute("html-if");
+      if (!element.getAttribute("id")) {
+        element.setAttribute("id", uuid());
+      }
       const open = document.createTextNode(`%%_ if ( safe(function(){ return ${htmlIf} }) ){ _%%`);
-      const close = document.createTextNode(`%%_ } _%%`);
+      const close = document.createTextNode(`%%_ }  _%%`);
       wrap(open, element, close);
     }
     if (htmlInner) {
