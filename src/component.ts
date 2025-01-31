@@ -1,4 +1,4 @@
-import { safe, rAF, g, dup } from './utils'
+import { safe, g, dup } from './utils'
 import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { publish, subscribe } from './utils/pubsub'
 
@@ -135,7 +135,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 			const clone = element.cloneNode()
 			const html = html_? html_ : target
 			clone.innerHTML = html
-			Promise.resolve(() => Idiomorph.morph(element, clone, IdiomorphOptions))
+			Idiomorph.morph(element, clone)
 		}
 	}
 

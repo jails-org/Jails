@@ -897,7 +897,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       const clone = element.cloneNode();
       const html = html_ ? html_ : target;
       clone.innerHTML = html;
-      Promise.resolve(() => Idiomorph.morph(element, clone, IdiomorphOptions));
+      Idiomorph.morph(element, clone);
     }
   };
   const render = (data) => {
