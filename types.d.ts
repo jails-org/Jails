@@ -1,10 +1,10 @@
 type EventCallback = ( Event: Event, data?:any ) => void
 
-export type subscribe = ( subject: string, callback: (data:any) => void ) => Function
-export type publish = ( subject: string, data :any ) => void
 export type start = ( target?:HTMLElement ) => void
 export type register = (name: string, module: Module, dependencies?: any) => void
 export type templateConfig = ({ tags: Array }) => void
+export type subscribe = ( subject: string, callback: (data:any) => void ) => Function
+export type publish = ( subject: string, data :any ) => void
 
 export type Module = {
 	default: ((component:Component) => Promise<void> | void )
