@@ -1,3 +1,4 @@
+
 import { Element } from './element'
 import { template, templateConfig as config } from './template-system'
 
