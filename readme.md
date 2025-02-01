@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.svg" width="120" />
+  <img width="200" src="https://github.com/user-attachments/assets/8b4dbfb9-f05e-4b83-8d42-8847038a97e2" alt="Jails" />
 </p>
 
 <h1 align="center">Jails</h1>
