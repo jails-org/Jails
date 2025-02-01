@@ -4,7 +4,7 @@
 
 <h1 align="center">Jails</h1>
 
-<h3 align="center">Elegant and Minimalistic<br /> Web Components Library</h3>
+<h3 align="center">An Elegant and Minimalistic<br /> Web Components Library</h3>
 
 <div align="center">
   <table align="center" border="0">
@@ -86,14 +86,14 @@ export const model = {
 
 `main.ts` 
 ```ts
-import jails from 'jails-js'
+import { register, start } from 'jails-js'
 import * as appCounter from './components/counter'
 
 // Register all your components
-jails.register('app-counter', appCounter)
+register('app-counter', appCounter)
 
 // Execute Jails
-jails.start()
+start()
 ```
 
 <br>
@@ -125,7 +125,7 @@ Jails is better suited for:
 ## 📚 Demos & Docs
 
 - [Online Examples & Playground](https://stackblitz.com/@Javiani/collections/jails-organization)
-- [Documentation](https://jails-org.github.io/#/)
+- [Documentation](https://jails-js.org/about/docs)
 
 <br />
 
@@ -140,10 +140,3 @@ Join to the forum and be part of the project by asking, answering or discuss som
 
 [MIT](http://opensource.org/licenses/MIT)
 
-
-<div align="center">
-  
-  <img src="https://github.com/jails-org/Jails/assets/567506/e9222352-312d-4b75-91a8-a23c32251b87" width="100" />
-  <br />
-  Release: <strong>Athena</strong>
-</div>
