@@ -784,8 +784,10 @@ const subscribe = (name, method) => {
     topics[name] = topics[name].filter((fn) => fn != method);
   };
 };
-const Component = ({ name, module, dependencies, node, templates: templates2, signal }) => {
+const Component = ({ name, module, dependencies, node, templates: templates2, signal, register: register2 }) => {
   var _a;
+  let tick;
+  let preserve = [];
   const _model = module.model || {};
   const initialState = new Function(`return ${node.getAttribute("html-model") || "{}"}`)();
   const tplid = node.getAttribute("tplid");
@@ -795,8 +797,6 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   const model = dup(((_a = module == null ? void 0 : module.model) == null ? void 0 : _a.apply) ? _model({ elm: node, initialState }) : _model);
   const state = Object.assign({}, scope, model, initialState);
   const view = module.view ? module.view : (data) => data;
-  let preserve = [];
-  let tick;
   const base = {
     name,
     model,
@@ -904,35 +904,37 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
     clearTimeout(tick);
     tick = setTimeout(() => {
       const html = tpl.render.call(view(data), node, safe, g);
-      Idiomorph.morph(node, html, IdiomorphOptions(node));
+      Idiomorph.morph(node, html, IdiomorphOptions(node, register2));
       Promise.resolve().then(() => {
         node.querySelectorAll("[tplid]").forEach((element) => {
-          if (!element.base) return;
-          element.base.state.protected().forEach((key) => delete data[key]);
-          element.base.state.set(data);
+          const child = register2.get(element);
+          if (!child) return;
+          child.state.protected().forEach((key) => delete data[key]);
+          child.state.set(data);
         });
         Promise.resolve().then(() => g.scope = {});
       });
     });
   };
   render(state);
-  node.base = base;
+  register2.set(node, base);
   return module.default(base);
 };
-const IdiomorphOptions = (parent) => ({
+const IdiomorphOptions = (parent, register2) => ({
   callbacks: {
     beforeNodeMorphed(node) {
       if (node.nodeType === 1) {
         if ("html-static" in node.attributes) {
           return false;
         }
-        if (node.base && node !== parent) {
+        if (register2.get(node) && node !== parent) {
           return false;
         }
       }
     }
   }
 });
+const register$1 = /* @__PURE__ */ new WeakMap();
 const Element$1 = ({ component, templates: templates2, start: start2 }) => {
   const { name, module, dependencies } = component;
   return class extends HTMLElement {
@@ -950,7 +952,8 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
         module,
         dependencies,
         templates: templates2,
-        signal: this.abortController.signal
+        signal: this.abortController.signal,
+        register: register$1
       });
       if (rtrn && rtrn.constructor === Promise) {
         rtrn.then(() => {
@@ -963,7 +966,6 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
     disconnectedCallback() {
       this.dispatchEvent(new CustomEvent(":unmount"));
       this.abortController.abort();
-      delete this.base;
     }
   };
 };

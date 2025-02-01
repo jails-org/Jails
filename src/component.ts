@@ -2,7 +2,10 @@ import { safe, g, dup } from './utils'
 import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { publish, subscribe } from './utils/pubsub'
 
-export const Component = ({ name, module, dependencies, node, templates, signal }) => {
+export const Component = ({ name, module, dependencies, node, templates, signal, register }) => {
+
+	let tick
+	let preserve		= []
 
 	const _model 		= module.model || {}
 	const initialState 	= (new Function( `return ${node.getAttribute('html-model') || '{}'}`))()
@@ -13,8 +16,6 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 	const model  		= dup(module?.model?.apply ? _model({ elm:node, initialState }) : _model)
 	const state 		= Object.assign({}, scope, model, initialState)
 	const view 			= module.view? module.view : (data) => data
-	let preserve		= []
-	let tick
 
 	const base = {
 		name,
@@ -143,13 +144,14 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 		clearTimeout( tick )
 		tick = setTimeout(() => {
 			const html = tpl.render.call( view(data), node, safe, g )
-			Idiomorph.morph( node, html, IdiomorphOptions(node) )
+			Idiomorph.morph( node, html, IdiomorphOptions(node, register) )
 			Promise.resolve().then(() => {
 				node.querySelectorAll('[tplid]')
 					.forEach((element) => {
-						if(!element.base) return
-						element.base.state.protected().forEach( key => delete data[key] )
-						element.base.state.set(data)
+						const child = register.get(element)
+						if(!child) return
+						child.state.protected().forEach( key => delete data[key] )
+						child.state.set(data)
 					})
 				Promise.resolve().then(() => g.scope = {})
 			})
@@ -157,18 +159,18 @@ export const Component = ({ name, module, dependencies, node, templates, signal 
 	}
 
 	render( state )
-	node.base = base
+	register.set( node, base )
 	return module.default( base )
 }
 
-const IdiomorphOptions = ( parent ) => ({
+const IdiomorphOptions = ( parent, register ) => ({
 	callbacks: {
 		beforeNodeMorphed( node ) {
 			if( node.nodeType === 1 ) {
 				if( 'html-static' in node.attributes ) {
 					return false
 				}
-				if( node.base && node !== parent ) {
+				if( register.get(node) && node !== parent ) {
 					return false
 				}
 			}

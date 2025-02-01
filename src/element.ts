@@ -1,5 +1,7 @@
 import { Component } from './component'
 
+const register = new WeakMap()
+
 export const Element = ({ component, templates, start }) => {
 
 	const { name, module, dependencies } = component
@@ -24,7 +26,8 @@ export const Element = ({ component, templates, start }) => {
 				module,
 				dependencies,
 				templates,
-				signal: this.abortController.signal
+				signal: this.abortController.signal,
+				register
 			})
 
 			if ( rtrn && rtrn.constructor === Promise ) {
@@ -39,7 +42,6 @@ export const Element = ({ component, templates, start }) => {
 		disconnectedCallback() {
 			this.dispatchEvent( new CustomEvent(':unmount') )
 			this.abortController.abort()
-			delete this.base
 		}
 	}
 }
