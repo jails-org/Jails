@@ -63,9 +63,10 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 				}
 
 				const newstate = Object.assign({}, state, scope)
-				render(newstate)
 
-				return Promise.resolve(newstate)
+				return new Promise((resolve) => {
+					render(newstate, () => resolve(newstate))
+				})
 			},
 
 			get() {
@@ -140,7 +141,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		}
 	}
 
-	const render = ( data ) => {
+	const render = ( data, callback = (() => {}) ) => {
 		clearTimeout( tick )
 		tick = setTimeout(() => {
 			const html = tpl.render.call( view(data), node, safe, g )
@@ -153,7 +154,10 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 						child.state.protected().forEach( key => delete data[key] )
 						child.state.set(data)
 					})
-				Promise.resolve().then(() => g.scope = {})
+				Promise.resolve().then(() => {
+					g.scope = {}
+					callback()
+				})
 			})
 		})
 	}
