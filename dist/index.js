@@ -917,12 +917,12 @@ const config = {
 const templateConfig$1 = (newconfig) => {
   Object.assign(config, newconfig);
 };
-const template = (target, { components: components2 }) => {
-  tagElements(target, [...Object.keys(components2), "[html-if]", "template"]);
+const template = (target, { components }) => {
+  tagElements(target, [...Object.keys(components), "[html-if]", "template"]);
   const clone = target.cloneNode(true);
   transformTemplate(clone);
   removeTemplateTagsRecursively(clone);
-  setTemplates(clone, components2);
+  setTemplates(clone, components);
   return templates;
 };
 const compile = (html) => {
@@ -998,14 +998,14 @@ const transformTemplate = (clone) => {
     }
   });
 };
-const setTemplates = (clone, components2) => {
+const setTemplates = (clone, components) => {
   Array.from(clone.querySelectorAll("[tplid]")).reverse().forEach((node) => {
     const tplid = node.getAttribute("tplid");
     const name = node.localName;
     node.setAttribute("html-scopeid", "jails___scope-id");
-    if (name in components2 && components2[name].module.template) {
+    if (name in components && components[name].module.template) {
       const children = node.innerHTML;
-      const html2 = components2[name].module.template({ elm: node, children });
+      const html2 = components[name].module.template({ elm: node, children });
       node.innerHTML = html2;
     }
     const html = transformAttributes(node.outerHTML);
@@ -1037,14 +1037,16 @@ const wrap = (open, node, close) => {
   (_a = node.parentNode) == null ? void 0 : _a.insertBefore(open, node);
   (_b = node.parentNode) == null ? void 0 : _b.insertBefore(close, node.nextSibling);
 };
-const components = {};
 const templateConfig = (options) => {
   templateConfig$1(options);
 };
+window.__jails__ = window.__jails__ || { components: {} };
 const register = (name, module, dependencies) => {
+  const { components } = window.__jails__;
   components[name] = { name, module, dependencies };
 };
 const start = (target = document.body) => {
+  const { components } = window.__jails__;
   const templates2 = template(target, { components });
   Object.values(components).forEach(({ name, module, dependencies }) => {
     if (!customElements.get(name)) {
