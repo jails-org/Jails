@@ -918,7 +918,7 @@ const templateConfig$1 = (newconfig) => {
   Object.assign(config, newconfig);
 };
 const template = (target, { components }) => {
-  tagElements(target, [...Object.keys(components), "[html-if]", "template"]);
+  tagElements(target, [...Object.keys(components), "[html-if]", "template"], components);
   const clone = target.cloneNode(true);
   transformTemplate(clone);
   removeTemplateTagsRecursively(clone);
@@ -938,14 +938,17 @@ const compile = (html) => {
 		}
 	`);
 };
-const tagElements = (target, keys) => {
+const tagElements = (target, keys, components) => {
   target.querySelectorAll(keys.toString()).forEach((node) => {
-    if (node.localName === "template") {
-      return tagElements(node.content, keys);
+    const name = node.localName;
+    if (name === "template") {
+      return tagElements(node.content, keys, components);
     }
-    node.setAttribute("tplid", uuid());
     if (node.getAttribute("html-if") && !node.id) {
       node.id = uuid();
+    }
+    if (name in components) {
+      node.setAttribute("tplid", uuid());
     }
   });
 };
