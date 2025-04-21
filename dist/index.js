@@ -954,7 +954,7 @@ const tagElements = (target, keys, components) => {
 };
 const transformAttributes = (html) => {
   const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, "g");
-  return html.replace(/jails___scope-id/g, "%%_=$scopeid_%%").replace(regexTags, "%%_=$1_%%").replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`).replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
+  return html.replace(/jails___scope-id/g, "%%_=$scopeid_%%").replace(regexTags, "%%_=$1_%%").replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`).replace(/html-([^\s]*?)=\"(.*?)\"/g, (all, key, value) => {
     if (key === "key" || key === "model" || key === "scopeid") {
       return all;
     }

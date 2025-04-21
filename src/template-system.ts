@@ -68,7 +68,7 @@ const transformAttributes = ( html ) => {
 		// https://meiert.com/en/blog/boolean-attributes-of-html/
 		.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`)
 		// The rest
-		.replace(/html-(.*?)=\"(.*?)\"/g, (all, key, value) => {
+		.replace(/html-([^\s]*?)=\"(.*?)\"/g, (all, key, value) => {
 			if (key === 'key' || key === 'model' || key === 'scopeid' ) {
 				return all
 			}
