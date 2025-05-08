@@ -144,7 +144,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 	const render = ( data, callback = (() => {}) ) => {
 		clearTimeout( tick )
 		tick = setTimeout(() => {
-			const html = tpl.render.call( view(data), node, safe, g )
+			const html = tpl.render.call({...data, ...view(data)}, node, safe, g )
 			Idiomorph.morph( node, html, IdiomorphOptions(node, register) )
 			Promise.resolve().then(() => {
 				node.querySelectorAll('[tplid]')
