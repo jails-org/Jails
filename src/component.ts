@@ -74,19 +74,10 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			}
 		},
 
-		dataset( target, name) {
+		dataset( target, name ) {
 
-			let el
-			let key
-
-			if( name ) {
-				el = target
-				key = name
-			}else {
-				el = node
-				key = target
-			}
-
+			const el = name? target : node
+			const key = name? name : target
 			const value = el.dataset[key]
 
 			if (value === 'true') return true
@@ -94,7 +85,6 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			if (!isNaN(value) && value.trim() !== '') return Number(value)
 
 			try {
-				// If it's not JSON, try parsing as JS expression
 				return new Function('return (' + value + ')')()
 			} catch {}
 
@@ -103,6 +93,46 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			} catch {}
 
 			return value
+		},
+
+		attributes( target ) {
+
+			let callbacks = []
+			const elm = target || node
+
+			const observer = new MutationObserver((mutationsList) => {
+				for (const mutation of mutationsList) {
+					if (mutation.type === 'attributes') {
+						const attributeName = mutation.attributeName
+						callbacks.forEach((item) => {
+							if (item.name == attributeName) {
+								item.callback(
+									attributeName,
+									elm.getAttribute(attributeName)
+								)
+							}
+						})
+					}
+				}
+			})
+
+			observer.observe(node, { attributes: true })
+
+			node.addEventListener(':unmount', () => {
+				callbacks = null
+				observer.disconnect()
+			})
+
+			return {
+
+				onchange( name, callback ) {
+					callbacks.push({ name, callback })
+				},
+
+				disconnect( callback ) {
+					callbacks = callbacks.filter((item) => item.callback !== callback)
+				}
+			}
 		},
 
 		/**

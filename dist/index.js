@@ -797,15 +797,8 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       }
     },
     dataset(target, name2) {
-      let el;
-      let key;
-      if (name2) {
-        el = target;
-        key = name2;
-      } else {
-        el = node;
-        key = target;
-      }
+      const el = name2 ? target : node;
+      const key = name2 ? name2 : target;
       const value = el.dataset[key];
       if (value === "true") return true;
       if (value === "false") return false;
@@ -819,6 +812,38 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       } catch (e) {
       }
       return value;
+    },
+    attributes(target) {
+      let callbacks = [];
+      const elm = target || node;
+      const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === "attributes") {
+            const attributeName = mutation.attributeName;
+            callbacks.forEach((item) => {
+              if (item.name == attributeName) {
+                item.callback(
+                  attributeName,
+                  elm.getAttribute(attributeName)
+                );
+              }
+            });
+          }
+        }
+      });
+      observer.observe(node, { attributes: true });
+      node.addEventListener(":unmount", () => {
+        callbacks = null;
+        observer.disconnect();
+      });
+      return {
+        onchange(name2, callback) {
+          callbacks.push({ name: name2, callback });
+        },
+        disconnect(callback) {
+          callbacks = callbacks.filter((item) => item.callback !== callback);
+        }
+      };
     },
     /**
      * @Events
