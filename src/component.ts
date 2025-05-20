@@ -73,6 +73,38 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 				return Object.assign({}, state)
 			}
 		},
+
+		dataset( target, name) {
+
+			let el
+			let key
+
+			if( name ) {
+				el = target
+				key = name
+			}else {
+				el = node
+				key = target
+			}
+
+			const value = el.dataset[key]
+
+			if (value === 'true') return true
+			if (value === 'false') return false
+			if (!isNaN(value) && value.trim() !== '') return Number(value)
+
+			try {
+				// If it's not JSON, try parsing as JS expression
+				return new Function('return (' + value + ')')()
+			} catch {}
+
+			try {
+				return JSON.parse(value)
+			} catch {}
+
+			return value
+		},
+
 		/**
 		 * @Events
 		 */

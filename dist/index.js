@@ -796,6 +796,30 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         return Object.assign({}, state);
       }
     },
+    dataset(target, name2) {
+      let el;
+      let key;
+      if (name2) {
+        el = target;
+        key = name2;
+      } else {
+        el = node;
+        key = target;
+      }
+      const value = el.dataset[key];
+      if (value === "true") return true;
+      if (value === "false") return false;
+      if (!isNaN(value) && value.trim() !== "") return Number(value);
+      try {
+        return new Function("return (" + value + ")")();
+      } catch (e) {
+      }
+      try {
+        return JSON.parse(value);
+      } catch (e) {
+      }
+      return value;
+    },
     /**
      * @Events
      */
