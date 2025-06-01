@@ -95,7 +95,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			return value
 		},
 
-		attributes( target ) {
+		attr( target ) {
 
 			let callbacks = []
 			const elm = target || node
@@ -125,7 +125,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 
 			return {
 
-				onchange( name, callback ) {
+				change( name, callback ) {
 					callbacks.push({ name, callback })
 				},
 

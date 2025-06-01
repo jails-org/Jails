@@ -813,7 +813,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       }
       return value;
     },
-    attributes(target) {
+    attr(target) {
       let callbacks = [];
       const elm = target || node;
       const observer = new MutationObserver((mutationsList) => {
@@ -837,7 +837,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         observer.disconnect();
       });
       return {
-        onchange(name2, callback) {
+        change(name2, callback) {
           callbacks.push({ name: name2, callback });
         },
         disconnect(callback) {
