@@ -1075,6 +1075,8 @@ const setTemplates = (clone, components) => {
       const children = node.innerHTML;
       const html2 = components[name].module.template({ elm: node, children });
       node.innerHTML = html2;
+      transformTemplate(node);
+      removeTemplateTagsRecursively(node);
     }
     const html = transformAttributes(node.outerHTML);
     templates[tplid] = {

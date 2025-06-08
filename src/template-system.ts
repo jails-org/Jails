@@ -142,6 +142,8 @@ const setTemplates = ( clone, components ) => {
 				const children = node.innerHTML
 				const html = components[name].module.template({ elm:node, children })
 				node.innerHTML = html
+				transformTemplate(node)
+				removeTemplateTagsRecursively(node)
 			}
 
 			const html = transformAttributes(node.outerHTML)
