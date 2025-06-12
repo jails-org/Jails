@@ -1,11 +1,11 @@
-
-const textarea = document.createElement('textarea')
+let textarea
 
 export const g = {
 	scope: {}
 }
 
 export const decodeHTML = (text) => {
+	textarea = textarea || document.createElement('textarea')
 	textarea.innerHTML = text
 	return textarea.value
 }

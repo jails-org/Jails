@@ -8,16 +8,16 @@ export const templateConfig = (options) => {
 	config( options )
 }
 
-window.__jails__ = window.__jails__ || { components: {} }
+globalThis.__jails__ = globalThis.__jails__ || { components: {} }
 
 export const register = ( name, module, dependencies ) => {
-	const { components } = window.__jails__
+	const { components } = globalThis.__jails__
 	components[ name ] = { name, module, dependencies }
 }
 
 export const start = ( target = document.body ) => {
 
-	const { components } = window.__jails__
+	const { components } = globalThis.__jails__
 	const templates = template( target, { components } )
 
 	Object
@@ -27,12 +27,4 @@ export const start = ( target = document.body ) => {
 				customElements.define( name, Element({ component: { name, module, dependencies }, templates, start }))
 			}
 	})
-}
-
-declare global {
-	interface Window {
-	  __jails__?: {
-		components: Record<string, any>
-	  }
-	}
 }

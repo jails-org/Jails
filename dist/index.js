@@ -14,11 +14,12 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
-const textarea = document.createElement("textarea");
+let textarea;
 const g = {
   scope: {}
 };
 const decodeHTML = (text) => {
+  textarea = textarea || document.createElement("textarea");
   textarea.innerHTML = text;
   return textarea.value;
 };
@@ -1110,13 +1111,13 @@ const wrap = (open, node, close) => {
 const templateConfig = (options) => {
   templateConfig$1(options);
 };
-window.__jails__ = window.__jails__ || { components: {} };
+globalThis.__jails__ = globalThis.__jails__ || { components: {} };
 const register = (name, module, dependencies) => {
-  const { components } = window.__jails__;
+  const { components } = globalThis.__jails__;
   components[name] = { name, module, dependencies };
 };
 const start = (target = document.body) => {
-  const { components } = window.__jails__;
+  const { components } = globalThis.__jails__;
   const templates2 = template(target, { components });
   Object.values(components).forEach(({ name, module, dependencies }) => {
     if (!customElements.get(name)) {
