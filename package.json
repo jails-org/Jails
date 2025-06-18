@@ -6,7 +6,7 @@
 	"module": "./dist/index.js",
 	"main": "./dist/jails.js",
 	"exports": {
-		"./html": "./html.mjs",
+		"./html": "./html.js",
 		".": {
 			"types": "./types.d.ts",
 			"import": "./dist/index.js",
