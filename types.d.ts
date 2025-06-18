@@ -13,10 +13,10 @@ export type Component = {
 
 	state : {
 		protected( props: Array<string> ): Array<string>
-		set( data: object ) : Promise<any>
+		set( data: any ) : Promise<any>
 		set( callback: ( state: object ) => any ) : Promise<any>
-		get() : object
-		getRaw() : object
+		get() : any
+		getRaw() : any
 	}
 
 	main( mainArgs: ( t: Component ) => void ): void
@@ -39,9 +39,9 @@ export type Component = {
 }
 
 export type Model = {
-	[key: string] : object
+	[key: string] : any
 }
 
-export type View = ( state: object ) => object
+export type View = ( state: any ) => any
 
 export type Template = ({ elm: HTMLElement, children: string }) => string

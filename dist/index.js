@@ -1116,7 +1116,11 @@ const register = (name, module, dependencies) => {
   const { components } = globalThis.__jails__;
   components[name] = { name, module, dependencies };
 };
-const start = (target = document.body) => {
+const start = (target) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  target = target || document.body;
   const { components } = globalThis.__jails__;
   const templates2 = template(target, { components });
   Object.values(components).forEach(({ name, module, dependencies }) => {

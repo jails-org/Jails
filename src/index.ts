@@ -15,8 +15,14 @@ export const register = ( name, module, dependencies ) => {
 	components[ name ] = { name, module, dependencies }
 }
 
-export const start = ( target = document.body ) => {
+export const start = ( target ) => {
 
+	// If the code is running in a Node.js environment, do nothing
+	if( typeof window === 'undefined' ) {
+		return;
+	}
+
+	target = target || document.body
 	const { components } = globalThis.__jails__
 	const templates = template( target, { components } )
 
