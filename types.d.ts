@@ -1,7 +1,7 @@
 type EventCallback = ( Event: Event, data?:any ) => void
 
 export declare const templateConfig: (options: any) => void;
-export declare const register: (name: string, module: Module, dependencies?: any) => void
+export declare const register: (name: string, module: any, dependencies?: any) => void
 export declare const start: (target?: HTMLElement) => void;
 export declare const subscribe:( subject: string, callback: (data:any) => void ) => Function
 export declare const publish: ( subject: string, data :any ) => void
@@ -36,6 +36,16 @@ export type Component = {
 	trigger( eventName: string, selector :string, data: any ): void
 
 	innerHTML( target: HTMLElement | string, html?: string ) : void
+
+	dataset( target: HTMLElement, key: string ) : any
+
+	dataset( key: string ) : any
+
+	attr( target?: HTMLElement ) : {
+		change : ( attribute: string, callback: Function ) => void
+		disconnect : ( callback: Function ) => void
+	}
+
 }
 
 export type Model = {
