@@ -741,6 +741,8 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   var _a;
   let tick;
   let preserve = [];
+  let observer = null;
+  let observables = [];
   const _model = module.model || {};
   const initialState = new Function(`return ${node.getAttribute("html-model") || "{}"}`)();
   const tplid = node.getAttribute("tplid");
@@ -814,42 +816,48 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       }
       return value;
     },
-    attr(target) {
-      let callbacks = [];
-      const elm = target || node;
-      const observer = new MutationObserver((mutationsList) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === "attributes") {
-            const attributeName = mutation.attributeName;
-            callbacks.forEach((item) => {
-              if (item.name == attributeName) {
-                item.callback(
-                  attributeName,
-                  elm.getAttribute(attributeName)
-                );
-              }
-            });
-          }
-        }
-      });
-      observer.observe(node, { attributes: true });
-      node.addEventListener(":unmount", () => {
-        callbacks = null;
-        observer.disconnect();
-      });
-      return {
-        change(name2, callback) {
-          callbacks.push({ name: name2, callback });
-        },
-        disconnect(callback) {
-          callbacks = callbacks.filter((item) => item.callback !== callback);
-        }
-      };
-    },
     /**
      * @Events
      */
     on(ev, selectorOrCallback, callback) {
+      const attribute = ev.match(/\[(.*)\]/);
+      if (attribute) {
+        observables.push({
+          target: callback ? node.querySelectorAll(selectorOrCallback) : [node],
+          callback: callback || selectorOrCallback
+        });
+        if (!observer) {
+          observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+              if (mutation.type === "attributes") {
+                const attrname = mutation.attributeName;
+                if (attrname === attribute[1]) {
+                  observables.forEach((item) => {
+                    item.target.forEach((target) => {
+                      if (target == mutation.target) {
+                        item.callback({
+                          target: mutation.target,
+                          attribute: attrname,
+                          value: mutation.target.getAttribute(attrname)
+                        });
+                      }
+                    });
+                  });
+                }
+              }
+            }
+          });
+          observer.observe(node, {
+            attributes: true,
+            subtree: true
+          });
+          node.addEventListener(":unmount", () => {
+            observables = [];
+            observer.disconnect();
+          });
+        }
+        return;
+      }
       if (callback) {
         callback.handler = (e) => {
           const detail = e.detail || {};

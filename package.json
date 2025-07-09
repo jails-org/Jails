@@ -1,8 +1,7 @@
 {
 	"name": "jails-js",
-	"version": "6.3.4",
+	"version": "6.4.0",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
-	"types": "types.d.ts",
 	"module": "./dist/index.js",
 	"main": "./dist/jails.js",
 	"exports": {
@@ -11,6 +10,10 @@
 			"types": "./types.d.ts",
 			"import": "./dist/index.js",
 			"require": "./dist/jails.js"
+		},
+		 "./internal": {
+			"types": "./types.d.ts",
+			"default": "./types.d.ts"
 		}
 	},
 	"scripts": {
