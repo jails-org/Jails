@@ -823,7 +823,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       const attribute = ev.match(/\[(.*)\]/);
       if (attribute) {
         observables.push({
-          target: callback ? node.querySelectorAll(selectorOrCallback) : [node],
+          target: callback ? selectorOrCallback : null,
           callback: callback || selectorOrCallback
         });
         if (!observer) {
@@ -833,8 +833,9 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
                 const attrname = mutation.attributeName;
                 if (attrname === attribute[1]) {
                   observables.forEach((item) => {
-                    item.target.forEach((target) => {
-                      if (target == mutation.target) {
+                    const target = item.target ? node.querySelectorAll(item.target) : [node];
+                    target.forEach((target2) => {
+                      if (target2 == mutation.target) {
                         item.callback({
                           target: mutation.target,
                           attribute: attrname,

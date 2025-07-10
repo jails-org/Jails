@@ -106,7 +106,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 
 			if( attribute ) {
 				observables.push({
-					target: callback? node.querySelectorAll(selectorOrCallback) : [node],
+					target: callback? selectorOrCallback : null,
 					callback: callback || selectorOrCallback
 				})
 
@@ -117,7 +117,8 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 								const attrname = mutation.attributeName
 								if( attrname === attribute[1] ) {
 									observables.forEach( item => {
-										item.target.forEach( target => {
+										const target = item.target? node.querySelectorAll(item.target): [node]
+										target.forEach( target => {
 											if( target == mutation.target ) {
 												item.callback({
 													target: mutation.target,
@@ -126,7 +127,6 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 												})
 											}
 										})
-
 									})
 								}
 							}
