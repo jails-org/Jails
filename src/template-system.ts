@@ -151,28 +151,34 @@ const setTemplates = ( clone, components ) => {
 }
 
 const removeTemplateTagsRecursively = (node) => {
-	const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, {
-		acceptNode: el => el.tagName === 'TEMPLATE' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
-	})
 
-	const templatesToRemove = []
+	// Get all <template> elements within the node
+	const templates = node.querySelectorAll('template')
 
-	while (walker.nextNode()) {
-		const tpl = walker.currentNode
-		if (!tpl.hasAttribute('html-if') && !tpl.hasAttribute('html-inner')) {
-			templatesToRemove.push(tpl)
+	templates.forEach((template) => {
+
+		if( template.getAttribute('html-if') || template.getAttribute('html-inner') ) {
+			return
 		}
-	}
 
-	for (const template of templatesToRemove) {
+		// Process any nested <template> tags within this <template> first
+		removeTemplateTagsRecursively(template.content)
+
+		// Get the parent of the <template> tag
 		const parent = template.parentNode
-		if (!parent) continue
 
-		const frag = document.createDocumentFragment()
-		frag.append(...template.content.childNodes)
-		parent.replaceChild(frag, template)
-	}
+		if (parent) {
+			// Move all child nodes from the <template>'s content to its parent
+			const content = template.content
+			while (content.firstChild) {
+				parent.insertBefore(content.firstChild, template)
+			}
+			// Remove the <template> tag itself
+			parent.removeChild(template)
+		}
+	})
 }
+
 
 const wrap = (open, node, close) => {
 	node.parentNode?.insertBefore(open, node)

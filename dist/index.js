@@ -84,9 +84,6 @@ var Idiomorph = function() {
   }
   function morphOuterHTML(ctx, oldNode, newNode) {
     const oldParent = normalizeParent(oldNode);
-    let childNodes = Array.from(oldParent.childNodes);
-    const index = childNodes.indexOf(oldNode);
-    const rightMargin = childNodes.length - (index + 1);
     morphChildren(
       ctx,
       oldParent,
@@ -97,8 +94,7 @@ var Idiomorph = function() {
       oldNode.nextSibling
       // end point for iteration
     );
-    childNodes = Array.from(oldParent.childNodes);
-    return childNodes.slice(index, childNodes.length - rightMargin);
+    return Array.from(oldParent.childNodes);
   }
   function saveAndRestoreFocus(ctx, fn) {
     var _a;
@@ -113,7 +109,7 @@ var Idiomorph = function() {
     const { id: activeElementId, selectionStart, selectionEnd } = activeElement;
     const results = fn();
     if (activeElementId && activeElementId !== ((_a = document.activeElement) == null ? void 0 : _a.id)) {
-      activeElement = ctx.target.querySelector(`#${activeElementId}`);
+      activeElement = ctx.target.querySelector(`[id="${activeElementId}"]`);
       activeElement == null ? void 0 : activeElement.focus();
     }
     if (activeElement && !activeElement.selectionEnd && selectionEnd) {
@@ -271,7 +267,7 @@ var Idiomorph = function() {
     function moveBeforeById(parentNode, id, after, ctx) {
       const target = (
         /** @type {Element} - will always be found */
-        ctx.target.querySelector(`#${id}`) || ctx.pantry.querySelector(`#${id}`)
+        ctx.target.id === id && ctx.target || ctx.target.querySelector(`[id="${id}"]`) || ctx.pantry.querySelector(`[id="${id}"]`)
       );
       removeElementFromAncestorsIdMaps(target, ctx);
       moveBefore(parentNode, target, after);
@@ -646,7 +642,10 @@ var Idiomorph = function() {
         );
       } else if (newContent instanceof Node) {
         if (newContent.parentNode) {
-          return createDuckTypedParent(newContent);
+          return (
+            /** @type {any} */
+            new SlicedParentNode(newContent)
+          );
         } else {
           const dummyParent = document.createElement("div");
           dummyParent.append(newContent);
@@ -660,27 +659,68 @@ var Idiomorph = function() {
         return dummyParent;
       }
     }
-    function createDuckTypedParent(newContent) {
-      return (
-        /** @type {Element} */
-        /** @type {unknown} */
-        {
-          childNodes: [newContent],
-          /** @ts-ignore - cover your eyes for a minute, tsc */
-          querySelectorAll: (s) => {
-            const elements = newContent.querySelectorAll(s);
-            return newContent.matches(s) ? [newContent, ...elements] : elements;
-          },
-          /** @ts-ignore */
-          insertBefore: (n, r) => newContent.parentNode.insertBefore(n, r),
-          /** @ts-ignore */
-          moveBefore: (n, r) => newContent.parentNode.moveBefore(n, r),
-          // for later use with populateIdMapWithTree to halt upwards iteration
-          get __idiomorphRoot() {
-            return newContent;
-          }
+    class SlicedParentNode {
+      /** @param {Node} node */
+      constructor(node) {
+        this.originalNode = node;
+        this.realParentNode = /** @type {Element} */
+        node.parentNode;
+        this.previousSibling = node.previousSibling;
+        this.nextSibling = node.nextSibling;
+      }
+      /** @returns {Node[]} */
+      get childNodes() {
+        const nodes = [];
+        let cursor = this.previousSibling ? this.previousSibling.nextSibling : this.realParentNode.firstChild;
+        while (cursor && cursor != this.nextSibling) {
+          nodes.push(cursor);
+          cursor = cursor.nextSibling;
         }
-      );
+        return nodes;
+      }
+      /**
+       * @param {string} selector
+       * @returns {Element[]}
+       */
+      querySelectorAll(selector) {
+        return this.childNodes.reduce(
+          (results, node) => {
+            if (node instanceof Element) {
+              if (node.matches(selector)) results.push(node);
+              const nodeList = node.querySelectorAll(selector);
+              for (let i = 0; i < nodeList.length; i++) {
+                results.push(nodeList[i]);
+              }
+            }
+            return results;
+          },
+          /** @type {Element[]} */
+          []
+        );
+      }
+      /**
+       * @param {Node} node
+       * @param {Node} referenceNode
+       * @returns {Node}
+       */
+      insertBefore(node, referenceNode) {
+        return this.realParentNode.insertBefore(node, referenceNode);
+      }
+      /**
+       * @param {Node} node
+       * @param {Node} referenceNode
+       * @returns {Node}
+       */
+      moveBefore(node, referenceNode) {
+        return this.realParentNode.moveBefore(node, referenceNode);
+      }
+      /**
+       * for later use with populateIdMapWithTree to halt upwards iteration
+       * @returns {Node}
+       */
+      get __idiomorphRoot() {
+        return this.originalNode;
+      }
     }
     function parseContent(newContent) {
       let parser = new DOMParser();
@@ -1097,23 +1137,21 @@ const setTemplates = (clone, components) => {
   });
 };
 const removeTemplateTagsRecursively = (node) => {
-  const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, {
-    acceptNode: (el) => el.tagName === "TEMPLATE" ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
-  });
-  const templatesToRemove = [];
-  while (walker.nextNode()) {
-    const tpl = walker.currentNode;
-    if (!tpl.hasAttribute("html-if") && !tpl.hasAttribute("html-inner")) {
-      templatesToRemove.push(tpl);
+  const templates2 = node.querySelectorAll("template");
+  templates2.forEach((template2) => {
+    if (template2.getAttribute("html-if") || template2.getAttribute("html-inner")) {
+      return;
     }
-  }
-  for (const template2 of templatesToRemove) {
+    removeTemplateTagsRecursively(template2.content);
     const parent = template2.parentNode;
-    if (!parent) continue;
-    const frag = document.createDocumentFragment();
-    frag.append(...template2.content.childNodes);
-    parent.replaceChild(frag, template2);
-  }
+    if (parent) {
+      const content = template2.content;
+      while (content.firstChild) {
+        parent.insertBefore(content.firstChild, template2);
+      }
+      parent.removeChild(template2);
+    }
+  });
 };
 const wrap = (open, node, close) => {
   var _a, _b;
