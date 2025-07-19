@@ -1,6 +1,6 @@
 {
 	"name": "jails-js",
-	"version": "6.4.1",
+	"version": "6.5.0",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"module": "./dist/index.js",
 	"main": "./dist/jails.js",
@@ -11,7 +11,7 @@
 			"import": "./dist/index.js",
 			"require": "./dist/jails.js"
 		},
-		 "./internal": {
+		"./internal": {
 			"types": "./types.d.ts",
 			"default": "./types.d.ts"
 		}
@@ -46,6 +46,6 @@
 		"vite": "^6.0.11"
 	},
 	"dependencies": {
-		"idiomorph": "^0.7.2"
+		"idiomorph": "^0.7.3"
 	}
 }
