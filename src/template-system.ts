@@ -1,10 +1,13 @@
 import { uuid, decodeHTML } from './utils'
 
-const templates  = {}
-
 const config = {
 	tags: ['{{', '}}']
 }
+
+const templates  = {}
+const booleanAttrs = /html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)="(.*?)"/g
+const htmlAttr = /html-([^\s]*?)="(.*?)"/g
+const tagExpr = () => new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
 
 export const templateConfig = (newconfig) => {
 	Object.assign( config, newconfig )
@@ -40,44 +43,36 @@ export const compile = ( html ) => {
 	`)
 }
 
-const tagElements = ( target, keys, components ) => {
-	target
-		.querySelectorAll( keys.toString() )
-		.forEach((node) => {
-			const name = node.localName
-			if( name === 'template' ) {
-				return tagElements( node.content, keys, components )
-			}
-			if( node.getAttribute('html-if') && !node.id ) {
-				node.id = uuid()
-			}
-			if( name in components ) {
-				node.setAttribute('tplid', uuid())
-			}
-		})
+const tagElements = (target, keys, components) => {
+	const isComponent = key => key in components
+	const selector = keys.join(',')
+
+	target.querySelectorAll(selector).forEach(node => {
+		if (node.localName === 'template') {
+			tagElements(node.content, keys, components)
+			return
+		}
+		if (node.hasAttribute('html-if') && !node.id) {
+			node.id = uuid()
+		}
+		if (isComponent(node.localName)) {
+			node.setAttribute('tplid', uuid())
+		}
+	})
 }
 
-const transformAttributes = ( html ) => {
-
-	const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, 'g')
-
+const transformAttributes = (html) => {
 	return html
 		.replace(/jails___scope-id/g, '%%_=$scopeid_%%')
-		.replace(regexTags, '%%_=$1_%%')
-		// Booleans
-		// https://meiert.com/en/blog/boolean-attributes-of-html/
-		.replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`)
-		// The rest
-		.replace(/html-([^\s]*?)=\"(.*?)\"/g, (all, key, value) => {
-			if (key === 'key' || key === 'model' || key === 'scopeid' ) {
-				return all
-			}
+		.replace(tagExpr(), '%%_=$1_%%')
+		.replace(booleanAttrs, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`)
+		.replace(htmlAttr, (all, key, value) => {
+			if (['key', 'model', 'scopeid'].includes(key)) return all
 			if (value) {
 				value = value.replace(/^{|}$/g, '')
 				return `${key}="%%_=safe(function(){ return ${value} })_%%"`
-			} else {
-				return all
 			}
+			return all
 		})
 }
 
@@ -156,32 +151,27 @@ const setTemplates = ( clone, components ) => {
 }
 
 const removeTemplateTagsRecursively = (node) => {
-
-	// Get all <template> elements within the node
-	const templates = node.querySelectorAll('template')
-
-	templates.forEach((template) => {
-
-		if( template.getAttribute('html-if') || template.getAttribute('html-inner') ) {
-			return
-		}
-
-		// Process any nested <template> tags within this <template> first
-		removeTemplateTagsRecursively(template.content)
-
-		// Get the parent of the <template> tag
-		const parent = template.parentNode
-
-		if (parent) {
-			// Move all child nodes from the <template>'s content to its parent
-			const content = template.content
-			while (content.firstChild) {
-				parent.insertBefore(content.firstChild, template)
-			}
-			// Remove the <template> tag itself
-			parent.removeChild(template)
-		}
+	const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, {
+		acceptNode: el => el.tagName === 'TEMPLATE' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
 	})
+
+	const templatesToRemove = []
+
+	while (walker.nextNode()) {
+		const tpl = walker.currentNode
+		if (!tpl.hasAttribute('html-if') && !tpl.hasAttribute('html-inner')) {
+			templatesToRemove.push(tpl)
+		}
+	}
+
+	for (const template of templatesToRemove) {
+		const parent = template.parentNode
+		if (!parent) continue
+
+		const frag = document.createDocumentFragment()
+		frag.append(...template.content.childNodes)
+		parent.replaceChild(frag, template)
+	}
 }
 
 const wrap = (open, node, close) => {

@@ -985,10 +985,13 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
     }
   };
 };
-const templates = {};
 const config = {
   tags: ["{{", "}}"]
 };
+const templates = {};
+const booleanAttrs = /html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)="(.*?)"/g;
+const htmlAttr = /html-([^\s]*?)="(.*?)"/g;
+const tagExpr = () => new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, "g");
 const templateConfig$1 = (newconfig) => {
   Object.assign(config, newconfig);
 };
@@ -1014,31 +1017,29 @@ const compile = (html) => {
 	`);
 };
 const tagElements = (target, keys, components) => {
-  target.querySelectorAll(keys.toString()).forEach((node) => {
-    const name = node.localName;
-    if (name === "template") {
-      return tagElements(node.content, keys, components);
+  const isComponent = (key) => key in components;
+  const selector = keys.join(",");
+  target.querySelectorAll(selector).forEach((node) => {
+    if (node.localName === "template") {
+      tagElements(node.content, keys, components);
+      return;
     }
-    if (node.getAttribute("html-if") && !node.id) {
+    if (node.hasAttribute("html-if") && !node.id) {
       node.id = uuid();
     }
-    if (name in components) {
+    if (isComponent(node.localName)) {
       node.setAttribute("tplid", uuid());
     }
   });
 };
 const transformAttributes = (html) => {
-  const regexTags = new RegExp(`\\${config.tags[0]}(.+?)\\${config.tags[1]}`, "g");
-  return html.replace(/jails___scope-id/g, "%%_=$scopeid_%%").replace(regexTags, "%%_=$1_%%").replace(/html-(allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)=\"(.*?)\"/g, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`).replace(/html-([^\s]*?)=\"(.*?)\"/g, (all, key, value) => {
-    if (key === "key" || key === "model" || key === "scopeid") {
-      return all;
-    }
+  return html.replace(/jails___scope-id/g, "%%_=$scopeid_%%").replace(tagExpr(), "%%_=$1_%%").replace(booleanAttrs, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`).replace(htmlAttr, (all, key, value) => {
+    if (["key", "model", "scopeid"].includes(key)) return all;
     if (value) {
       value = value.replace(/^{|}$/g, "");
       return `${key}="%%_=safe(function(){ return ${value} })_%%"`;
-    } else {
-      return all;
     }
+    return all;
   });
 };
 const transformTemplate = (clone) => {
@@ -1096,21 +1097,23 @@ const setTemplates = (clone, components) => {
   });
 };
 const removeTemplateTagsRecursively = (node) => {
-  const templates2 = node.querySelectorAll("template");
-  templates2.forEach((template2) => {
-    if (template2.getAttribute("html-if") || template2.getAttribute("html-inner")) {
-      return;
-    }
-    removeTemplateTagsRecursively(template2.content);
-    const parent = template2.parentNode;
-    if (parent) {
-      const content = template2.content;
-      while (content.firstChild) {
-        parent.insertBefore(content.firstChild, template2);
-      }
-      parent.removeChild(template2);
-    }
+  const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, {
+    acceptNode: (el) => el.tagName === "TEMPLATE" ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
   });
+  const templatesToRemove = [];
+  while (walker.nextNode()) {
+    const tpl = walker.currentNode;
+    if (!tpl.hasAttribute("html-if") && !tpl.hasAttribute("html-inner")) {
+      templatesToRemove.push(tpl);
+    }
+  }
+  for (const template2 of templatesToRemove) {
+    const parent = template2.parentNode;
+    if (!parent) continue;
+    const frag = document.createDocumentFragment();
+    frag.append(...template2.content.childNodes);
+    parent.replaceChild(frag, template2);
+  }
 };
 const wrap = (open, node, close) => {
   var _a, _b;
