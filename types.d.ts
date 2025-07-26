@@ -1,3 +1,8 @@
+declare module 'jails-js/html' {
+	export function html(strings: TemplateStringsArray, ...values: any[]): string;
+	export function attributes(strings: TemplateStringsArray, ...values: any[]): string;
+}
+
 type EventCallback = ( Event: Event, data?:any ) => void
 
 export declare const templateConfig: (options: any) => void;
@@ -40,11 +45,6 @@ export type Component = {
 	dataset( target: HTMLElement, key: string ) : any
 
 	dataset( key: string ) : any
-
-	attr( target?: HTMLElement ) : {
-		change : ( attribute: string, callback: Function ) => void
-		disconnect : ( callback: Function ) => void
-	}
 
 }
 
