@@ -27,7 +27,8 @@ export const dup = (o) => {
 
 export const safe = (execute, val) => {
 	try{
-		return execute() || ''
+		const value = execute()
+		return value !== undefined && value !== null ? value : val || ''
 	}catch(err){
 		return val || ''
 	}
