@@ -31,7 +31,7 @@ const dup = (o) => {
 };
 const safe = (execute, val) => {
   try {
-    return execute();
+    return execute() || "";
   } catch (err) {
     return val || "";
   }
