@@ -1,6 +1,6 @@
 import { safe, g, dup } from './utils'
-import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { publish, subscribe } from './utils/pubsub'
+import morphdom from 'morphdom'
 
 export const Component = ({ name, module, dependencies, node, templates, signal, register }) => {
 
@@ -205,7 +205,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			const clone = element.cloneNode()
 			const html = html_? html_ : target
 			clone.innerHTML = html
-			Idiomorph.morph(element, clone)
+			morphdom(element, clone)
 		}
 	}
 
@@ -213,7 +213,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		clearTimeout( tick )
 		tick = setTimeout(() => {
 			const html = tpl.render.call({...data, ...view(data)}, node, safe, g )
-			Idiomorph.morph( node, html, IdiomorphOptions(node, register) )
+			morphdom( node, html, morhdomOptions(node, register) )
 			Promise.resolve().then(() => {
 				node.querySelectorAll('[tplid]')
 					.forEach((element) => {
@@ -235,17 +235,20 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 	return module.default( base )
 }
 
-const IdiomorphOptions = ( parent, register ) => ({
-	callbacks: {
-		beforeNodeMorphed( node ) {
-			if( node.nodeType === 1 ) {
-				if( 'html-static' in node.attributes ) {
-					return false
-				}
-				if( register.get(node) && node !== parent ) {
-					return false
-				}
+const morhdomOptions = ( parent, register ) => {
+
+	const update = ( node ) => {
+		if( node.nodeType === 1 ) {
+			if( 'html-static' in node.attributes ) {
+				return false
+			}
+			if( register.get(node) && node !== parent ) {
+				return false
 			}
 		}
 	}
-})
+	return {
+		onBeforeElChildrenUpdated: update,
+		onBeforeElUpdated: update
+	}
+}
