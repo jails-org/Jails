@@ -24,6 +24,8 @@ export type Component = {
 		getRaw() : any
 	}
 
+	effect( callback: ( state: any ) => Promise<any> | void )
+
 	main( mainArgs: ( t: Component ) => void ): void
 
 	publish( name: string, value: any ) : void

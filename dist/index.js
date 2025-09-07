@@ -37,7 +37,7 @@ const safe = (execute, val) => {
     return val || "";
   }
 };
-var Idiomorph = function() {
+var Idiomorph = (function() {
   const noOp = () => {
   };
   const defaults = {
@@ -118,7 +118,7 @@ var Idiomorph = function() {
     }
     return results;
   }
-  const morphChildren = /* @__PURE__ */ function() {
+  const morphChildren = /* @__PURE__ */ (function() {
     function morphChildren2(ctx, oldParent, newParent, insertionPoint = null, endPoint = null) {
       if (oldParent instanceof HTMLTemplateElement && newParent instanceof HTMLTemplateElement) {
         oldParent = oldParent.content;
@@ -187,7 +187,7 @@ var Idiomorph = function() {
         return newClonedChild;
       }
     }
-    const findBestMatch = /* @__PURE__ */ function() {
+    const findBestMatch = /* @__PURE__ */ (function() {
       function findBestMatch2(ctx, node, startPoint, endPoint) {
         let softMatch = null;
         let nextSibling = node.nextSibling;
@@ -242,7 +242,7 @@ var Idiomorph = function() {
         (!oldElt.id || oldElt.id === newElt.id);
       }
       return findBestMatch2;
-    }();
+    })();
     function removeNode(ctx, node) {
       var _a;
       if (ctx.idMap.has(node)) {
@@ -298,8 +298,8 @@ var Idiomorph = function() {
       }
     }
     return morphChildren2;
-  }();
-  const morphNode = /* @__PURE__ */ function() {
+  })();
+  const morphNode = /* @__PURE__ */ (function() {
     function morphNode2(oldNode, newContent, ctx) {
       if (ctx.ignoreActive && oldNode === document.activeElement) {
         return null;
@@ -431,7 +431,7 @@ var Idiomorph = function() {
       return !!ctx.ignoreActiveValue && possibleActiveElement === document.activeElement && possibleActiveElement !== document.body;
     }
     return morphNode2;
-  }();
+  })();
   function withHeadBlocking(ctx, oldNode, newNode, callback) {
     if (ctx.head.block) {
       const oldHead = oldNode.querySelector("head");
@@ -520,7 +520,7 @@ var Idiomorph = function() {
     });
     return promises;
   }
-  const createMorphContext = /* @__PURE__ */ function() {
+  const createMorphContext = /* @__PURE__ */ (function() {
     function createMorphContext2(oldNode, newContent, config2) {
       const { persistentIds, idMap } = createIdMaps(oldNode, newContent);
       const mergedConfig = mergeDefaults(config2);
@@ -618,8 +618,8 @@ var Idiomorph = function() {
       return persistentIds;
     }
     return createMorphContext2;
-  }();
-  const { normalizeElement, normalizeParent } = /* @__PURE__ */ function() {
+  })();
+  const { normalizeElement, normalizeParent } = /* @__PURE__ */ (function() {
     const generatedByIdiomorph = /* @__PURE__ */ new WeakSet();
     function normalizeElement2(content) {
       if (content instanceof Document) {
@@ -755,12 +755,12 @@ var Idiomorph = function() {
       }
     }
     return { normalizeElement: normalizeElement2, normalizeParent: normalizeParent2 };
-  }();
+  })();
   return {
     morph,
     defaults
   };
-}();
+})();
 const topics = {};
 const _async = {};
 const publish = (name, params) => {
@@ -788,6 +788,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   let preserve = [];
   let observer = null;
   let observables = [];
+  let effect = null;
   const _model = module.model || {};
   const initialState = new Function(`return ${node.getAttribute("html-model") || "{}"}`)();
   const tplid = node.getAttribute("tplid");
@@ -807,6 +808,13 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
     subscribe,
     main(fn) {
       node.addEventListener(":mount", fn);
+    },
+    effect(fn) {
+      if (fn) {
+        effect = fn;
+      } else {
+        return effect;
+      }
     },
     /**
      * @State
@@ -957,8 +965,8 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       Idiomorph.morph(element, clone);
     }
   };
-  const render = (data, callback = () => {
-  }) => {
+  const render = (data, callback = (() => {
+  })) => {
     clearTimeout(tick);
     tick = setTimeout(() => {
       const html = tpl.render.call(__spreadValues(__spreadValues({}, data), view(data)), node, safe, g);
@@ -968,7 +976,17 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
           const child = register2.get(element);
           if (!child) return;
           child.state.protected().forEach((key) => delete data[key]);
-          child.state.set(data);
+          const useEffect = child.effect();
+          if (useEffect) {
+            const promise = useEffect(data);
+            if (promise && promise.then) {
+              promise.then(() => child.state.set(data));
+            } else {
+              child.state.set(data);
+            }
+          } else {
+            child.state.set(data);
+          }
         });
         Promise.resolve().then(() => {
           g.scope = {};

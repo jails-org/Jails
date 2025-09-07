@@ -8,6 +8,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 	let preserve		= []
 	let observer 		= null
 	let observables 	= []
+	let effect 			= null
 
 	const _model 		= module.model || {}
 	const initialState 	= (new Function( `return ${node.getAttribute('html-model') || '{}'}`))()
@@ -30,6 +31,14 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 
 		main(fn) {
 			node.addEventListener(':mount', fn)
+		},
+
+		effect(fn) {
+			if( fn ) {
+				effect = fn
+			} else {
+				return effect
+			}
 		},
 
 		/**
@@ -220,7 +229,17 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 						const child = register.get(element)
 						if(!child) return
 						child.state.protected().forEach( key => delete data[key] )
-						child.state.set(data)
+						const useEffect = child.effect()
+						if( useEffect ) {
+							const promise = useEffect(data)
+							if( promise && promise.then ) {
+								promise.then(() => child.state.set(data))
+							} else {
+								child.state.set(data)
+							}
+						} else {
+							child.state.set(data)
+						}
 					})
 				Promise.resolve().then(() => {
 					g.scope = {}
