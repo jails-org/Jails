@@ -795,7 +795,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   const scopeid = node.getAttribute("html-scopeid");
   const tpl = templates2[tplid];
   const scope = g.scope[scopeid];
-  const model = dup(((_a = module == null ? void 0 : module.model) == null ? void 0 : _a.apply) ? _model({ elm: node, initialState }) : _model);
+  const model = dup(((_a = module == null ? void 0 : module.model) == null ? void 0 : _a.apply) ? _model({ elm: node, initialState, dependencies }) : _model);
   const state = Object.assign({}, scope, model, initialState);
   const view = module.view ? module.view : (data) => data;
   const base = {

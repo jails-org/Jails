@@ -16,7 +16,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 	const scopeid 		= node.getAttribute('html-scopeid')
 	const tpl 			= templates[ tplid ]
 	const scope 		= g.scope[ scopeid ]
-	const model  		= dup(module?.model?.apply ? _model({ elm:node, initialState }) : _model)
+	const model  		= dup(module?.model?.apply ? _model({ elm:node, initialState, dependencies }) : _model)
 	const state 		= Object.assign({}, scope, model, initialState)
 	const view 			= module.view? module.view : (data) => data
 
