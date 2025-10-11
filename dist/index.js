@@ -109,7 +109,7 @@ var Idiomorph = (function() {
     }
     const { id: activeElementId, selectionStart, selectionEnd } = activeElement;
     const results = fn();
-    if (activeElementId && activeElementId !== ((_a = document.activeElement) == null ? void 0 : _a.id)) {
+    if (activeElementId && activeElementId !== ((_a = document.activeElement) == null ? void 0 : _a.getAttribute("id"))) {
       activeElement = ctx.target.querySelector(`[id="${activeElementId}"]`);
       activeElement == null ? void 0 : activeElement.focus();
     }
@@ -142,16 +142,22 @@ var Idiomorph = (function() {
             continue;
           }
         }
-        if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
-          const movedChild = moveBeforeById(
-            oldParent,
-            newChild.id,
-            insertionPoint,
-            ctx
+        if (newChild instanceof Element) {
+          const newChildId = (
+            /** @type {String} */
+            newChild.getAttribute("id")
           );
-          morphNode(movedChild, newChild, ctx);
-          insertionPoint = movedChild.nextSibling;
-          continue;
+          if (ctx.persistentIds.has(newChildId)) {
+            const movedChild = moveBeforeById(
+              oldParent,
+              newChildId,
+              insertionPoint,
+              ctx
+            );
+            morphNode(movedChild, newChild, ctx);
+            insertionPoint = movedChild.nextSibling;
+            continue;
+          }
         }
         const insertedNode = createNode(
           oldParent,
@@ -211,7 +217,7 @@ var Idiomorph = (function() {
               softMatch = void 0;
             }
           }
-          if (cursor.contains(document.activeElement)) break;
+          if (ctx.activeElementAndParents.includes(cursor)) break;
           cursor = cursor.nextSibling;
         }
         return softMatch || null;
@@ -228,6 +234,7 @@ var Idiomorph = (function() {
         return false;
       }
       function isSoftMatch(oldNode, newNode) {
+        var _a, _b, _c;
         const oldElt = (
           /** @type {Element} */
           oldNode
@@ -239,7 +246,8 @@ var Idiomorph = (function() {
         return oldElt.nodeType === newElt.nodeType && oldElt.tagName === newElt.tagName && // If oldElt has an `id` with possible state and it doesn't match newElt.id then avoid morphing.
         // We'll still match an anonymous node with an IDed newElt, though, because if it got this far,
         // its not persistent, and new nodes can't have any hidden state.
-        (!oldElt.id || oldElt.id === newElt.id);
+        // We can't use .id because of form input shadowing, and we can't count on .getAttribute's presence because it could be a document-fragment
+        (!((_a = oldElt.getAttribute) == null ? void 0 : _a.call(oldElt, "id")) || ((_b = oldElt.getAttribute) == null ? void 0 : _b.call(oldElt, "id")) === ((_c = newElt.getAttribute) == null ? void 0 : _c.call(newElt, "id")));
       }
       return findBestMatch2;
     })();
@@ -266,16 +274,22 @@ var Idiomorph = (function() {
       return cursor;
     }
     function moveBeforeById(parentNode, id, after, ctx) {
+      var _a, _b;
       const target = (
         /** @type {Element} - will always be found */
-        ctx.target.id === id && ctx.target || ctx.target.querySelector(`[id="${id}"]`) || ctx.pantry.querySelector(`[id="${id}"]`)
+        // ctx.target.id unsafe because of form input shadowing
+        // ctx.target could be a document fragment which doesn't have `getAttribute`
+        ((_b = (_a = ctx.target).getAttribute) == null ? void 0 : _b.call(_a, "id")) === id && ctx.target || ctx.target.querySelector(`[id="${id}"]`) || ctx.pantry.querySelector(`[id="${id}"]`)
       );
       removeElementFromAncestorsIdMaps(target, ctx);
       moveBefore(parentNode, target, after);
       return target;
     }
     function removeElementFromAncestorsIdMaps(element, ctx) {
-      const id = element.id;
+      const id = (
+        /** @type {String} */
+        element.getAttribute("id")
+      );
       while (element = element.parentNode) {
         let idSet = ctx.idMap.get(element);
         if (idSet) {
@@ -539,6 +553,7 @@ var Idiomorph = (function() {
         idMap,
         persistentIds,
         pantry: createPantry(),
+        activeElementAndParents: createActiveElementAndParents(oldNode),
         callbacks: mergedConfig.callbacks,
         head: mergedConfig.head
       };
@@ -560,16 +575,33 @@ var Idiomorph = (function() {
       document.body.insertAdjacentElement("afterend", pantry);
       return pantry;
     }
+    function createActiveElementAndParents(oldNode) {
+      let activeElementAndParents = [];
+      let elt = document.activeElement;
+      if ((elt == null ? void 0 : elt.tagName) !== "BODY" && oldNode.contains(elt)) {
+        while (elt) {
+          activeElementAndParents.push(elt);
+          if (elt === oldNode) break;
+          elt = elt.parentElement;
+        }
+      }
+      return activeElementAndParents;
+    }
     function findIdElements(root) {
+      var _a;
       let elements = Array.from(root.querySelectorAll("[id]"));
-      if (root.id) {
+      if ((_a = root.getAttribute) == null ? void 0 : _a.call(root, "id")) {
         elements.push(root);
       }
       return elements;
     }
     function populateIdMapWithTree(idMap, persistentIds, root, elements) {
       for (const elt of elements) {
-        if (persistentIds.has(elt.id)) {
+        const id = (
+          /** @type {String} */
+          elt.getAttribute("id")
+        );
+        if (persistentIds.has(id)) {
           let current = elt;
           while (current) {
             let idSet = idMap.get(current);
@@ -577,7 +609,7 @@ var Idiomorph = (function() {
               idSet = /* @__PURE__ */ new Set();
               idMap.set(current, idSet);
             }
-            idSet.add(elt.id);
+            idSet.add(id);
             if (current === root) break;
             current = current.parentElement;
           }
@@ -974,18 +1006,19 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       Promise.resolve().then(() => {
         node.querySelectorAll("[tplid]").forEach((element) => {
           const child = register2.get(element);
+          const scope2 = __spreadValues({}, child.__scope__);
           if (!child) return;
           child.state.protected().forEach((key) => delete data[key]);
           const useEffect = child.effect();
           if (useEffect) {
             const promise = useEffect(data);
             if (promise && promise.then) {
-              promise.then(() => child.state.set(data));
+              promise.then(() => child.state.set(__spreadValues(__spreadValues({}, data), scope2)));
             } else {
-              child.state.set(data);
+              child.state.set(__spreadValues(__spreadValues({}, data), scope2));
             }
           } else {
-            child.state.set(data);
+            child.state.set(__spreadValues(__spreadValues({}, data), scope2));
           }
         });
         Promise.resolve().then(() => {
@@ -999,14 +1032,18 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   register2.set(node, base);
   return module.default(base);
 };
-const IdiomorphOptions = (parent, register2) => ({
+const IdiomorphOptions = (parent, register2, data) => ({
   callbacks: {
-    beforeNodeMorphed(node) {
+    beforeNodeMorphed(node, newnode) {
       if (node.nodeType === 1) {
         if ("html-static" in node.attributes) {
           return false;
         }
         if (register2.get(node) && node !== parent) {
+          const scopeid = newnode.getAttribute("html-scopeid");
+          const scope = g.scope[scopeid];
+          const base = register2.get(node);
+          base.__scope__ = scope;
           return false;
         }
       }
@@ -1113,6 +1150,9 @@ const transformTemplate = (clone) => {
     const htmlClass = element.getAttribute("html-class");
     if (htmlFor) {
       element.removeAttribute("html-for");
+      if (!element.id) {
+        element.setAttribute("id", "jails___scope-id");
+      }
       const split = htmlFor.match(/(.*)\sin\s(.*)/) || "";
       const varname = split[1];
       const object = split[2];

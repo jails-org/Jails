@@ -222,23 +222,24 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		clearTimeout( tick )
 		tick = setTimeout(() => {
 			const html = tpl.render.call({...data, ...view(data)}, node, safe, g )
-			Idiomorph.morph( node, html, IdiomorphOptions(node, register) )
+			Idiomorph.morph( node, html, IdiomorphOptions(node, register, data) )
 			Promise.resolve().then(() => {
 				node.querySelectorAll('[tplid]')
 					.forEach((element) => {
 						const child = register.get(element)
+						const scope = { ...child.__scope__ }
 						if(!child) return
 						child.state.protected().forEach( key => delete data[key] )
 						const useEffect = child.effect()
 						if( useEffect ) {
 							const promise = useEffect(data)
 							if( promise && promise.then ) {
-								promise.then(() => child.state.set(data))
+								promise.then(() => child.state.set({...data, ...scope }))
 							} else {
-								child.state.set(data)
+								child.state.set({...data, ...scope })
 							}
 						} else {
-							child.state.set(data)
+							child.state.set({...data, ...scope })
 						}
 					})
 				Promise.resolve().then(() => {
@@ -254,14 +255,18 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 	return module.default( base )
 }
 
-const IdiomorphOptions = ( parent, register ) => ({
+const IdiomorphOptions = ( parent, register, data ) => ({
 	callbacks: {
-		beforeNodeMorphed( node ) {
+		beforeNodeMorphed( node, newnode ) {
 			if( node.nodeType === 1 ) {
 				if( 'html-static' in node.attributes ) {
 					return false
 				}
 				if( register.get(node) && node !== parent ) {
+					const scopeid 		= newnode.getAttribute('html-scopeid')
+					const scope 		= g.scope[ scopeid ]
+					const base = register.get(node)
+					base.__scope__ = scope
 					return false
 				}
 			}
