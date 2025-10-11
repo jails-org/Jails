@@ -90,10 +90,6 @@ const transformTemplate = ( clone ) => {
 
 				element.removeAttribute('html-for')
 
-				if( !element.id ) {
-					element.setAttribute('id', 'jails___scope-id')
-				}
-
 				const split 	 = htmlFor.match(/(.*)\sin\s(.*)/) || ''
 				const varname 	 = split[1]
 				const object 	 = split[2]
