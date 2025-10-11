@@ -67,7 +67,7 @@ const transformAttributes = (html) => {
 		.replace(tagExpr(), '%%_=$1_%%')
 		.replace(booleanAttrs, `%%_if(safe(function(){ return $2 })){_%%$1%%_}_%%`)
 		.replace(htmlAttr, (all, key, value) => {
-			if (['key', 'model', 'scopeid'].includes(key)) return all
+			if (['model', 'scopeid'].includes(key)) return all
 			if (value) {
 				value = value.replace(/^{|}$/g, '')
 				return `${key}="%%_=safe(function(){ return ${value} })_%%"`

@@ -1,5 +1,5 @@
+import morphdom from 'morphdom'
 import { safe, g, dup } from './utils'
-import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { publish, subscribe } from './utils/pubsub'
 
 export const Component = ({ name, module, dependencies, node, templates, signal, register }) => {
@@ -214,7 +214,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			const clone = element.cloneNode()
 			const html = html_? html_ : target
 			clone.innerHTML = html
-			Idiomorph.morph(element, clone)
+			morphdom(element, clone)
 		}
 	}
 
@@ -222,7 +222,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		clearTimeout( tick )
 		tick = setTimeout(() => {
 			const html = tpl.render.call({...data, ...view(data)}, node, safe, g )
-			Idiomorph.morph( node, html, IdiomorphOptions(node, register, data) )
+			morphdom(node, html, morphOptions(node, register, data) )
 			Promise.resolve().then(() => {
 				node.querySelectorAll('[tplid]')
 					.forEach((element) => {
@@ -255,21 +255,30 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 	return module.default( base )
 }
 
-const IdiomorphOptions = ( parent, register, data ) => ({
-	callbacks: {
-		beforeNodeMorphed( node, newnode ) {
+const morphOptions = ( parent, register, data ) => {
+
+	return {
+		getNodeKey(node) {
 			if( node.nodeType === 1 ) {
-				if( 'html-static' in node.attributes ) {
-					return false
-				}
-				if( register.get(node) && node !== parent ) {
-					const scopeid 		= newnode.getAttribute('html-scopeid')
-					const scope 		= g.scope[ scopeid ]
-					const base = register.get(node)
-					base.__scope__ = scope
-					return false
-				}
+				return node.id || node.getAttribute('key')
 			}
+		},
+		onBeforeElUpdated: update(parent, register, data),
+		onBeforeChildElUpdated: update(parent, register, data),
+	}
+}
+
+const update = (parent, register, data) => (node, newnode) => {
+	if( node.nodeType === 1 ) {
+		if( 'html-static' in node.attributes ) {
+			return false
+		}
+		if( register.get(node) && node !== parent ) {
+			const scopeid 		= newnode.getAttribute('html-scopeid')
+			const scope 		= g.scope[ scopeid ]
+			const base = register.get(node)
+			base.__scope__ = scope
+			return false
 		}
 	}
-})
+}
