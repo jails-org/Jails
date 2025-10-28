@@ -42,11 +42,11 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		},
 
 		query( selector) {
-			const nodes = Array.from(document.querySelectorAll(selector))
-			return nodes.map(node => {
+			const elements = Array.from(node.querySelectorAll(selector))
+			return elements.map( (element: HTMLElement) => {
 				return new Promise((resolve, reject) => {
-					if (document.body.contains(node)) {
-						node.addEventListener(':mount', () => resolve(node))
+					if (document.body.contains(element)) {
+						element.addEventListener(':mount', () => resolve(node))
 					} else {
 						reject(node)
 					}

@@ -600,13 +600,13 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       }
     },
     query(selector) {
-      const nodes = Array.from(document.querySelectorAll(selector));
-      return nodes.map((node2) => {
+      const elements = Array.from(node.querySelectorAll(selector));
+      return elements.map((element) => {
         return new Promise((resolve, reject) => {
-          if (document.body.contains(node2)) {
-            node2.addEventListener(":mount", () => resolve(node2));
+          if (document.body.contains(element)) {
+            element.addEventListener(":mount", () => resolve(node));
           } else {
-            reject(node2);
+            reject(node);
           }
         });
       });
