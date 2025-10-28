@@ -604,9 +604,9 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       return elements.map((element) => {
         return new Promise((resolve, reject) => {
           if (document.body.contains(element)) {
-            element.addEventListener(":mount", () => resolve(node));
+            element.addEventListener(":mount", () => resolve(element));
           } else {
-            reject(node);
+            reject(element);
           }
         });
       });
