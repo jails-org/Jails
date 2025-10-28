@@ -599,6 +599,18 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         return effect;
       }
     },
+    query(selector) {
+      const nodes = Array.from(document.querySelectorAll(selector));
+      return nodes.map((node2) => {
+        return new Promise((resolve, reject) => {
+          if (document.body.contains(node2)) {
+            node2.addEventListener(":mount", () => resolve(node2));
+          } else {
+            reject(node2);
+          }
+        });
+      });
+    },
     /**
      * @State
      */
@@ -725,7 +737,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         node.removeEventListener(ev, callback.handler);
       }
     },
-    trigger(ev, selectorOrCallback, data) {
+    trigger(ev, selectorOrCallback, data = {}) {
       if (selectorOrCallback.constructor === String) {
         Array.from(node.querySelectorAll(selectorOrCallback)).forEach((children) => {
           children.dispatchEvent(new CustomEvent(ev, { bubbles: true, detail: { args: data } }));

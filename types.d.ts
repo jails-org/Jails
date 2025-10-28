@@ -40,13 +40,15 @@ export type Component = {
 
 	off( eventName: string, callback: () => void ): void
 
-	trigger( eventName: string, selector :string, data: any ): void
+	trigger( eventName: string, selector :string, data?: any ): void
 
 	innerHTML( target: HTMLElement | string, html?: string ) : void
 
 	dataset( target: HTMLElement, key: string ) : any
 
 	dataset( key: string ) : any
+
+	query( selector: string ) : Array<Promise<HTMLElement>>
 
 }
 

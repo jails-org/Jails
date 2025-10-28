@@ -41,6 +41,19 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			}
 		},
 
+		query( selector) {
+			const nodes = Array.from(document.querySelectorAll(selector))
+			return nodes.map(node => {
+				return new Promise((resolve, reject) => {
+					if (document.body.contains(node)) {
+						node.addEventListener(':mount', () => resolve(node))
+					} else {
+						reject(node)
+					}
+				})
+			})
+		},
+
 		/**
 		 * @State
 		 */
@@ -189,7 +202,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			}
 		},
 
-		trigger(ev, selectorOrCallback, data) {
+		trigger(ev, selectorOrCallback, data = {}) {
 			if( selectorOrCallback.constructor === String ) {
 				Array
 					.from(node.querySelectorAll(selectorOrCallback))
