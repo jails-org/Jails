@@ -894,9 +894,6 @@ const tagElements = (target, keys, components) => {
       tagElements(node.content, keys, components);
       return;
     }
-    if (node.hasAttribute("html-if") && !node.id) {
-      node.id = uuid();
-    }
     if (isComponent(node.localName)) {
       node.setAttribute("tplid", uuid());
     }
