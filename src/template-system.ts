@@ -52,6 +52,9 @@ const tagElements = (target, keys, components) => {
 			tagElements(node.content, keys, components)
 			return
 		}
+		if( node.getAttribute('html-if') && !node.id ) {
+			node.setAttribute('id', uuid())
+		}
 		if (isComponent(node.localName)) {
 			node.setAttribute('tplid', uuid())
 		}

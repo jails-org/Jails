@@ -1,4 +1,4 @@
-import morphdom from 'morphdom'
+import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { safe, g, dup } from './utils'
 import { publish, subscribe } from './utils/pubsub'
 
@@ -86,7 +86,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 					Object.assign(state, data)
 				}
 
-				const newstate = Object.assign({}, state, scope)
+				const newstate = Object.assign({}, state)
 
 				return new Promise((resolve) => {
 					render(newstate, () => resolve(newstate))
@@ -227,7 +227,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			const clone = element.cloneNode()
 			const html = html_? html_ : target
 			clone.innerHTML = html
-			morphdom(element, clone)
+			Idiomorph.morph(element, clone)
 		}
 	}
 
@@ -235,7 +235,8 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		clearTimeout( tick )
 		tick = setTimeout(() => {
 			const html = tpl.render.call({...data, ...view(data)}, node, safe, g )
-			morphdom(node, html, morphOptions(node, register, data) )
+			Idiomorph.morph(node, html, morphOptions(node, register, data) )
+
 			Promise.resolve().then(() => {
 				node.querySelectorAll('[tplid]')
 					.forEach((element) => {
@@ -245,7 +246,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 						child.state.protected().forEach( key => delete data[key] )
 						const useEffect = child.effect()
 						if( useEffect ) {
-							const promise = useEffect(data)
+							const promise = useEffect({ ...data, ...scope})
 							if( promise && promise.then ) {
 								promise.then(() => child.state.set({...data, ...scope }))
 							} else {
@@ -269,15 +270,10 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 }
 
 const morphOptions = ( parent, register, data ) => {
-
 	return {
-		getNodeKey(node) {
-			if( node.nodeType === 1 ) {
-				return node.id || node.getAttribute('key')
-			}
-		},
-		onBeforeElUpdated: update(parent, register, data),
-		onBeforeChildElUpdated: update(parent, register, data),
+		callbacks: {
+			beforeNodeMorphed: update(parent, register, data)
+		}
 	}
 }
 
@@ -291,7 +287,7 @@ const update = (parent, register, data) => (node, newnode) => {
 			const scope 		= g.scope[ scopeid ]
 			const base = register.get(node)
 			base.__scope__ = scope
-			return false
+			// return false
 		}
 	}
 }
