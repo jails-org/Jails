@@ -638,7 +638,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         } else {
           Object.assign(state, data);
         }
-        const newstate = Object.assign({}, state, scope);
+        const newstate = Object.assign({}, state);
         return new Promise((resolve) => {
           render(newstate, () => resolve(newstate));
         });
