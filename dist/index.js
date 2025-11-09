@@ -1061,6 +1061,7 @@ const update = (parent, register2, data) => (node, newnode) => {
       const scope = g.scope[scopeid];
       const base = register2.get(node);
       base.__scope__ = scope;
+      return false;
     }
   }
 };
@@ -1137,9 +1138,6 @@ const tagElements = (target, keys, components) => {
     if (node.localName === "template") {
       tagElements(node.content, keys, components);
       return;
-    }
-    if (node.getAttribute("html-if") && !node.id) {
-      node.setAttribute("id", uuid());
     }
     if (isComponent(node.localName)) {
       node.setAttribute("tplid", uuid());

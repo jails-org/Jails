@@ -287,7 +287,7 @@ const update = (parent, register, data) => (node, newnode) => {
 			const scope 		= g.scope[ scopeid ]
 			const base = register.get(node)
 			base.__scope__ = scope
-			// return false
+			return false
 		}
 	}
 }
