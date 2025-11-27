@@ -1,4 +1,4 @@
-import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
+import morphdom from 'morphdom'
 import { safe, g, dup } from './utils'
 import { publish, subscribe } from './utils/pubsub'
 
@@ -227,7 +227,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 			const clone = element.cloneNode()
 			const html = html_? html_ : target
 			clone.innerHTML = html
-			Idiomorph.morph(element, clone)
+			morphdom(element, clone)
 		}
 	}
 
@@ -235,7 +235,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		clearTimeout( tick )
 		tick = setTimeout(() => {
 			const html = tpl.render.call({...data, ...view(data)}, node, safe, g )
-			Idiomorph.morph(node, html, morphOptions(node, register, data) )
+			morphdom(node, html, morphOptions(node, register, data) )
 
 			Promise.resolve().then(() => {
 				node.querySelectorAll('[tplid]')
@@ -271,9 +271,13 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 
 const morphOptions = ( parent, register, data ) => {
 	return {
-		callbacks: {
-			beforeNodeMorphed: update(parent, register, data)
-		}
+		getNodeKey(node) {
+			if( node.nodeType === 1 ) {
+				return node.id || node.getAttribute('key')
+			}
+		},
+		onBeforeElUpdated: update(parent, register, data),
+		onBeforeElChildrenUpdated: update(parent, register, data)
 	}
 }
 
