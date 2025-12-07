@@ -15,7 +15,7 @@ export const templateConfig = (newconfig) => {
 
 export const template = ( target, { components }) => {
 
-	tagElements( target, [...Object.keys( components ), '[html-if]', 'template'], components )
+	tagElements( target, [...Object.keys( components ), 'template'], components )
 	const clone = target.cloneNode( true )
 
 	transformTemplate( clone )
@@ -134,6 +134,7 @@ const setTemplates = ( clone, components ) => {
 				const children = node.innerHTML
 				const html = components[name].module.template({ elm:node, children })
 				node.innerHTML = html
+				template(node, { components })
 				transformTemplate(node)
 				removeTemplateTagsRecursively(node)
 			}
@@ -145,6 +146,7 @@ const setTemplates = ( clone, components ) => {
 				render	: compile(html)
 			}
 		})
+
 }
 
 const removeTemplateTagsRecursively = (node) => {

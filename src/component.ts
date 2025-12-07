@@ -236,7 +236,6 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		tick = setTimeout(() => {
 			const html = tpl.render.call({...data, ...view(data)}, node, safe, g )
 			Idiomorph.morph(node, html, morphOptions(node, register, data) )
-
 			Promise.resolve().then(() => {
 				node.querySelectorAll('[tplid]')
 					.forEach((element) => {

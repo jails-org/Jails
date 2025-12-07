@@ -1,4 +1,3 @@
-
 import { Element } from './element'
 import { template, templateConfig as config } from './template-system'
 
@@ -16,7 +15,6 @@ export const register = ( name, module, dependencies ) => {
 }
 
 export const start = ( target ) => {
-
 	// If the code is running in a Node.js environment, do nothing
 	if( typeof window === 'undefined' ) {
 		return;

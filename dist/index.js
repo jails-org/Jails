@@ -1111,7 +1111,7 @@ const templateConfig$1 = (newconfig) => {
   Object.assign(config, newconfig);
 };
 const template = (target, { components }) => {
-  tagElements(target, [...Object.keys(components), "[html-if]", "template"], components);
+  tagElements(target, [...Object.keys(components), "template"], components);
   const clone = target.cloneNode(true);
   transformTemplate(clone);
   removeTemplateTagsRecursively(clone);
@@ -1198,6 +1198,7 @@ const setTemplates = (clone, components) => {
       const children = node.innerHTML;
       const html2 = components[name].module.template({ elm: node, children });
       node.innerHTML = html2;
+      template(node, { components });
       transformTemplate(node);
       removeTemplateTagsRecursively(node);
     }
