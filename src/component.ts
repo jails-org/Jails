@@ -6,8 +6,9 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 
 	let tick
 	let preserve		= []
-	let observer 		= null
+	let stack 			= []
 	let observables 	= []
+	let observer 		= null
 	let effect 			= null
 
 	const _model 		= module.model || {}
@@ -231,7 +232,10 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		}
 	}
 
-	const render = ( data, callback = (() => {}) ) => {
+	const render = ( data, callback? ) => {
+		if( callback ) {
+			stack.push(callback)
+		}
 		clearTimeout( tick )
 		tick = setTimeout(() => {
 			const html = tpl.render.call({...data, ...view(data)}, node, safe, g )
@@ -257,7 +261,9 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 					})
 				Promise.resolve().then(() => {
 					g.scope = {}
-					callback()
+					setTimeout(() => {
+						stack.forEach( callback => callback() )
+					})
 				})
 			})
 		})

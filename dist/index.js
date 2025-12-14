@@ -818,8 +818,9 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   var _a;
   let tick;
   let preserve = [];
-  let observer = null;
+  let stack = [];
   let observables = [];
+  let observer = null;
   let effect = null;
   const _model = module.model || {};
   const initialState = new Function(`return ${node.getAttribute("html-model") || "{}"}`)();
@@ -1009,8 +1010,10 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       Idiomorph.morph(element, clone);
     }
   };
-  const render = (data, callback = (() => {
-  })) => {
+  const render = (data, callback) => {
+    if (callback) {
+      stack.push(callback);
+    }
     clearTimeout(tick);
     tick = setTimeout(() => {
       const html = tpl.render.call(__spreadValues(__spreadValues({}, data), view(data)), node, safe, g);
@@ -1035,7 +1038,9 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
         });
         Promise.resolve().then(() => {
           g.scope = {};
-          callback();
+          setTimeout(() => {
+            stack.forEach((callback2) => callback2());
+          });
         });
       });
     });
