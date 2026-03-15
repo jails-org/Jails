@@ -31,7 +31,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 		subscribe,
 
 		main(fn) {
-			node.addEventListener(':mount', fn)
+			node.addEventListener(':mount', () => setTimeout(fn))
 		},
 
 		effect(fn) {
