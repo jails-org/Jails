@@ -111,7 +111,8 @@ const transformTemplate = ( clone ) => {
 
 			if (htmlClass) {
 				element.removeAttribute('html-class')
-				element.className = (element.className + ` %%_=${htmlClass}_%%`).trim()
+				const value = element.getAttribute('class') || ''
+				element.setAttribute('class', `${value} %%_=${htmlClass}_%%`)
 			}
 
 			if( element.localName === 'template' ) {
