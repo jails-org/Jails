@@ -1,0 +1,75 @@
+[
+  {
+    "pattern": "local-state",
+    "problem": "A component needs to render local UI state.",
+    "solution": "Export a small model and update it with state.set().",
+    "example": "export const model = { isOpen: false }",
+    "tradeoffs": ["Simple mental model", "State is scoped to one component"],
+    "antiPatterns": ["Global variables for local toggles"]
+  },
+  {
+    "pattern": "page-scoped-store",
+    "problem": "Multiple components need access to a page service or store.",
+    "solution": "Inject the store through register(name, module, dependencies).",
+    "example": "register('cart-total', cartTotal, { cart })",
+    "tradeoffs": ["Explicit dependency boundary", "Caller controls implementation"],
+    "antiPatterns": ["Importing hidden singletons everywhere"]
+  },
+  {
+    "pattern": "event-delegation",
+    "problem": "Rendered children may be replaced during morphing.",
+    "solution": "Use on(event, selector, callback) from main().",
+    "example": "on('click', '[data-remove]', remove)",
+    "tradeoffs": ["Listeners survive DOM replacement", "Callbacks must use delegateTarget"],
+    "antiPatterns": ["Adding listeners to each repeated row"]
+  },
+  {
+    "pattern": "dom-first-rendering",
+    "problem": "The app should show useful content before JavaScript.",
+    "solution": "Render semantic HTML first and add directives for dynamic fields.",
+    "example": "<span html-inner=\"count\">0</span>",
+    "tradeoffs": ["Great SSR fit", "Requires backend and client state agreement"],
+    "antiPatterns": ["Empty component shells"]
+  },
+  {
+    "pattern": "declarative-updates",
+    "problem": "UI should reflect state predictably.",
+    "solution": "Put render behavior in directives and update state explicitly.",
+    "example": "<p html-if=\"error\" html-inner=\"error\"></p>",
+    "tradeoffs": ["Traceable updates", "Expressions should stay small"],
+    "antiPatterns": ["Manual textContent changes on Jails-owned nodes"]
+  },
+  {
+    "pattern": "progressive-enhancement",
+    "problem": "The feature should work acceptably without JavaScript.",
+    "solution": "Use real links, forms, fallback text, and html-* delayed attributes.",
+    "example": "<a href=\"/profile\" data-route=\"profile\">Profile</a>",
+    "tradeoffs": ["Accessible by default", "Client behavior may duplicate server routes"],
+    "antiPatterns": ["Preventing all default navigation without fallback"]
+  },
+  {
+    "pattern": "lazy-hydration-alternative",
+    "problem": "Expensive DOM behavior should not run until needed.",
+    "solution": "Mount a small Jails component and dynamically import expensive code in main().",
+    "example": "const mod = await import('./chart-lib')",
+    "tradeoffs": ["Keeps initial bundle small", "Requires explicit loading state"],
+    "antiPatterns": ["Loading every widget dependency on page start"]
+  },
+  {
+    "pattern": "optimistic-ui",
+    "problem": "User action should feel immediate while persistence is pending.",
+    "solution": "Snapshot state, set optimistic state, rollback on failure.",
+    "example": "const previous = state.get().items",
+    "tradeoffs": ["Fast feedback", "Needs deterministic rollback"],
+    "antiPatterns": ["Changing DOM directly before state update"]
+  },
+  {
+    "pattern": "composition",
+    "problem": "A parent list renders state while each row has local behavior.",
+    "solution": "Render child custom elements inside html-for and protect child-local state.",
+    "example": "state.protected(['isOpen'])",
+    "tradeoffs": ["Clear ownership", "More custom element boundaries"],
+    "antiPatterns": ["Parent owning all transient row UI"]
+  }
+]
+

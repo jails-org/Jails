@@ -1,24 +1,38 @@
 {
 	"name": "jails-js",
-	"version": "6.9.8",
+	"version": "6.10.0",
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"module": "./dist/index.js",
 	"main": "./dist/jails.js",
 	"exports": {
+
 		"./html": {
 			"types": "./types.d.ts",
 			"import": "./html.js",
 			"require": "./html.js"
 		},
+
 		".": {
 			"types": "./types.d.ts",
 			"import": "./dist/index.js",
 			"require": "./dist/jails.js"
 		},
+
 		"./internal": {
 			"types": "./types.d.ts",
 			"default": "./types.d.ts"
-		}
+		},
+
+		"./ai/*": "./ai-docs/*",
+		"./schemas/*": "./ai-docs/schemas/*",
+		"./canonical/*": "./ai-docs/canonical/*"
+	},
+
+	"ai": {
+		"entry": "./ai-docs/LLM.md",
+		"schemas": "./ai-docs/schemas",
+		"examples": "./ai-docs/canonical",
+		"training": "./ai-docs/training/training.jsonl"
 	},
 	"scripts": {
 		"dev": "vite build --watch",
@@ -27,28 +41,35 @@
 		"publish-beta": "yarn build && npm version prerelease --preid=beta && npm publish --tag beta",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
+
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/jails-org/Jails.git"
 	},
+
 	"keywords": [
 		"Jails",
 		"Javascript",
 		"Component",
 		"Micro-Library"
 	],
+
 	"author": "javiani",
 	"license": "MIT",
+
 	"bugs": {
 		"url": "https://github.com/jails-org/Jails/issues"
 	},
+
 	"homepage": "https://github.com/jails-org/Jails",
+
 	"devDependencies": {
 		"@types/node": "^22.10.10",
 		"terser": "^5.37.0",
 		"typescript": "^5.7.3",
 		"vite": "^6.0.11"
 	},
+
 	"dependencies": {
 		"idiomorph": "^0.7.4"
 	}

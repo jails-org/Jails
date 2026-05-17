@@ -1,0 +1,89 @@
+{
+  "sourceAvailability": {
+    "formalTestsFound": false,
+    "contractSources": [
+      "/Users/edu/Sites/jails-org/jails/src/index.ts",
+      "/Users/edu/Sites/jails-org/jails/src/component.ts",
+      "/Users/edu/Sites/jails-org/jails/src/template-system.ts",
+      "/Users/edu/Sites/jails-org/jails/src/element.ts",
+      "docs/reference/*.md",
+      "readme.md"
+    ]
+  },
+  "expectedBehaviors": [
+    {
+      "area": "start",
+      "contract": "start() is a no-op when window is undefined.",
+      "invariants": ["SSR imports must not require DOM execution."]
+    },
+    {
+      "area": "registration",
+      "contract": "register(name, module, dependencies) stores component metadata globally by name.",
+      "invariants": ["customElements.define is called only if the name is not already defined."]
+    },
+    {
+      "area": "template-compilation",
+      "contract": "component roots receive tplid and compiled render functions before mount.",
+      "invariants": ["tplid identifies the compiled template", "html-scopeid is internal"]
+    },
+    {
+      "area": "state-initialization",
+      "contract": "initial state merges scope, model, and html-model, with html-model winning.",
+      "invariants": ["functional model receives elm, initialState, dependencies"]
+    },
+    {
+      "area": "rendering",
+      "contract": "state.set schedules render and morphs the component root.",
+      "invariants": ["state.set returns a Promise", "multiple rapid sets are debounced by tick"]
+    },
+    {
+      "area": "safe-expressions",
+      "contract": "failed directive expressions render as empty string.",
+      "invariants": ["safe() catches exceptions", "null and undefined become empty string"]
+    },
+    {
+      "area": "child-components",
+      "contract": "parent morphing skips child component roots and forwards state separately.",
+      "invariants": ["child protected keys are not overwritten", "child scope is stored before update"]
+    },
+    {
+      "area": "html-static",
+      "contract": "nodes with html-static are not morphed.",
+      "invariants": ["descendant DOM remains under external ownership"]
+    },
+    {
+      "area": "delegated-events",
+      "contract": "on(event, selector, callback) listens from component root and sets delegateTarget.",
+      "invariants": ["focus, blur, mouseenter, and mouseleave use capture"]
+    },
+    {
+      "area": "attribute-observers",
+      "contract": "on('[attr]', selector?, callback) observes attribute changes within the component root.",
+      "invariants": ["callback receives target, attribute, value"]
+    },
+    {
+      "area": "lifecycle",
+      "contract": "connectedCallback creates an AbortController and dispatches :mount after Component setup.",
+      "invariants": ["disconnectedCallback dispatches :unmount", "abortController aborts event listeners"]
+    },
+    {
+      "area": "pubsub",
+      "contract": "subscribe receives future publishes and immediately receives cached data for previously published topics.",
+      "invariants": ["object payloads are shallow-merged in cache", "unsubscribe removes handler"]
+    }
+  ],
+  "edgeCases": [
+    "state.set does nothing if the component node is no longer in document.body.",
+    "dataset parses true, false, numbers, JavaScript expressions, JSON, then falls back to string.",
+    "html-for uses for...in, so array-like order is best represented by arrays.",
+    "html-model is executed as JavaScript and must not contain untrusted input.",
+    "template tags are unwrapped unless they carry html-if or html-inner."
+  ],
+  "failureConditions": [
+    "Missing registered component name means no custom element class is defined for that tag.",
+    "Invalid directive expressions silently render fallback empty strings.",
+    "Third-party DOM without html-static can be changed by morphing.",
+    "Global pub/sub subscriptions leak unless unsubscribed on unmount."
+  ]
+}
+
