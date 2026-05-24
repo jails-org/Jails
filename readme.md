@@ -1,12 +1,13 @@
-<p align="center">
-  <img width="200" src="https://github.com/user-attachments/assets/8b4dbfb9-f05e-4b83-8d42-8847038a97e2" alt="Jails" />
+
+<p align="center" height="100">
+  <img width="300" alt="Jails - A minimalistic Micro Framework" src="https://github.com/user-attachments/assets/3144e31a-9037-46f5-9cea-d21850c6447d" />
 </p>
 
-<h1 align="center">Jails</h1>
-
-<h3 align="center">An Elegant and Minimalistic<br /> Web Components Micro-Framework</h3>
+<h1 align="center">An Elegant and Minimalistic<br /> Micro-Framework</h3>
 
 <div align="center">
+  <br />
+    <br />
   <table align="center" border="0">
     <tr><td align="center">🏝 Built for <br/><a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture</a></td</tr>
     <td align="center">ƛ Inspired by <br/><a href="https://guide.elm-lang.org/architecture/" target="_blank">Elm Architecture</a></td>
