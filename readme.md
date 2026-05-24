@@ -1,6 +1,8 @@
 
+
 <p align="center" height="100">
-  <img width="300" alt="Jails - A minimalistic Micro Framework" src="https://github.com/user-attachments/assets/3144e31a-9037-46f5-9cea-d21850c6447d" />
+  <img width="300"  alt="Jails - A minimalistic Micro Framework" src="https://github.com/user-attachments/assets/5e2eee1a-5f8f-4eed-abba-7422a5258245" />
+  
 </p>
 
 <h1 align="center">An Elegant and Minimalistic<br /> Micro-Framework</h3>
@@ -8,7 +10,7 @@
 <div align="center">
   <br />
     <br />
-  <table align="center" border="0">
+  <table width="100%" align="center" border="0">
     <tr><td align="center">🏝 Built for <br/><a href="https://www.patterns.dev/posts/islands-architecture/" target="_blank">Island Architecture</a></td</tr>
     <td align="center">ƛ Inspired by <br/><a href="https://guide.elm-lang.org/architecture/" target="_blank">Elm Architecture</a></td>
     <td align="center">🔗 Ready for <br/><a href="https://htmx.org/essays/hypermedia-driven-applications" target="_blank">hypermedia applications</a></td></tr>
