@@ -1,0 +1,107 @@
+[
+  {
+    "name": "html-if",
+    "description": "Conditionally renders a node from a JavaScript expression evaluated against component render scope.",
+    "syntax": "<div html-if=\"show\">...</div>",
+    "renderingBehavior": "Truthy expressions render the node; falsy expressions remove it from rendered output.",
+    "domBehavior": "Node is created when condition becomes truthy and removed when falsy. DOM state inside removed branch is lost.",
+    "updateBehavior": "Re-evaluated after state updates and parent prop updates.",
+    "examples": ["<p html-if=\"isVisible\">Visible</p>"],
+    "rules": ["Keep condition expressions cheap.", "Use delegated events for children inside conditional branches."],
+    "relatedConcepts": ["state.set", "render scope", "conditional rendering"],
+    "antiPatterns": ["Using for large frequently toggled subtrees when DOM state must persist.", "Side effects in condition expressions."],
+    "performanceNotes": "Branch creation/removal cost grows with subtree size and nested directives."
+  },
+  {
+    "name": "html-for",
+    "description": "Repeats an element for each item in an array or object.",
+    "syntax": "<li html-for=\"item in list\">{{ item.name }}</li>",
+    "renderingBehavior": "The directive element acts as the repeated template. Each iteration receives the item alias, $index, and $key.",
+    "domBehavior": "Copies are inserted at the directive position. Extra copies are removed when iterable shrinks.",
+    "updateBehavior": "Re-evaluated after state changes. Keyed reconciliation is not documented; assume order-based behavior.",
+    "examples": ["<li html-for=\"item in list\"><span html-if=\"item.show\">{{ item.name }} {{ $index }}</span></li>"],
+    "rules": ["Avoid expensive filtering/sorting in directive expression.", "Use event delegation instead of per-item listeners."],
+    "relatedConcepts": ["loops", "$index", "$key", "event delegation"],
+    "antiPatterns": ["Deeply nested loops.", "Relying on undocumented keyed DOM preservation."],
+    "performanceNotes": "Cost grows with item count and nested directive complexity."
+  },
+  {
+    "name": "html-inner",
+    "description": "Writes an expression result into a specific element, replacing fallback content after mount.",
+    "syntax": "<span html-inner=\"counter\">0</span>",
+    "renderingBehavior": "Equivalent purpose to mustache interpolation but targeted at one element.",
+    "domBehavior": "Existing child content is replaced with expression output.",
+    "updateBehavior": "Re-evaluated after state changes.",
+    "examples": ["<strong html-inner=\"name\">Some default value</strong>"],
+    "rules": ["Use for scalar content and progressive fallback text."],
+    "relatedConcepts": ["mustache", "fallback content", "state"],
+    "antiPatterns": ["Injecting untrusted HTML.", "Using for complex nested markup."],
+    "performanceNotes": "Cheap for text/scalar updates because element structure remains stable."
+  },
+  {
+    "name": "html-model",
+    "description": "Provides initial component state from markup.",
+    "syntax": "<my-component html-model=\"{ counter: 5 }\"></my-component>",
+    "renderingBehavior": "Initial state includes html-model values, overriding model props as documented.",
+    "domBehavior": "Initialization directive; not intended as a final application attribute.",
+    "updateBehavior": "Used during bootstrap, not reactive after mount.",
+    "examples": ["<my-component html-model=\"{ counter: 5 }\"><span html-inner=\"counter\"></span></my-component>"],
+    "rules": ["Use for small per-instance configuration.", "Use valid JavaScript object expression syntax."],
+    "relatedConcepts": ["model", "initialState"],
+    "antiPatterns": ["Large serialized payloads in attributes.", "Treating html-model as reactive."],
+    "performanceNotes": "Cheap bootstrap mechanism; avoid parsing large attribute payloads."
+  },
+  {
+    "name": "html-*",
+    "description": "Binds standard HTML attributes to JavaScript expressions while stripping the html- prefix.",
+    "syntax": "<img html-src=\"imageUrl\" alt=\"\">",
+    "renderingBehavior": "Expression result is written to the real attribute name.",
+    "domBehavior": "Boolean attributes are present for truthy values and removed for falsy values.",
+    "updateBehavior": "Re-evaluated after state changes.",
+    "examples": ["<div html-class=\"loading ? 'is-loading' : ''\"></div>", "<button html-disabled=\"isSaving\">Save</button>"],
+    "rules": ["Use html-src to avoid premature network requests.", "Treat selected, checked, readonly, disabled, and autoplay as boolean attributes."],
+    "relatedConcepts": ["attribute binding", "boolean attributes", "attribute observers"],
+    "antiPatterns": ["Expecting disabled=\"false\" for falsy booleans.", "Complex class logic inline."],
+    "performanceNotes": "Efficient for scalar attributes; heavy expressions repeat on updates."
+  },
+  {
+    "name": "html-static",
+    "description": "Marks a node and children as skipped by Jails virtual DOM updates/diffing.",
+    "syntax": "<div html-static>...</div>",
+    "renderingBehavior": "The marked subtree is excluded from Jails template updates.",
+    "domBehavior": "Browser or external libraries may mutate the subtree without Jails reconciling it.",
+    "updateBehavior": "State updates skip the subtree. Directives inside should be treated as inert after the static boundary.",
+    "examples": ["<div class=\"swiper\" html-static></div>", "<input type=\"number\" value=\"1\" html-static>"],
+    "rules": ["Use for third-party DOM libraries.", "Use for browser-owned form values when state does not need every keystroke."],
+    "relatedConcepts": ["DOM ownership", "third-party integration", "diff boundary"],
+    "antiPatterns": ["Expecting dynamic content inside html-static to update.", "Marking too much of a component static."],
+    "performanceNotes": "Reduces diff work and prevents conflicts with imperative DOM mutation."
+  },
+  {
+    "name": "mustache",
+    "description": "Interpolates JavaScript expression results into text positions.",
+    "syntax": "{{ expression }}",
+    "renderingBehavior": "Expression result becomes text/content at the interpolation position.",
+    "domBehavior": "Text node content changes when expression result changes.",
+    "updateBehavior": "Re-evaluated after state updates. Delimiters can be changed with templateConfig.",
+    "examples": ["<p>Hello, {{ name }}</p>"],
+    "rules": ["Use for scalar output.", "Move formatting into view for clarity."],
+    "relatedConcepts": ["templateConfig", "view", "render scope"],
+    "antiPatterns": ["Side effects in expressions.", "Large logic in interpolation."],
+    "performanceNotes": "Cheap for simple text; complex expressions repeat during updates."
+  },
+  {
+    "name": "template element",
+    "description": "Native inert HTML used to hide dynamic fragments from initial page rendering.",
+    "syntax": "<template><div html-if=\"user\">{{ user.name }}</div></template>",
+    "renderingBehavior": "Browser does not render template contents directly.",
+    "domBehavior": "Content stays inert until processed/cloned by template system.",
+    "updateBehavior": "Useful for fragments that require data before display.",
+    "examples": ["<template><div html-if=\"userData\">Welcome, {{ userData.name }}!</div></template>"],
+    "rules": ["Use for data-dependent fragments that should not flash markers."],
+    "relatedConcepts": ["progressive enhancement", "mustache", "first paint"],
+    "antiPatterns": ["Hiding SSR content that should appear immediately."],
+    "performanceNotes": "Improves first-paint correctness, not a diff optimization by itself."
+  }
+]
+
