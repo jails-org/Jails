@@ -1,7 +1,7 @@
 
 
 <p align="center" height="100">
-  <img width="300"  alt="Jails - A minimalistic Micro Framework" src="https://github.com/user-attachments/assets/5e2eee1a-5f8f-4eed-abba-7422a5258245" />
+  <img width="250"  alt="Jails - A minimalistic Micro Framework" src="https://github.com/user-attachments/assets/5e2eee1a-5f8f-4eed-abba-7422a5258245" />
   
 </p>
 
@@ -31,9 +31,19 @@
 The JavaScript ecosystem, including browsers and tools, has undergone significant evolution over the years. However, it's evident that many of the complexities introduced by frameworks today may not be essential for the majority of web applications. The prevailing trend in modern app development seems to prioritize expertise in frameworks over mastery of the language itself, often leading to a sense of being confined within the framework ecosystem.
 
 Jails was designed to be:
-- **Decoupled** - Backend-agnostic, our solution seamlessly integrates with any backend framework or programming language. It refrains from importing styles and ensures a clean demarcation by avoiding mixing HTML within the codebase.
-- **Lightweight** - Lightweight, weighing in at just around 5kb when gzipped. It enhances your application's performance by progressively lightening the load, separating HTML from your JavaScript code. This practice results in smaller bundles and a more streamlined application.
-- **Interoperable** - It seamlessly integrates and functions alongside any other vanilla UI or behavioral libraries. You no longer need to wait for a specific Jails Chart.js library to be available; simply integrate it into your application hassle-free.
+
+<table width="100%" align="center" border="0">
+    <tr>
+      <th>🧩 Decoupled</th>
+      <th>⚡️ Lightweight</th>
+      <th>📦 Interoperable</th>
+    </tr>
+    <tr>
+      <td align="center">Backend-agnostic, our solution seamlessly integrates with any backend framework or back-end programming language.</td>
+      <td align="center">Lightweight, just around 5kb when gzipped. It enhances your application's performance by progressively, separating HTML from your JavaScript code. </td>
+      <td align="center">It seamlessly integrates and functions alongside any other vanilla UI or behavioral libraries. </td>
+    </tr>    
+</table>
 
 <br clear="all" />
 <br />
