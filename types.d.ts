@@ -9,7 +9,7 @@ export declare const templateConfig: (options: any) => void;
 export declare const register: (name: string, module: any, dependencies?: any) => void
 export declare const start: (target?: HTMLElement) => void;
 export declare const subscribe:( subject: string, callback: (data:any) => void ) => Function
-export declare const publish: ( subject: string, data :any ) => void
+export declare const publish: ( subject: string, data ?:any ) => void
 
 export type Component = {
 
@@ -24,11 +24,11 @@ export type Component = {
 		getRaw() : any
 	}
 
-	effect( callback: ( state: any ) => Promise<any> | void )
+	effect( callback: ( state: any ) => Promise<any> | void ): void
 
 	main( mainArgs: ( t: Component ) => void ): void
 
-	publish( name: string, value: any ) : void
+	publish( name: string, value?: any ) : void
 
 	subscribe( name: string, value: Function ) : Function
 

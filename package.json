@@ -4,6 +4,7 @@
 	"description": "Jails - Elegant and Minimalistic Javascript Application Library",
 	"module": "./dist/index.js",
 	"main": "./dist/jails.js",
+	"types": "./types.d.ts",
 	"exports": {
 
 		"./html": {
