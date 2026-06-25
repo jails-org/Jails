@@ -1,13 +1,15 @@
-import { Element } from './element'
+import { Element, getInstance } from './element'
 import { template, templateConfig as config } from './template-system'
 
+globalThis.__jails__ = globalThis.__jails__ || { components: {} }
+globalThis.__jails__.getInstance = getInstance
+
+export { getInstance }
 export { publish, subscribe } from './utils/pubsub'
 
 export const templateConfig = (options) => {
 	config( options )
 }
-
-globalThis.__jails__ = globalThis.__jails__ || { components: {} }
 
 export const register = ( name, module, dependencies ) => {
 	const { components } = globalThis.__jails__

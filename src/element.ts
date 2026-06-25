@@ -45,3 +45,7 @@ export const Element = ({ component, templates, start }) => {
 		}
 	}
 }
+
+export const getInstance = ( node ) => {
+	return register.get(node)
+}

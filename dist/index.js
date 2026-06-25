@@ -1105,6 +1105,9 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
     }
   };
 };
+const getInstance = (node) => {
+  return register$1.get(node);
+};
 const config = {
   tags: ["{{", "}}"]
 };
@@ -1237,10 +1240,11 @@ const wrap = (open, node, close) => {
   (_a = node.parentNode) == null ? void 0 : _a.insertBefore(open, node);
   (_b = node.parentNode) == null ? void 0 : _b.insertBefore(close, node.nextSibling);
 };
+globalThis.__jails__ = globalThis.__jails__ || { components: {} };
+globalThis.__jails__.getInstance = getInstance;
 const templateConfig = (options) => {
   templateConfig$1(options);
 };
-globalThis.__jails__ = globalThis.__jails__ || { components: {} };
 const register = (name, module, dependencies) => {
   const { components } = globalThis.__jails__;
   components[name] = { name, module, dependencies };
@@ -1259,6 +1263,7 @@ const start = (target) => {
   });
 };
 export {
+  getInstance,
   publish,
   register,
   start,
