@@ -2,7 +2,7 @@ import { Idiomorph } from 'idiomorph/dist/idiomorph.esm'
 import { safe, g, dup } from './utils'
 import { publish, subscribe } from './utils/pubsub'
 
-export const Component = ({ name, module, dependencies, node, templates, signal, register }) => {
+export const Component = ({ name, module, dependencies, node, templates, signal }) => {
 
 	let tick
 	let preserve		= []
@@ -11,6 +11,7 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 	let observer 		= null
 	let effect 			= null
 
+	const register 		= globalThis.__jails__.instances
 	const _model 		= module.model || {}
 	const initialState 	= (new Function( `return ${node.getAttribute('html-model') || '{}'}`))()
 	const tplid 		= node.getAttribute('tplid')

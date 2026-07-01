@@ -1,10 +1,12 @@
-import { Element, getInstance } from './element'
+import { Element } from './element'
 import { template, templateConfig as config } from './template-system'
 
 globalThis.__jails__ = globalThis.__jails__ || { components: {} }
-globalThis.__jails__.getInstance = globalThis.__jails__.getInstance || getInstance
+globalThis.__jails__.instances = globalThis.__jails__.instances || new WeakMap()
+globalThis.__jails__.getInstance = (node) => {
+	return globalThis.__jails__.instances.get(node)
+}
 
-export { getInstance }
 export { publish, subscribe } from './utils/pubsub'
 
 export const templateConfig = (options) => {

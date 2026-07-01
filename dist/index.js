@@ -814,7 +814,7 @@ const subscribe = (name, method) => {
 const isObject = (value) => {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 };
-const Component = ({ name, module, dependencies, node, templates: templates2, signal, register: register2 }) => {
+const Component = ({ name, module, dependencies, node, templates: templates2, signal }) => {
   var _a;
   let tick;
   let preserve = [];
@@ -822,6 +822,7 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
   let observables = [];
   let observer = null;
   let effect = null;
+  const register2 = globalThis.__jails__.instances;
   const _model = module.model || {};
   const initialState = new Function(`return ${node.getAttribute("html-model") || "{}"}`)();
   const tplid = node.getAttribute("tplid");
@@ -1070,7 +1071,6 @@ const update = (parent, register2, data) => (node, newnode) => {
     }
   }
 };
-const register$1 = /* @__PURE__ */ new WeakMap();
 const Element$1 = ({ component, templates: templates2, start: start2 }) => {
   const { name, module, dependencies } = component;
   return class extends HTMLElement {
@@ -1088,8 +1088,7 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
         module,
         dependencies,
         templates: templates2,
-        signal: this.abortController.signal,
-        register: register$1
+        signal: this.abortController.signal
       });
       if (rtrn && rtrn.constructor === Promise) {
         rtrn.then(() => {
@@ -1104,9 +1103,6 @@ const Element$1 = ({ component, templates: templates2, start: start2 }) => {
       this.abortController.abort();
     }
   };
-};
-const getInstance = (node) => {
-  return register$1.get(node);
 };
 const config = {
   tags: ["{{", "}}"]
@@ -1241,7 +1237,10 @@ const wrap = (open, node, close) => {
   (_b = node.parentNode) == null ? void 0 : _b.insertBefore(close, node.nextSibling);
 };
 globalThis.__jails__ = globalThis.__jails__ || { components: {} };
-globalThis.__jails__.getInstance = globalThis.__jails__.getInstance || getInstance;
+globalThis.__jails__.instances = globalThis.__jails__.instances || /* @__PURE__ */ new WeakMap();
+globalThis.__jails__.getInstance = (node) => {
+  return globalThis.__jails__.instances.get(node);
+};
 const templateConfig = (options) => {
   templateConfig$1(options);
 };
@@ -1263,7 +1262,6 @@ const start = (target) => {
   });
 };
 export {
-  getInstance,
   publish,
   register,
   start,
