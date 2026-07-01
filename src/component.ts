@@ -244,8 +244,8 @@ export const Component = ({ name, module, dependencies, node, templates, signal,
 				node.querySelectorAll('[tplid]')
 					.forEach((element) => {
 						const child = register.get(element)
-						const scope = { ...child.__scope__ }
 						if(!child) return
+						const scope = { ...child.__scope__ }
 						child.state.protected().forEach( key => delete data[key] )
 						const useEffect = child.effect()
 						if( useEffect ) {

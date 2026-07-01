@@ -1021,8 +1021,8 @@ const Component = ({ name, module, dependencies, node, templates: templates2, si
       Promise.resolve().then(() => {
         node.querySelectorAll("[tplid]").forEach((element) => {
           const child = register2.get(element);
-          const scope2 = __spreadValues({}, child.__scope__);
           if (!child) return;
+          const scope2 = __spreadValues({}, child.__scope__);
           child.state.protected().forEach((key) => delete data[key]);
           const useEffect = child.effect();
           if (useEffect) {
