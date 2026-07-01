@@ -1241,7 +1241,7 @@ const wrap = (open, node, close) => {
   (_b = node.parentNode) == null ? void 0 : _b.insertBefore(close, node.nextSibling);
 };
 globalThis.__jails__ = globalThis.__jails__ || { components: {} };
-globalThis.__jails__.getInstance = getInstance;
+globalThis.__jails__.getInstance = globalThis.__jails__.getInstance || getInstance;
 const templateConfig = (options) => {
   templateConfig$1(options);
 };

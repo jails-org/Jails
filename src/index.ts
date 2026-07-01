@@ -2,7 +2,7 @@ import { Element, getInstance } from './element'
 import { template, templateConfig as config } from './template-system'
 
 globalThis.__jails__ = globalThis.__jails__ || { components: {} }
-globalThis.__jails__.getInstance = getInstance
+globalThis.__jails__.getInstance = globalThis.__jails__.getInstance || getInstance
 
 export { getInstance }
 export { publish, subscribe } from './utils/pubsub'
