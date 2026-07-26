@@ -1,4 +1,7 @@
 export const attributes = ( attrs ) => {
+	if( attrs.constructor === NamedNodeMap ) {
+		attrs = Object.fromEntries([...attrs].map(attr => [attr.name, attr.value]) )
+	}
 	const result = Object.entries(attrs)
 		.map(([key, value]) => {
 			if( value === '' ) {
