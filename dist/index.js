@@ -1143,7 +1143,7 @@ const tagElements = (target, keys, components) => {
       tagElements(node.content, keys, components);
       return;
     }
-    if (isComponent(node.localName)) {
+    if (isComponent(node.localName) && !node.getAttribute("tplid")) {
       node.setAttribute("tplid", uuid());
     }
   });
@@ -1197,6 +1197,9 @@ const transformTemplate = (clone) => {
 const setTemplates = (clone, components) => {
   Array.from(clone.querySelectorAll("[tplid]")).reverse().forEach((node) => {
     const tplid = node.getAttribute("tplid");
+    if (tplid in templates) {
+      return;
+    }
     const name = node.localName;
     node.setAttribute("html-scopeid", "jails___scope-id");
     if (name in components && components[name].module.template) {

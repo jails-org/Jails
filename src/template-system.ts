@@ -21,7 +21,6 @@ export const template = ( target, { components }) => {
 	transformTemplate( clone )
 	removeTemplateTagsRecursively( clone )
 	setTemplates( clone, components )
-
 	return templates
 }
 
@@ -52,7 +51,7 @@ const tagElements = (target, keys, components) => {
 			tagElements(node.content, keys, components)
 			return
 		}
-		if (isComponent(node.localName)) {
+		if (isComponent(node.localName) && !node.getAttribute('tplid')) {
 			node.setAttribute('tplid', uuid())
 		}
 	})
@@ -128,6 +127,11 @@ const setTemplates = ( clone, components ) => {
 		.forEach((node) => {
 
 			const tplid = node.getAttribute('tplid')
+
+			if( tplid in templates ) {
+				return
+			}
+
 			const name  = node.localName
 			node.setAttribute('html-scopeid', 'jails___scope-id')
 
